@@ -13,7 +13,7 @@
     MaxWidth="600"
     d:DataContext="{d:DesignInstance Type=viewModel:MainViewModel,
                                      IsDesignTimeCreatable=False}"
-    d:DesignHeight="135"
+    d:DesignHeight="189.667"
     d:DesignWidth="500"
     ResizeMode="CanMinimize"
     SizeToContent="WidthAndHeight"
@@ -24,7 +24,7 @@
         <TextBlock
             x:Name="message"
             Margin="0,0,0,10"
-            Text="The message" />
+            Text="The message" Height="54" />
         <TextBox
             x:Name="input"
             MaxHeight="300"
@@ -33,8 +33,8 @@
             FontFamily="Arial"
             FontSize="14"
             TextWrapping="Wrap"
-            VerticalScrollBarVisibility="Auto" />
-        <Grid Margin="0,10,0,0">
+            VerticalScrollBarVisibility="Auto" Height="36" />
+        <Grid Margin="0,10,0,0" Height="47">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
@@ -44,14 +44,15 @@
                 Grid.Column="0"
                 Padding="8"
                 Click="OkButton_Click"
-                Content="{l:Localize OK}" Width="94" />
+                Content="{l:Localize OK}" Width="94" Margin="5,0,0,0" VerticalAlignment="Bottom" />
             <Button
                 x:Name="CancelButton"
                 Grid.Column="1"
-                Margin="0,0,10,0"
+                Margin="0,0,5,0"
                 Padding="8"
                 Click="CancelButton_Click"
-                Content="{l:Localize Cancel}" Width="98" HorizontalAlignment="Right" />
+                Content="{l:Localize Cancel}" Width="98" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="37" />
         </Grid>
+     
     </StackPanel>
 </Window>

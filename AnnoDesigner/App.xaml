@@ -8,8 +8,11 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ui:ThemesDictionary Theme="Light" />
-                <ui:ControlsDictionary />
+                <ui:ControlsDictionary /> 
             </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="DefaultControlFocusVisualStyle">
+                <Setter Property="Control.Template" Value="{x:Null}" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

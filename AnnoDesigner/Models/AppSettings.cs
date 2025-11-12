@@ -1,6 +1,7 @@
 ﻿using AnnoDesigner.Core.Models;
 using AnnoDesigner.Properties;
 using System;
+using System.Collections;
 using System.Windows;
 
 namespace AnnoDesigner.Models;
@@ -219,7 +220,7 @@ public class AppSettings : IAppSettings
     }
 
     /// <summary>
-    /// Serialized <see cref="IDictionary{string, HotkeyInformation}"/>.
+    /// Serialized <see cref="IDictionary" /> of <c>string</c> to <c>HotkeyInformation</c>.
     /// </summary>
     public string HotkeyMappings
     {

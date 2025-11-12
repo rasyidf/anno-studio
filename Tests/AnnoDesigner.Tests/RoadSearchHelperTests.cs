@@ -14,12 +14,12 @@ namespace AnnoDesigner.Tests
 {
     public class RoadSearchHelperTests
     {
-        private readonly IFileSystem _fileSystem;
+        private readonly IFileSystem _fileSystem = new FileSystem();
         private static readonly LayoutFile defaultObjectList;
         static RoadSearchHelperTests()
         {
             defaultObjectList = new LayoutLoader().LoadLayout(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData", "RoadSearchHelper", "BreadthFirstSearch_FindBuildingInfluenceRange.ad"), true);
-            _fileSystem = new FileSystem();
+             
         }
         private string GetTestDataFile(string testCase)
         {

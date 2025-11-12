@@ -5,6 +5,7 @@ using AnnoDesigner.Core.Extensions;
 using AnnoDesigner.Core.Helper;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Presets.Loader;
+using AnnoDesigner.Core.Presets.Models;
 using AnnoDesigner.Core.RecentFiles;
 using AnnoDesigner.Core.Services;
 using AnnoDesigner.Helper;

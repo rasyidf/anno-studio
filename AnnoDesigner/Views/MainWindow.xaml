@@ -17,6 +17,8 @@
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:viewModel="clr-namespace:AnnoDesigner.ViewModels"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+    xmlns:wpfui="clr-namespace:AvalonDock.Themes.WPFUI;assembly=AvalonDock.Themes.WPFUI"
     x:Name="mainWindow"
     Width="{Binding MainWindowWidth, Mode=TwoWay}"
     Height="{Binding MainWindowHeight, Mode=TwoWay}"
@@ -73,35 +75,21 @@
         <ui:TitleBar Grid.Row="0"
                      d:Title="Untitled*">
             <ui:TitleBar.Icon>
-                <ui:ImageIcon Source="/Icon.ico"/>
+                <ui:ImageIcon Source="/icon_v2.ico"/>
             </ui:TitleBar.Icon>
-            <ui:TitleBar.Title>
+            <!--<ui:TitleBar.Title>
                 <MultiBinding Converter="{StaticResource converterUnsavedChanges}">
                     <Binding Path="MainWindowTitle"/>
                     <Binding Path="AnnoCanvas.UndoManager.IsDirty"/>
                 </MultiBinding>
-            </ui:TitleBar.Title>
-        </ui:TitleBar>
-        <xctk:BusyIndicator x:Name="busyIndicator"
-                            Grid.Row="1">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"
-                                      MinWidth="100"/>
-                    <ColumnDefinition Width="5"/>
-                    <ColumnDefinition Width="300"
-                                      MinWidth="100"/>
-                </Grid.ColumnDefinitions>
+            </ui:TitleBar.Title>-->
 
-                <Menu
-                    Name="Menu"
-                    Grid.ColumnSpan="3"
-                    VerticalAlignment="Top">
+
+            <ui:TitleBar.Header>
+
+                <Menu Name="Menu"
+                      Grid.ColumnSpan="3"
+                      VerticalAlignment="Top">
                     <Menu.Resources>
                         <Style TargetType="{x:Type MenuItem}">
                             <Style.Triggers>
@@ -113,35 +101,27 @@
                             </Style.Triggers>
                         </Style>
                     </Menu.Resources>
-                    <MenuItem Header="{l:Localize File}"
-                              TabIndex="20">
-                        <MenuItem
-                            Command="ApplicationCommands.New"
-                            CommandTarget="{Binding ElementName=annoCanvas}"
-                            Header="{l:Localize NewCanvas}"/>
-                        <MenuItem
-                            Command="ApplicationCommands.Open"
-                            CommandTarget="{Binding ElementName=annoCanvas}"
-                            Header="{l:Localize Open}"/>
-                        <MenuItem
-                            Command="ApplicationCommands.Save"
-                            CommandTarget="{Binding ElementName=annoCanvas}"
-                            Header="{l:Localize Save}"/>
-                        <MenuItem
-                            Command="ApplicationCommands.SaveAs"
-                            CommandTarget="{Binding ElementName=annoCanvas}"
-                            Header="{l:Localize SaveAs}"/>
+
+                    <!-- FILE -->
+                    <ui:MenuItem Header="{l:Localize File}"
+                                 TabIndex="10">
+                        <ui:MenuItem Command="ApplicationCommands.New"
+                                     CommandTarget="{Binding ElementName=annoCanvas}"
+                                     Header="{l:Localize NewCanvas}"/>
+                        <ui:MenuItem Command="ApplicationCommands.Open"
+                                     CommandTarget="{Binding ElementName=annoCanvas}"
+                                     Header="{l:Localize Open}"/>
+                        <ui:MenuItem Command="ApplicationCommands.Save"
+                                     CommandTarget="{Binding ElementName=annoCanvas}"
+                                     Header="{l:Localize Save}"/>
+                        <ui:MenuItem Command="ApplicationCommands.SaveAs"
+                                     CommandTarget="{Binding ElementName=annoCanvas}"
+                                     Header="{l:Localize SaveAs}"/>
                         <Separator/>
-                        <MenuItem Command="{Binding CopyLayoutToClipboardCommand}"
-                                  Header="{l:Localize CopyLayoutToClipboard}"/>
-                        <MenuItem Command="{Binding LoadLayoutFromJsonCommand}"
-                                  Header="{l:Localize LoadLayoutFromJson}"/>
-                        <Separator/>
-                        <MenuItem
-                            Header="{l:Localize RecentFiles}"
-                            IsEnabled="{Binding HasRecentFiles}"
-                            ItemsSource="{Binding RecentFiles}">
-                            <MenuItem.ItemContainerStyle>
+                        <ui:MenuItem Header="{l:Localize RecentFiles}"
+                                     IsEnabled="{Binding HasRecentFiles}"
+                                     ItemsSource="{Binding RecentFiles}">
+                            <ui:MenuItem.ItemContainerStyle>
                                 <Style TargetType="MenuItem">
                                     <Setter Property="HeaderTemplate">
                                         <Setter.Value>
@@ -155,700 +135,394 @@
                                     <Setter Property="CommandParameter"
                                             Value="{Binding}"/>
                                 </Style>
-                            </MenuItem.ItemContainerStyle>
-                        </MenuItem>
+                            </ui:MenuItem.ItemContainerStyle>
+                        </ui:MenuItem>
                         <Separator/>
-                        <MenuItem
-                            Command="{Binding CloseWindowCommand}"
-                            CommandParameter="{Binding ElementName=mainWindow}"
-                            Header="{l:Localize Exit}"/>
-                    </MenuItem>
-                    <MenuItem Header="{l:Localize Export}"
-                              TabIndex="22">
-                        <MenuItem Command="{Binding ExportImageCommand}"
-                                  Header="{l:Localize ExportImage}"/>
+                        <ui:MenuItem Command="{Binding CloseWindowCommand}"
+                                     CommandParameter="{Binding ElementName=mainWindow}"
+                                     Header="{l:Localize Exit}"/>
+                    </ui:MenuItem>
+                    <!-- EDIT -->
+                    <ui:MenuItem Header="{l:Localize Edit}"
+                                 TabIndex="11">
+                        <ui:MenuItem Command="ApplicationCommands.Undo"
+                                     Header="{l:Localize Undo}"/>
+                        <ui:MenuItem Command="ApplicationCommands.Redo"
+                                     Header="{l:Localize Redo}"/>
                         <Separator/>
-                        <MenuItem
-                            Header="{l:Localize UseCurrentZoomOnExportedImage}"
-                            IsCheckable="True"
-                            IsChecked="{Binding UseCurrentZoomOnExportedImageValue}"/>
-                        <MenuItem
-                            Header="{l:Localize RenderSelectionHighlightsOnExportedImage}"
-                            IsCheckable="True"
-                            IsChecked="{Binding RenderSelectionHighlightsOnExportedImageValue}"/>
-                        <MenuItem
-                            Header="{l:Localize RenderVersionOnExportedImage}"
-                            IsCheckable="True"
-                            IsChecked="{Binding RenderVersionOnExportedImageValue}"/>
-                    </MenuItem>
-                    <MenuItem
-                        Header="{l:Localize Language}"
-                        ItemsSource="{Binding Languages}"
-                        TabIndex="23">
-                        <MenuItem.Resources>
-                            <Image
-                                x:Key="flagImage"
-                                Height="22"
-                                x:Shared="False"
-                                Source="{Binding FlagPath}"/>
-                        </MenuItem.Resources>
-                        <MenuItem.ItemContainerStyle>
-                            <Style TargetType="MenuItem">
-                                <Setter Property="Icon"
-                                        Value="{StaticResource flagImage}"/>
-                                <Setter Property="Header"
-                                        Value="{Binding Name}"/>
-                                <Setter Property="IsCheckable"
-                                        Value="True"/>
-                                <Setter Property="IsChecked"
-                                        Value="{Binding IsSelected, Mode=TwoWay}"/>
-                                <Setter Property="Command"
-                                        Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.LanguageSelectedCommand}"/>
-                                <Setter Property="CommandParameter"
-                                        Value="{Binding}"/>
-                            </Style>
-                        </MenuItem.ItemContainerStyle>
-                    </MenuItem>
-                    <MenuItem
-                        HorizontalAlignment="Right"
-                        Header="{l:Localize ManageStats}"
-                        TabIndex="24">
-                        <MenuItem
-                            Command="{Binding ShowStatisticsCommand}"
-                            Header="{l:Localize ShowStats}"
-                            IsCheckable="True"
-                            IsChecked="{Binding StatisticsViewModel.IsVisible}"/>
+                        <ui:MenuItem Command="ApplicationCommands.Copy"
+                                     Header="{l:Localize Copy}"/>
+                        <ui:MenuItem Command="ApplicationCommands.Paste"
+                                     Header="{l:Localize Paste}"/>
+                        <ui:MenuItem Command="ApplicationCommands.Delete"
+                                     Header="{l:Localize Delete}"/>
+                    </ui:MenuItem>
+
+                    <!-- VIEW -->
+                    <ui:MenuItem Header="{l:Localize View}"
+                                 TabIndex="12">
+                        <ui:MenuItem Header="{l:Localize ShowGrid}"
+                                     IsCheckable="True"
+                                     IsChecked="{Binding CanvasShowGrid}"/>
+                        <ui:MenuItem Header="{l:Localize ShowLabels}"
+                                     IsCheckable="True"
+                                     IsChecked="{Binding CanvasShowLabels}"/>
+                        <ui:MenuItem Header="{l:Localize ShowIcons}"
+                                     IsCheckable="True"
+                                     IsChecked="{Binding CanvasShowIcons}"/>
                         <Separator/>
-                        <MenuItem
-                            Command="{Binding ShowStatisticsBuildingCountCommand}"
-                            Header="{l:Localize BuildingCount}"
-                            IsCheckable="True"
-                            IsChecked="{Binding StatisticsViewModel.ShowStatisticsBuildingCount}"
-                            IsEnabled="{Binding StatisticsViewModel.IsVisible, Mode=OneWay}"/>
-                    </MenuItem>
-                    <MenuItem Header="{l:Localize View}">
-                        <MenuItem
-                            Header="{l:Localize ShowGrid}"
-                            IsCheckable="True"
-                            IsChecked="{Binding CanvasShowGrid}"/>
-                        <MenuItem
-                            Header="{l:Localize ShowLabels}"
-                            IsCheckable="True"
-                            IsChecked="{Binding CanvasShowLabels}"/>
-                        <MenuItem
-                            Header="{l:Localize ShowIcons}"
-                            IsCheckable="True"
-                            IsChecked="{Binding CanvasShowIcons}"/>
-                        <MenuItem
-                            Header="{l:Localize ShowTrueInfluenceRange}"
-                            IsCheckable="True"
-                            IsChecked="{Binding CanvasShowTrueInfluenceRange}"/>
-                        <MenuItem
-                            Header="{l:Localize ShowInfluences}"
-                            IsCheckable="True"
-                            IsChecked="{Binding CanvasShowInfluences}"/>
-                        <MenuItem
-                            Header="{l:Localize ShowHarborBlockedArea}"
-                            IsCheckable="True"
-                            IsChecked="{Binding CanvasShowHarborBlockedArea}"/>
-                        <MenuItem
-                            Header="{l:Localize ShowPanorama}"
-                            IsCheckable="True"
-                            IsChecked="{Binding CanvasShowPanorama}"/>
-                    </MenuItem>
-                    <MenuItem Header="{l:Localize Tools}">
-                        <MenuItem Command="{Binding CanvasNormalizeCommand}"
-                                  Header="{l:Localize Normalize}"/>
-                        <MenuItem Command="{Binding CanvasResetZoomCommand}"
-                                  Header="{l:Localize ResetZoom}"/>
-                        <MenuItem Command="{Binding MergeRoadsCommand}"
-                                  Header="{l:Localize MergeRoads}"/>
+                        <ui:MenuItem Header="{l:Localize ShowInfluences}"
+                                     IsCheckable="True"
+                                     IsChecked="{Binding CanvasShowInfluences}"/>
+                        <ui:MenuItem Header="{l:Localize ShowTrueInfluenceRange}"
+                                     IsCheckable="True"
+                                     IsChecked="{Binding CanvasShowTrueInfluenceRange}"/>
+                        <ui:MenuItem Header="{l:Localize ShowHarborBlockedArea}"
+                                     IsCheckable="True"
+                                     IsChecked="{Binding CanvasShowHarborBlockedArea}"/>
+                        <ui:MenuItem Header="{l:Localize ShowPanorama}"
+                                     IsCheckable="True"
+                                     IsChecked="{Binding CanvasShowPanorama}"/>
                         <Separator/>
-                        <MenuItem Command="{Binding RegisterExtensionCommand}"
-                                  Header="{l:Localize RegisterFileExtension}"/>
-                        <MenuItem Command="{Binding UnregisterExtensionCommand}"
-                                  Header="{l:Localize UnregisterFileExtension}"/>
+                        <ui:MenuItem Command="{Binding CanvasResetZoomCommand}"
+                                     Header="{l:Localize ResetZoom}"/>
+                    </ui:MenuItem>
+
+                    <!-- LAYOUT / TOOLS -->
+                    <ui:MenuItem Header="{l:Localize Layout}"
+                                 TabIndex="13">
+                        <ui:MenuItem Command="{Binding MergeRoadsCommand}"
+                                     Header="{l:Localize MergeRoads}"/>
+                        <ui:MenuItem Command="{Binding CanvasNormalizeCommand}"
+                                     Header="{l:Localize NormalizeLayout}"/>
                         <Separator/>
-                        <MenuItem Command="{Binding ShowPreferencesWindowCommand}">
-                            <MenuItem.Header>
-                                <!--  Header property is an object, so can't just do {Binding Tools, ... } directly in Header attribute  -->
-                                <Run Text="{l:Localize Preferences, StringFormat='\{0\}...', Mode=OneWay}"/>
-                            </MenuItem.Header>
-                        </MenuItem>
-                    </MenuItem>
-                    <MenuItem
-                        HorizontalAlignment="Right"
-                        Header="{l:Localize Help}"
-                        TabIndex="25">
-                        <MenuItem Command="{Binding OpenProjectHomepageCommand}"
-                                  Header="{l:Localize GoToProjectHomepage}"/>
-                        <MenuItem Command="{Binding ShowWelcomeWindowCommand}"
-                                  Header="{l:Localize OpenWelcomePage}"/>
-                        <MenuItem Command="{Binding ShowAboutWindowCommand}"
-                                  Header="{l:Localize AboutAnnoDesigner}"/>
+                        <ui:MenuItem IsEnabled="False"
+                                     Command="{Binding OptimizeLayoutCommand}"
+                                     Header="{l:Localize OptimizeLayout}"/>
+                        <ui:MenuItem IsEnabled="False"
+                                     Command="{Binding ValidateLayoutCommand}"
+                                     Header="{l:Localize ValidateLayout}"/>
+                        <ui:MenuItem IsEnabled="False"
+                                     Command="{Binding AutoAlignCommand}"
+                                     Header="{l:Localize AutoAlign}"/>
+                    </ui:MenuItem>
+
+                    <!-- EXPORT -->
+                    <ui:MenuItem Header="{l:Localize ImportExport}"
+                                 TabIndex="11">
+                        <!-- IMPORT -->
+                        <ui:MenuItem Header="{l:Localize Import}">
+                            <ui:MenuItem Command="{Binding LoadLayoutFromJsonCommand}"
+                                         Header="{l:Localize FromJSON}"/>
+                            <!-- Future -->
+                            <ui:MenuItem IsEnabled="False"
+                                         Command="{Binding ImportBlueprintCommand}"
+                                         Header="{l:Localize FromBlueprint}"/>
+                            <ui:MenuItem IsEnabled="False"
+                                         Command="{Binding ImportFromClipboardCommand}"
+                                         Header="{l:Localize FromClipboard}"/>
+
+                        </ui:MenuItem>
+
+                        <!-- EXPORT -->
+                        <ui:MenuItem Header="{l:Localize Export}">
+                            <ui:MenuItem Command="{Binding ExportImageCommand}"
+                                         Header="{l:Localize AsImage}"/>
+                            <ui:MenuItem Command="{Binding CopyLayoutToClipboardCommand}"
+                                         Header="{l:Localize ToClipboard}"/>
+                            <ui:MenuItem Command="{Binding ExportToJSONCommand}"
+                                         Header="{l:Localize AsJSON}"/>
+                            <ui:MenuItem Command="{Binding ExportToBlueprintCommand}"
+                                         Header="{l:Localize AsBlueprint}"/>
+                            <Separator/>
+                            <ui:MenuItem Header="{l:Localize ExportSettings}"
+                                         IsEnabled="False"/>
+                            <ui:MenuItem Header="{l:Localize UseCurrentZoomOnExportedImage}"
+                                         IsCheckable="True"
+                                         IsChecked="{Binding UseCurrentZoomOnExportedImageValue}"/>
+                            <ui:MenuItem Header="{l:Localize RenderSelectionHighlightsOnExportedImage}"
+                                         IsCheckable="True"
+                                         IsChecked="{Binding RenderSelectionHighlightsOnExportedImageValue}"/>
+                            <ui:MenuItem Header="{l:Localize RenderVersionOnExportedImage}"
+                                         IsCheckable="True"
+                                         IsChecked="{Binding RenderVersionOnExportedImageValue}"/>
+                        </ui:MenuItem>
+                    </ui:MenuItem>
+
+
+                    <!-- STATISTICS -->
+                    <ui:MenuItem Header="{l:Localize Statistics}"
+                                 TabIndex="15">
+                        <ui:MenuItem Command="{Binding ShowStatisticsCommand}"
+                                     Header="{l:Localize ShowStats}"
+                                     IsCheckable="True"
+                                     IsChecked="{Binding StatisticsViewModel.IsVisible}"/>
+                        <ui:MenuItem Command="{Binding ShowStatisticsBuildingCountCommand}"
+                                     Header="{l:Localize BuildingCount}"
+                                     IsCheckable="True"
+                                     IsChecked="{Binding StatisticsViewModel.ShowStatisticsBuildingCount}"
+                                     IsEnabled="{Binding StatisticsViewModel.IsVisible}"/>
                         <Separator/>
-                        <MenuItem Command="{Binding ShowLicensesWindowCommand}"
-                                  Header="{l:Localize ViewLicenses}"/>
-                    </MenuItem>
+                        <ui:MenuItem Command="{Binding ExportStatisticsCommand}"
+                                     Header="{l:Localize ExportStats}"/>
+                        <!-- New -->
+                    </ui:MenuItem>
+
+                    <!-- EXTENSIONS -->
+                    <ui:MenuItem Header="{l:Localize Extensions}"
+                                 TabIndex="16">
+                        <ui:MenuItem Command="{Binding RegisterExtensionCommand}"
+                                     Header="{l:Localize RegisterFileExtension}"/>
+                        <ui:MenuItem Command="{Binding UnregisterExtensionCommand}"
+                                     Header="{l:Localize UnregisterFileExtension}"/>
+                        <Separator/>
+                        <ui:MenuItem Command="{Binding ManagePluginsCommand}"
+                                     Header="{l:Localize ManagePlugins}"/>
+                        <!-- New -->
+                        <ui:MenuItem Command="{Binding RefreshPluginsCommand}"
+                                     Header="{l:Localize ReloadPlugins}"/>
+                        <!-- New -->
+                    </ui:MenuItem>
+
+                    <!-- SETTINGS -->
+                    <ui:MenuItem Header="{l:Localize Settings}"
+                                 TabIndex="17">
+                        <ui:MenuItem Command="{Binding ShowPreferencesWindowCommand}"
+                                     Header="{l:Localize Preferences}"/>
+                        <Separator/>
+                        <ui:MenuItem Header="{l:Localize Language}"
+                                     ItemsSource="{Binding Languages}">
+                            <ui:MenuItem.Resources>
+                                <Image x:Key="flagImage"
+                                       Height="22"
+                                       x:Shared="False"
+                                       Source="{Binding FlagPath}"/>
+                            </ui:MenuItem.Resources>
+                            <ui:MenuItem.ItemContainerStyle>
+                                <Style TargetType="MenuItem">
+                                    <Setter Property="Icon"
+                                            Value="{StaticResource flagImage}"/>
+                                    <Setter Property="Header"
+                                            Value="{Binding Name}"/>
+                                    <Setter Property="IsCheckable"
+                                            Value="True"/>
+                                    <Setter Property="IsChecked"
+                                            Value="{Binding IsSelected, Mode=TwoWay}"/>
+                                    <Setter Property="Command"
+                                            Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.LanguageSelectedCommand}"/>
+                                    <Setter Property="CommandParameter"
+                                            Value="{Binding}"/>
+                                </Style>
+                            </ui:MenuItem.ItemContainerStyle>
+                        </ui:MenuItem>
+                    </ui:MenuItem>
+
+                    <!-- HELP -->
+                    <ui:MenuItem Header="{l:Localize Help}"
+                                 TabIndex="18">
+                        <ui:MenuItem Command="{Binding ShowWelcomeWindowCommand}"
+                                     Header="{l:Localize WelcomeGuide}"/>
+                        <ui:MenuItem Command="{Binding OpenProjectHomepageCommand}"
+                                     Header="{l:Localize ProjectHomepage}"/>
+                        <ui:MenuItem Command="{Binding ShowLicensesWindowCommand}"
+                                     Header="{l:Localize ViewLicenses}"/>
+                        <Separator/>
+                        <ui:MenuItem Command="{Binding ShowAboutWindowCommand}"
+                                     Header="{l:Localize AboutAnnoDesigner}"/>
+                        <ui:MenuItem Command="{Binding CheckForUpdatesCommand}"
+                                     Header="{l:Localize CheckForUpdates}"/>
+                        <!-- New -->
+                    </ui:MenuItem>
                 </Menu>
 
-                <Grid
-                    x:Name="gridMain"
-                    Grid.Row="1"
-                    Grid.Column="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"
-                                          MinWidth="100"/>
-                        <ColumnDefinition Width="5"/>
-                        <ColumnDefinition Width="2*"/>
-                        <ColumnDefinition Width="5"/>
-                        <ColumnDefinition
-                            x:Name="colStatisticsView"
-                            Width="1*"
-                            MinWidth="205.28"/>
-                    </Grid.ColumnDefinitions>
 
-                    <DockPanel Grid.Row="0"
-                               Margin="8"
-                               LastChildFill="True">
+            </ui:TitleBar.Header>
 
-                        <!-- Replaced Expander with flat layout + header TextBlock -->
-                        <StackPanel DockPanel.Dock="Top"
-                                    Margin="0,0,0,6">
-                            <TextBlock Text="{Binding PresetsSectionHeader}"
-                                       FontWeight="SemiBold"
-                                       FontSize="14"
-                                       Margin="0,0,0,4"/>
-                            <!-- Inline search + version filters at top of presets list -->
-                            <StackPanel Margin="0,0,0,4">
-                                <ui:AutoSuggestBox
-                                    x:Name="TextBoxSearchPresets"
-                                    VerticalContentAlignment="Center"
-                                    KeyUp="TextBoxSearchPresetsKeyUp"
-                                    PlaceholderText="Search"
-                                    Text="{Binding PresetsTreeSearchViewModel.SearchText, UpdateSourceTrigger=PropertyChanged}"
-                                    ToolTip="{l:Localize SearchToolTip}">
-                                    <b:Interaction.Triggers>
-                                        <b:EventTrigger EventName="GotFocus">
-                                            <b:InvokeCommandAction Command="{Binding PresetsTreeSearchViewModel.GotFocusCommand}"/>
-                                        </b:EventTrigger>
-                                        <b:EventTrigger EventName="LostFocus">
-                                            <b:InvokeCommandAction Command="{Binding PresetsTreeSearchViewModel.LostFocusCommand}"/>
-                                        </b:EventTrigger>
-                                    </b:Interaction.Triggers>
-                                    <ui:AutoSuggestBox.InputBindings>
-                                        <KeyBinding
-                                            Key="Esc"
-                                            Command="{Binding PresetsTreeSearchViewModel.ClearSearchTextCommand}"
-                                            CommandParameter="{Binding ElementName=TextBoxSearchPresets}"/>
-                                    </ui:AutoSuggestBox.InputBindings>
-                                </ui:AutoSuggestBox>
-                                <StackPanel Orientation="Horizontal"
-                                            Margin="0,6,0,2">
-                                    <TextBlock Text="{l:Localize GameVersions}"
-                                               VerticalAlignment="Center"
-                                               Margin="0,0,8,0"/>
-                                    <Button Padding="4,2"
-                                            MinWidth="60"
-                                            Command="{Binding PresetsTreeSearchViewModel.SelectAllGameVersionsCommand}">
-                                        <TextBlock Text="{l:Localize SelectAll}"/>
-                                    </Button>
-                                    <Button Padding="4,2"
-                                            MinWidth="60"
-                                            Margin="4,0,0,0"
-                                            Command="{Binding PresetsTreeSearchViewModel.ClearAllGameVersionsCommand}">
-                                        <TextBlock Text="{l:Localize Clear}"/>
-                                    </Button>
-                                </StackPanel>
-                                <ScrollViewer MaxHeight="90"
-                                              VerticalScrollBarVisibility="Auto">
-                                    <ItemsControl ItemsSource="{Binding PresetsTreeSearchViewModel.GameVersionFilters}">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <WrapPanel/>
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <CheckBox Content="{Binding Name}"
-                                                          IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                                          Margin="4,2"/>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </ScrollViewer>
-                            </StackPanel>
-                        </StackPanel>
-                        <TreeView
-                            x:Name="PresetsTree"
-                            VerticalContentAlignment="Stretch"
-                            ItemsSource="{Binding PresetsTreeViewModel.FilteredItems}">
-                            <TreeView.Resources>
-                                <HierarchicalDataTemplate DataType="{x:Type modelPresetsTree:GameHeaderTreeItem}"
-                                                          ItemsSource="{Binding Children}">
-                                    <TextBlock FontWeight="SemiBold"
-                                               Text="{Binding Header}"/>
-                                </HierarchicalDataTemplate>
-                                <HierarchicalDataTemplate DataType="{x:Type modelPresetsTree:GenericTreeItem}"
-                                                          ItemsSource="{Binding Children}">
-                                    <TextBlock Text="{Binding Header}"/>
-                                </HierarchicalDataTemplate>
-                            </TreeView.Resources>
-                            <TreeView.InputBindings>
-                                <KeyBinding
-                                    Key="Return"
-                                    Command="{Binding PresetsTreeViewModel.ReturnKeyPressedCommand}"
-                                    CommandParameter="{Binding SelectedItem, ElementName=PresetsTree}"/>
-                            </TreeView.InputBindings>
-                            <b:Interaction.Triggers>
-                                <b:EventTrigger EventName="MouseDoubleClick">
-                                    <b:InvokeCommandAction Command="{Binding PresetsTreeViewModel.DoubleClickCommand}"
-                                                           CommandParameter="{Binding SelectedItem, ElementName=PresetsTree}"/>
-                                </b:EventTrigger>
-                            </b:Interaction.Triggers>
-                        </TreeView>
 
-                    </DockPanel>
+            <ui:TitleBar.TrailingContent>
+                <Button>
+                    <ui:FontIcon Glyph="&#xE711;"
+                                 FontSize="16"/>
+                </Button>
+            </ui:TitleBar.TrailingContent>
+        </ui:TitleBar>
+        <xctk:BusyIndicator x:Name="busyIndicator"
+                            Grid.Row="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition
+                        MinWidth="100"/>
+                </Grid.ColumnDefinitions>
 
-                    <GridSplitter
-                        x:Name="splitterToolboxView"
-                        Grid.Column="1"
-                        Width="5"
-                        HorizontalAlignment="Center"
-                        Background="{DynamicResource ControlElevationBorderBrush}"/>
+                <DockingManager x:Name="dockManager"
+                                Grid.Row="1"
+                                Grid.Column="0">
 
-                    <!--
-                        ScrollViewer steals focus (all key events) unless `Focusable` is set to false. Scrolling via arrow keys and page up/down stil works
-                        as the event will still bubble up to the scroll viewer as its not handled in AnnoCanvas
-                    -->
-                    <Grid Grid.Column="2"
-                          Margin="5,0,0,0">
-                        <ScrollViewer
-                            x:Name="canvasScrollViewer"
-                            CanContentScroll="True"
-                            Focusable="False"
-                            HorizontalScrollBarVisibility="{Binding ShowScrollbars}"
-                            VerticalScrollBarVisibility="{Binding ShowScrollbars}">
-                            <my:AnnoCanvas x:Name="annoCanvas"/>
-                        </ScrollViewer>
+                    <DockingManager.Theme>
+                        <wpfui:WPFUITheme/>
+                    </DockingManager.Theme>
 
-                        <!-- Floating Toolbox V2 overlay -->
-                        <!-- <canvasV2:FloatingToolboxView
-                            x:Name="floatingToolbox"
-                            VerticalAlignment="Top"
-                            HorizontalAlignment="Center"
-                            Margin="0,10,0,0"
-                            DataContext="{Binding FloatingToolboxViewModel}"
-                            Panel.ZIndex="100"
-                            IsHitTestVisible="True">
-                            <canvasV2:FloatingToolboxView.Effect>
-                                <DropShadowEffect Color="Black"
-                                                  Direction="270"
-                                                  ShadowDepth="3"
-                                                  BlurRadius="10"
-                                                  Opacity="0.6"/>
-                            </canvasV2:FloatingToolboxView.Effect>
-                        </canvasV2:FloatingToolboxView> -->
-                    </Grid>
-
-                    <GridSplitter
-                        x:Name="splitterStatisticsView"
-                        Grid.Column="3"
-                        Width="5"
-                        HorizontalAlignment="Left"
-                        Background="{DynamicResource ControlElevationBorderBrush}"
-                        Grid.ColumnSpan="1"/>
-
-                    <my:StatisticsView
-                        x:Name="statisticsView"
-                        Grid.Column="4"
-                        DataContext="{Binding StatisticsViewModel}"
-                        Margin="1,0,0,0"/>
-
-                </Grid>
-
-                <GridSplitter
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    Width="5"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Stretch"
-                    Background="{DynamicResource ControlElevationBorderBrush}"/>
-                <Grid Grid.Row="1"
-                      Grid.Column="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="8*"/>
-                        <RowDefinition Height="5"/>
-                        <RowDefinition Height="3*"/>
-                    </Grid.RowDefinitions>
-
-                    <DockPanel x:Name="BuildingsPanel"
-                               LastChildFill="True">
-                        <Expander
-                            BorderBrush="{DynamicResource ExpanderHeaderBorderBrush}"
-                            DockPanel.Dock="Top"
-                            Header="{l:Localize LayoutSettings}"
-                            IsExpanded="True">
-                            <DockPanel LastChildFill="False">
-                                <Label Content="{l:Localize Version}"/>
-                                <TextBox
-                                    Width="140"
-                                    Height="32"
-                                    DockPanel.Dock="Right"
-                                    IsEnabled="True"
-                                    Text="{Binding LayoutSettingsViewModel.LayoutVersionDisplayValue}"/>
-                            </DockPanel>
-                        </Expander>
-                        <Expander
-                            BorderBrush="{DynamicResource ExpanderHeaderBorderBrush}"
-                            DockPanel.Dock="Top"
-                            Header="{l:Localize BuildingSettings}"
-                            IsExpanded="True">
-                            <StackPanel>
-                                <DockPanel
-                                    Height="43"
-                                    VerticalAlignment="Center"
-                                    LastChildFill="False">
-                                    <Label VerticalAlignment="Center"
-                                           Content="{l:Localize Size}"/>
-                                    <ui:NumberBox
-                                        Width="58"
-                                        DockPanel.Dock="Right"
-                                        IsEnabled="True"
-                                        Minimum="1"
-                                        SpinButtonPlacementMode="Compact"
-                                        TabIndex="1"
-                                        Value="{Binding BuildingSettingsViewModel.BuildingHeight, FallbackValue=4}"/>
-                                    <Label
-                                        Margin="5,0,6,0"
-                                        VerticalAlignment="Center"
-                                        Content="x"
-                                        DockPanel.Dock="Right"/>
-                                    <ui:NumberBox
-                                        Width="60"
-                                        DockPanel.Dock="Right"
-                                        IsEnabled="True"
-                                        Minimum="1"
-                                        SpinButtonPlacementMode="Compact"
-                                        TabIndex="0"
-                                        Value="{Binding BuildingSettingsViewModel.BuildingWidth, FallbackValue=4}"/>
-                                </DockPanel>
-                                <DockPanel LastChildFill="False"
-                                           Visibility="Hidden">
-                                    <Label Content="{l:Localize Color}"/>
-
-                                    <xctk:ColorPicker
-                                        x:Name="colorPicker"
-                                        Width="140"
-                                        AdvancedTabHeader="{l:Localize Advanced}"
-                                        AvailableColorsHeader="{l:Localize AvailableColors}"
-                                        AvailableColorsSortingMode="HueSaturationBrightness"
-                                        DisplayColorAndName="True"
-                                        DisplayColorTooltip="True"
-                                        DockPanel.Dock="Right"
-                                        RecentColorsHeader="{l:Localize RecentColors}"
-                                        SelectedColor="{Binding BuildingSettingsViewModel.SelectedColor}"
-                                        ShowAvailableColors="True"
-                                        ShowDropDownButton="True"
-                                        ShowRecentColors="True"
-                                        StandardColorsHeader="{l:Localize StandardColors}"
-                                        StandardTabHeader="{l:Localize Standard}"
-                                        TabIndex="2"/>
-                                </DockPanel>
-                                <DockPanel LastChildFill="False"
-                                           Visibility="Hidden">
-
-                                    <!--  used when predefined colors are available  -->
-                                    <xctk:SplitButton
-                                        Width="48"
-                                        Command="{Binding BuildingSettingsViewModel.ApplyColorToSelectionCommand}"
-                                        DockPanel.Dock="Right"
-                                        ToolTip="{l:Localize ApplyColorToSelectionToolTip}">
-                                        <xctk:SplitButton.Resources>
-                                            <Style x:Key="stylePath"
-                                                   TargetType="{x:Type Path}">
-                                                <Style.Triggers>
-                                                    <Trigger Property="IsEnabled"
-                                                             Value="True">
-                                                        <Setter Property="Fill"
-                                                                Value="#FF000000"/>
-                                                    </Trigger>
-                                                    <Trigger Property="IsEnabled"
-                                                             Value="False">
-                                                        <Setter Property="Fill"
-                                                                Value="Gray"/>
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </xctk:SplitButton.Resources>
-                                        <xctk:SplitButton.DropDownContent>
-                                            <Button
-                                                Command="{Binding BuildingSettingsViewModel.ApplyPredefinedColorToSelectionCommand}"
-                                                Content="{l:Localize ApplyPredefinedColorToSelection}"
-                                                ToolTip="{l:Localize ApplyPredefinedColorToSelectionToolTip}"/>
-                                        </xctk:SplitButton.DropDownContent>
-                                        <Grid
-                                            Width="24"
-                                            Height="24"
-                                            Visibility="Visible">
-                                            <Path
-                                                Width="16"
-                                                Height="16"
-                                                Margin="0,0,0,0"
-                                                Data="M10.237976,16.558633L15.362,21.68467C15.362,21.68467 15.362,32.671771 0,30.001748 3.9839783,29.020736 3.5959778,25.791718 5.9639893,20.122661 7.1269836,17.340638 10.237976,16.558633 10.237976,16.558633z M30.389984,0.00048406667C30.752991,0.0094867014 31.134979,0.14547426 31.494995,0.50648519 32.77597,1.7864956 31.215973,3.3455154 31.215973,3.3455152 31.215973,3.3455154 23.415985,11.147588 21.855988,12.708591 20.296997,14.270602 18.406982,18.619656 18.406982,18.619656L13.28299,13.495602C13.28299,13.495602 17.733978,11.707591 19.29599,10.147579 20.855988,8.5855531 28.655975,0.78248873 28.655975,0.78248861 28.655975,0.78248873 29.461975,-0.022526528 30.389984,0.00048406667z"
-                                                RenderTransformOrigin="0.5,0.5"
-                                                Stretch="Uniform"
-                                                Style="{StaticResource stylePath}">
-                                                <Path.RenderTransform>
-                                                    <TransformGroup>
-                                                        <RotateTransform Angle="0"/>
-                                                        <ScaleTransform ScaleX="1"
-                                                                        ScaleY="1"/>
-                                                    </TransformGroup>
-                                                </Path.RenderTransform>
-                                            </Path>
-                                        </Grid>
-                                    </xctk:SplitButton>
-                                </DockPanel>
-                                <DockPanel LastChildFill="True">
-                                    <DockPanel.Resources>
-                                        <Style x:Key="styleRectangle"
-                                               TargetType="{x:Type Rectangle}">
-                                            <Setter Property="Margin"
-                                                    Value="2"/>
-                                        </Style>
-                                    </DockPanel.Resources>
-                                    <Expander
-                                        MaxWidth="{Binding ActualWidth, ElementName=BuildingsPanel, Mode=OneWay}"
-                                        MaxHeight="90"
-                                        Header="{l:Localize ColorsInLayout}"
-                                        IsExpanded="False"
-                                        ToolTip="{l:Localize ColorsInLayoutToolTip}"
-                                        Visibility="{Binding BuildingSettingsViewModel.ShowColorsInLayout, Converter={StaticResource converterBoolToVisibility}}">
-                                        <ScrollViewer VerticalScrollBarVisibility="Auto">
-                                            <ItemsControl ItemsSource="{Binding BuildingSettingsViewModel.ColorsInLayout}">
-                                                <ItemsControl.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Rectangle
-                                                            Fill="{Binding MediaColor, Converter={StaticResource converterColorToSolidColorBrush}}"
-                                                            Stroke="#FFABADB3"
-                                                            StrokeThickness="1"
-                                                            Style="{StaticResource styleRectangle}"
-                                                            ToolTip="{Binding}">
-                                                            <Rectangle.InputBindings>
-                                                                <MouseBinding
-                                                                    Command="{Binding DataContext.BuildingSettingsViewModel.UseColorInLayoutCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}, Mode=FindAncestor}}"
-                                                                    CommandParameter="{Binding}"
-                                                                    Gesture="LeftDoubleClick"/>
-                                                            </Rectangle.InputBindings>
-                                                        </Rectangle>
-                                                    </DataTemplate>
-                                                </ItemsControl.ItemTemplate>
-                                                <ItemsControl.ItemsPanel>
-                                                    <ItemsPanelTemplate>
-                                                        <WrapPanel
-                                                            Margin="0"
-                                                            HorizontalAlignment="Right"
-                                                            ItemHeight="20"
-                                                            ItemWidth="20"
-                                                            Orientation="Horizontal"/>
-                                                    </ItemsPanelTemplate>
-                                                </ItemsControl.ItemsPanel>
-                                            </ItemsControl>
-                                        </ScrollViewer>
-                                    </Expander>
-                                </DockPanel>
-                                <DockPanel Margin="0,8,0,0"
-                                           LastChildFill="False">
-                                    <Label VerticalAlignment="Center"
-                                           Content="{l:Localize Label}"/>
-                                    <TextBox
-                                        Width="140"
-                                        DockPanel.Dock="Right"
-                                        IsEnabled="True"
-                                        TabIndex="4"
-                                        Text="{Binding BuildingSettingsViewModel.BuildingName}"/>
-                                    <TextBox
-                                        Width="140"
-                                        Height="10"
-                                        DockPanel.Dock="Right"
-                                        IsEnabled="False"
-                                        Text="{Binding BuildingSettingsViewModel.BuildingIdentifier}"
-                                        Visibility="Collapsed"/>
-                                    <TextBox
-                                        Width="140"
-                                        Height="10"
-                                        DockPanel.Dock="Right"
-                                        IsEnabled="False"
-                                        Text="{Binding BuildingSettingsViewModel.BuildingRealName}"
-                                        Visibility="Collapsed"/>
-                                </DockPanel>
-                                <DockPanel Height="46"
-                                           LastChildFill="False">
-                                    <Label VerticalAlignment="Center"
-                                           Content="{l:Localize Icon}"/>
-                                    <ComboBox
-                                        x:Name="comboBoxIcon"
-                                        Width="140"
-                                        Height="46"
-                                        DockPanel.Dock="Right"
-                                        IsEnabled="True"
-                                        ItemsSource="{Binding AvailableIcons}"
-                                        ScrollViewer.CanContentScroll="True"
-                                        SelectedItem="{Binding SelectedIcon}"
-                                        TabIndex="6"
-                                        TextSearch.TextPath="DisplayName">
-                                        <ComboBox.Resources>
-                                            <Style TargetType="{x:Type Popup}">
-                                                <!--<Setter Property="MinWidth"
-                                                Value="140" />
-                                        <Setter Property="MaxWidth"
-                                                Value="340" />-->
-                                                <Setter Property="Width"
-                                                        Value="300"/>
-                                            </Style>
-                                            <converters:IconImageToDisplayNameConverter x:Key="converterIconImageToDisplayName"/>
-                                        </ComboBox.Resources>
-                                        <ComboBox.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <VirtualizingStackPanel VirtualizingPanel.IsVirtualizing="True"
-                                                                        VirtualizingPanel.VirtualizationMode="Recycling"/>
-                                            </ItemsPanelTemplate>
-                                        </ComboBox.ItemsPanel>
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <Viewbox Margin="5">
-                                                        <Image
-                                                            Width="23"
-                                                            Height="32"
-                                                            Source="{Binding Icon}"/>
-                                                    </Viewbox>
-                                                    <TextBlock
-                                                        Margin="0,5,5,5"
-                                                        VerticalAlignment="Center"
-                                                        Text="{Binding ., Converter={StaticResource converterIconImageToDisplayName}}"/>
+                    <LayoutRoot>
+                        <LayoutPanel Orientation="Horizontal">
+                            <!-- Left: Presets as an anchorable pane -->
+                            <LayoutAnchorablePane DockWidth="300">
+                                <LayoutAnchorable Title="{l:Localize PresetsSectionHeader}"
+                                                  CanClose="False">
+                                    <DockPanel Margin="8"
+                                               LastChildFill="True">
+                                        <StackPanel DockPanel.Dock="Top"
+                                                    Margin="0,0,0,6">
+                                            <TextBlock Text="{Binding PresetsSectionHeader}"
+                                                       FontWeight="SemiBold"
+                                                       FontSize="14"
+                                                       Margin="0,0,0,4"/>
+                                            <!-- Inline search + version filters at top of presets list -->
+                                            <StackPanel Margin="0,0,0,4">
+                                                <ui:AutoSuggestBox
+                                                    x:Name="TextBoxSearchPresets"
+                                                    VerticalContentAlignment="Center"
+                                                    KeyUp="TextBoxSearchPresetsKeyUp"
+                                                    PlaceholderText="Search"
+                                                    Text="{Binding PresetsTreeSearchViewModel.SearchText, UpdateSourceTrigger=PropertyChanged}"
+                                                    ToolTip="{l:Localize SearchToolTip}">
+                                                    <b:Interaction.Triggers>
+                                                        <b:EventTrigger EventName="GotFocus">
+                                                            <b:InvokeCommandAction Command="{Binding PresetsTreeSearchViewModel.GotFocusCommand}"/>
+                                                        </b:EventTrigger>
+                                                        <b:EventTrigger EventName="LostFocus">
+                                                            <b:InvokeCommandAction Command="{Binding PresetsTreeSearchViewModel.LostFocusCommand}"/>
+                                                        </b:EventTrigger>
+                                                    </b:Interaction.Triggers>
+                                                    <ui:AutoSuggestBox.InputBindings>
+                                                        <KeyBinding
+                                                            Key="Esc"
+                                                            Command="{Binding PresetsTreeSearchViewModel.ClearSearchTextCommand}"
+                                                            CommandParameter="{Binding ElementName=TextBoxSearchPresets}"/>
+                                                    </ui:AutoSuggestBox.InputBindings>
+                                                </ui:AutoSuggestBox>
+                                                <StackPanel Orientation="Horizontal"
+                                                            Margin="0,6,0,2">
+                                                    <TextBlock Text="{l:Localize GameVersions}"
+                                                               VerticalAlignment="Center"
+                                                               Margin="0,0,8,0"/>
+                                                    <Button Padding="4,2"
+                                                            MinWidth="60"
+                                                            Command="{Binding PresetsTreeSearchViewModel.SelectAllGameVersionsCommand}">
+                                                        <TextBlock Text="{l:Localize SelectAll}"/>
+                                                    </Button>
+                                                    <Button Padding="4,2"
+                                                            MinWidth="60"
+                                                            Margin="4,0,0,0"
+                                                            Command="{Binding PresetsTreeSearchViewModel.ClearAllGameVersionsCommand}">
+                                                        <TextBlock Text="{l:Localize Clear}"/>
+                                                    </Button>
                                                 </StackPanel>
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
-                                </DockPanel>
-                                <DockPanel Margin="0,8,0,0"
-                                           LastChildFill="False">
-                                    <Label VerticalAlignment="Center"
-                                           Content="{l:Localize InfluenceType}"/>
-                                    <ComboBox
-                                        Width="140"
-                                        DisplayMemberPath="Name"
-                                        DockPanel.Dock="Right"
-                                        IsEnabled="True"
-                                        ItemsSource="{Binding BuildingSettingsViewModel.BuildingInfluences}"
-                                        SelectedItem="{Binding BuildingSettingsViewModel.SelectedBuildingInfluence}"
-                                        TabIndex="6"/>
-                                </DockPanel>
-                                <DockPanel
-                                    Margin="0,6,0,0"
-                                    LastChildFill="False"
-                                    Visibility="{Binding BuildingSettingsViewModel.IsBuildingInfluenceInputRadiusVisible, Converter={StaticResource converterBoolToVisibilityCollapsed}}">
-                                    <Label VerticalAlignment="Center"
-                                           Content="{l:Localize Radius}"/>
-                                    <ui:NumberBox
-                                        Width="140"
-                                        DockPanel.Dock="Right"
-                                        IsEnabled="True"
-                                        Minimum="0"
-                                        SpinButtonPlacementMode="Compact"
-                                        TabIndex="8"
-                                        Value="{Binding BuildingSettingsViewModel.BuildingRadius, FallbackValue=1}"/>
-                                </DockPanel>
-                                <DockPanel
-                                    Margin="0,5,0,0"
-                                    LastChildFill="False"
-                                    Visibility="{Binding BuildingSettingsViewModel.IsBuildingInfluenceInputRangeVisible, Converter={StaticResource converterBoolToVisibilityCollapsed}}">
-                                    <Label VerticalAlignment="Center"
-                                           Content="{l:Localize Distance}"/>
-                                    <ui:NumberBox
-                                        Width="140"
-                                        DockPanel.Dock="Right"
-                                        IsEnabled="True"
-                                        Minimum="0"
-                                        SpinButtonPlacementMode="Compact"
-                                        TabIndex="9"
-                                        Value="{Binding BuildingSettingsViewModel.BuildingInfluenceRange, FallbackValue=1}"/>
-                                </DockPanel>
-                                <DockPanel
-                                    Margin="0,4,0,0"
-                                    LastChildFill="False"
-                                    Visibility="{Binding BuildingSettingsViewModel.IsBuildingInfluenceInputRangeVisible, Converter={StaticResource converterBoolToVisibilityCollapsed}}">
-                                    <CheckBox
-                                        Margin="0,3,0,5"
-                                        Content="{l:Localize PavedStreet}"
-                                        DockPanel.Dock="Right"
-                                        IsChecked="{Binding BuildingSettingsViewModel.IsPavedStreet}"
-                                        IsThreeState="False"
-                                        ToolTip="{l:Localize PavedStreetToolTip}">
-                                        <CheckBox.Style>
-                                            <Style TargetType="{x:Type CheckBox}">
-                                                <Setter Property="Background"
-                                                        Value="{DynamicResource SystemFillColorSuccessBrush}"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding BuildingSettingsViewModel.IsPavedStreet}"
-                                                                 Value="True">
-                                                        <Setter Property="Background"
-                                                                Value="{DynamicResource SystemFillColorCriticalBrush}"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </CheckBox.Style>
-                                    </CheckBox>
-                                </DockPanel>
-                                <DockPanel LastChildFill="False">
-                                    <Label Content="{l:Localize Options}"/>
-                                    <StackPanel DockPanel.Dock="Right"
-                                                Orientation="Vertical">
-                                        <CheckBox
-                                            Margin="0,5,0,5"
-                                            VerticalAlignment="Center"
-                                            Content="{l:Localize EnableLabel}"
-                                            IsChecked="{Binding BuildingSettingsViewModel.IsEnableLabelChecked}"
-                                            IsThreeState="False"
-                                            TabIndex="9"/>
-                                        <CheckBox
-                                            Margin="0,0,0,5"
-                                            VerticalAlignment="Center"
-                                            Content="{l:Localize Borderless}"
-                                            IsChecked="{Binding BuildingSettingsViewModel.IsBorderlessChecked}"
-                                            IsThreeState="False"
-                                            TabIndex="10"/>
-                                        <CheckBox
-                                            Margin="0,0,0,5"
-                                            VerticalAlignment="Center"
-                                            Content="{l:Localize Road}"
-                                            IsChecked="{Binding BuildingSettingsViewModel.IsRoadChecked}"
-                                            IsThreeState="False"
-                                            TabIndex="11"/>
-                                    </StackPanel>
-                                </DockPanel>
-                                <Button
-                                    Height="Auto"
-                                    Command="{Binding PlaceBuildingCommand}"
-                                    Content="{l:Localize PlaceBuilding}"
-                                    TabIndex="12"/>
-                            </StackPanel>
-                        </Expander>
+                                                <ScrollViewer MaxHeight="90"
+                                                              VerticalScrollBarVisibility="Auto">
+                                                    <ItemsControl ItemsSource="{Binding PresetsTreeSearchViewModel.GameVersionFilters}">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <WrapPanel/>
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <CheckBox Content="{Binding Name}"
+                                                                          IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                                          Margin="4,2"/>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </ScrollViewer>
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <TreeView
+                                            x:Name="PresetsTree"
+                                            VerticalContentAlignment="Stretch"
+                                            ItemsSource="{Binding PresetsTreeViewModel.FilteredItems}">
+                                            <TreeView.Resources>
+                                                <HierarchicalDataTemplate DataType="{x:Type modelPresetsTree:GameHeaderTreeItem}"
+                                                                          ItemsSource="{Binding Children}">
+                                                    <TextBlock FontWeight="SemiBold"
+                                                               Text="{Binding Header}"/>
+                                                </HierarchicalDataTemplate>
+                                                <HierarchicalDataTemplate DataType="{x:Type modelPresetsTree:GenericTreeItem}"
+                                                                          ItemsSource="{Binding Children}">
+                                                    <TextBlock Text="{Binding Header}"/>
+                                                </HierarchicalDataTemplate>
+                                            </TreeView.Resources>
+                                            <TreeView.InputBindings>
+                                                <KeyBinding
+                                                    Key="Return"
+                                                    Command="{Binding PresetsTreeViewModel.ReturnKeyPressedCommand}"
+                                                    CommandParameter="{Binding SelectedItem, ElementName=PresetsTree}"/>
+                                            </TreeView.InputBindings>
+                                            <b:Interaction.Triggers>
+                                                <b:EventTrigger EventName="MouseDoubleClick">
+                                                    <b:InvokeCommandAction Command="{Binding PresetsTreeViewModel.DoubleClickCommand}"
+                                                                           CommandParameter="{Binding SelectedItem, ElementName=PresetsTree}"/>
+                                                </b:EventTrigger>
+                                            </b:Interaction.Triggers>
+                                        </TreeView>
+                                    </DockPanel>
+                                </LayoutAnchorable>
 
-                    </DockPanel>
-                    <GridSplitter
-                        Grid.Row="1"
-                        Grid.Column="0"
-                        Height="5"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Center"
-                        Background="{DynamicResource ControlElevationBorderBrush}"/>
-                </Grid>
-                <StatusBar Grid.Row="2"
+                                <LayoutAnchorable Title="{l:Localize Statistics}"
+                                                  CanClose="False">
+                                    <my:StatisticsView
+                                        x:Name="statisticsView"
+                                        DataContext="{Binding StatisticsViewModel}"
+                                        Margin="1,0,0,0"/>
+                                </LayoutAnchorable>
+                            </LayoutAnchorablePane>
+
+                            <!-- Center: canvas + buildings as a document -->
+                            <LayoutDocumentPane>
+                                <LayoutDocument Title="Canvas"
+                                                IsActive="True"
+                                                CanClose="False">
+
+                                    <ScrollViewer
+                                        x:Name="canvasScrollViewer"
+                                        Grid.Row="0"
+                                        CanContentScroll="True"
+                                        Focusable="False"
+                                        HorizontalScrollBarVisibility="{Binding ShowScrollbars}"
+                                        VerticalScrollBarVisibility="{Binding ShowScrollbars}">
+                                        <my:AnnoCanvas x:Name="annoCanvas"/>
+                                    </ScrollViewer>
+
+                                </LayoutDocument>
+                            </LayoutDocumentPane> 
+                            <!-- Right: properties as anchorable -->
+                            <LayoutAnchorablePane  DockWidth="300" > 
+                                <LayoutAnchorable  Title="{l:Localize Properties}"
+                                                  CanClose="False">
+                                    <!-- Buildings panel extracted into BuildingView.xaml -->
+                                    <my:PropertiesView Height="200"/>
+
+                                </LayoutAnchorable>
+                                <LayoutAnchorable Title="{l:Localize Properties}"
+                                                  CanClose="False">
+                                    <!-- Buildings panel extracted into BuildingView.xaml -->
+                                    <my:BuildingView />
+
+                                    </LayoutAnchorable> 
+                            </LayoutAnchorablePane>
+                        </LayoutPanel>
+                    </LayoutRoot>
+                </DockingManager>
+
+                <StatusBar Grid.Row="1"
                            Grid.ColumnSpan="3"
-                           Padding="0">
+                           Padding="0"
+                           Margin="0,989,0,0"
+                           Grid.RowSpan="2">
                     <StatusBarItem Content="{l:Localize StatusBarControls}"/>
                     <StatusBarItem Margin="10,0,0,0"
                                    Content="{Binding StatusMessage}"/>

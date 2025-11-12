@@ -64,7 +64,6 @@
         </Grid>
         <ui:ListView
             Margin="0,86,0,50"
-            HorizontalContentAlignment="Stretch"
             d:ItemsSource="{d:SampleData ItemCount=5}"
             Background="#FFECECEC"
             BorderThickness="0"
@@ -77,20 +76,41 @@
                     <i:InvokeCommandAction Command="{Binding ContinueCommand}" CommandParameter="{Binding ElementName=welcomeWindow}" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
+
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="3" IsItemsHost="True"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+
+            <ui:ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Width" Value="140" />
+                    <Setter Property="Height" Value="160" />
+                    <Setter Property="Margin" Value="8" />
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    <Setter Property="VerticalContentAlignment" Value="Top" />
+                    <Setter Property="Padding" Value="4" />
+                </Style>
+            </ui:ListView.ItemContainerStyle>
+
             <ui:ListView.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel
-                        Margin="20"
-                        HorizontalAlignment="Stretch"
-                        Orientation="Horizontal">
-                        <ui:ImageIcon Width="100" Source="{Binding FlagPath}" />
-                        <Label
-                            Width="Auto"
-                            Margin="8,0,0,0"
-                            VerticalContentAlignment="Center"
-                            Content="{Binding Name}"
-                            FontSize="18" />
-                    </StackPanel>
+                    <Border Background="Transparent" CornerRadius="6" Padding="4">
+                        <StackPanel
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
+                            Orientation="Vertical">
+                            <!-- Image.Stretch uses Uniform/UniformToFill/Fill/None -->
+                            <ui:ImageIcon   Height="80" Source="{Binding FlagPath}"  />
+                            <TextBlock
+                                Margin="0,8,0,0"
+                                Text="{Binding Name}"
+                                FontSize="14"
+                                TextAlignment="Center"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
                 </DataTemplate>
             </ui:ListView.ItemTemplate>
         </ui:ListView>

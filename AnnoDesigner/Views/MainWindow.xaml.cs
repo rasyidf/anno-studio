@@ -148,9 +148,9 @@ public partial class MainWindow : FluentWindow, ICloseable
         }
 
         // load color presets
-        colorPicker.StandardColors.Clear();
+        //colorPicker.StandardColors.Clear();
         //This is currently disabled
-        colorPicker.ShowStandardColors = false;
+        //colorPicker.ShowStandardColors = false;
         //try
         //{
         //    ColorPresetsLoader loader = new ColorPresetsLoader();
@@ -225,13 +225,13 @@ public partial class MainWindow : FluentWindow, ICloseable
 
     private void ToggleStatisticsView(bool showStatisticsView)
     {
-        colStatisticsView.MinWidth = showStatisticsView ? 100 : 0;
-        colStatisticsView.Width = showStatisticsView ? GridLength.Auto : new GridLength(0);
+        //colStatisticsView.MinWidth = showStatisticsView ? 100 : 0;
+        //colStatisticsView.Width = showStatisticsView ? GridLength.Auto : new GridLength(0);
 
         statisticsView.Visibility = showStatisticsView ? Visibility.Visible : Visibility.Collapsed;
         statisticsView.MinWidth = showStatisticsView ? 100 : 0;
 
-        splitterStatisticsView.Visibility = showStatisticsView ? Visibility.Visible : Visibility.Collapsed;
+        //splitterStatisticsView.Visibility = showStatisticsView ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void TextBoxSearchPresetsKeyUp(object sender, KeyEventArgs e)

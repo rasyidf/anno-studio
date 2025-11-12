@@ -55,13 +55,6 @@
             BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
             BorderThickness="0,0,1,0">
             <DockPanel LastChildFill="True">
-                <TextBlock
-                    Margin="16,16,16,8"
-                    DockPanel.Dock="Top"
-                    FontSize="13"
-                    FontWeight="SemiBold"
-                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                    Text="SETTINGS" />
                 <ScrollViewer
                     Padding="8,0,8,8"
                     DockPanel.Dock="Top"

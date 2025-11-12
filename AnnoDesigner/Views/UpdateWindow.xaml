@@ -19,7 +19,7 @@
                             BusyContent="Installing Update ...">
         </xctk:BusyIndicator>-->
         <ProgressBar Margin="50,150,50,0" IsIndeterminate="True" Height="4" VerticalAlignment="Top"/>
-        <Image Margin="75,27,75,73" Source="/icon.ico"/>
+        <Image Margin="75,27,75,73" Source="/icon64.png"/>
         <TextBlock HorizontalAlignment="Center" Margin="0,159,0,0" TextWrapping="Wrap" Text="Installing Update ..." VerticalAlignment="Top" FontSize="12"/>
     </Grid>
 </Window>

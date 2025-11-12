@@ -30,8 +30,7 @@ public class UpdateHelper(string basePathToUse,
     IAppSettings appSettingsToUse,
     IMessageBoxService messageBoxServiceToUse,
     ILocalizationHelper localizationHelperToUse) : IUpdateHelper
-{
-    private readonly IFileSystem _fileSystem;
+{ 
     private readonly FileSystem _fileSystem = new();
     private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -71,29 +70,14 @@ public class UpdateHelper(string basePathToUse,
                     Timeout = TimeSpan.FromSeconds(30)
                 };
                 field.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue($"anno-designer-{Constants.Version}", "1.0"));
-
-                //detect DNS changes (default is infinite)
-                //ServicePointManager.FindServicePoint(new Uri(BASE_URI)).ConnectionLeaseTimeout = (int)TimeSpan.FromMinutes(1).TotalMilliseconds;
-                //default is 2 minutes
-                ServicePointManager.DnsRefreshTimeout = (int)TimeSpan.FromMinutes(1).TotalMilliseconds;
-                //increases the concurrent outbound connections
-                if (ServicePointManager.DefaultConnectionLimit < 1024)
-                {
-                    ServicePointManager.DefaultConnectionLimit = 1024;
-                }
-                //only allow secure protocols
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                 
             }
 
             return field;
         }
     }
 
-    private IReadOnlyList<Release> AllReleases { get; set; }
-    public UpdateHelper()
-    {
-        _fileSystem = new FileSystem();
-    }
+    private IReadOnlyList<Release> AllReleases { get; set; } 
     #region IUpdateHelper members        
 
     public async Task<List<AvailableRelease>> GetAvailableReleasesAsync()

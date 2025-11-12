@@ -1773,7 +1773,7 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
     /// Add the objects to SelectedObjects, optionally also add all objects which match one of their identifiers.
     /// </summary>
     /// <param name="includeSameObjects"> 
-    /// If <see langword="true"/> then apply to objects whose identifier matches one of those in <see cref="objectsToAdd"/>.
+    /// If <see langword="true"/> then apply to objects whose identifier matches one of those in objectsToAdd.
     /// </param>
     private void AddSelectedObjects(IEnumerable<LayoutObject> objectsToAdd, bool includeSameObjects)
     {
@@ -1792,7 +1792,7 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
     /// Remove the objects from SelectedObjects, optionally also remove all objects which match one of their identifiers.
     /// </summary>
     /// <param name="includeSameObjects"> 
-    /// If <see langword="true"> then apply to objects whose identifier matches one of those in <see cref="objectsToRemove">.
+    /// If <see langword="true"/> then apply to objects whose identifier matches one of those in <see cref="objectsToRemove"/>.
     /// </param>
     private void RemoveSelectedObjects(IEnumerable<LayoutObject> objectsToRemove, bool includeSameObjects)
     {
@@ -1830,7 +1830,7 @@ public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScro
     /// Remove a single object from SelectedObjects, optionally also remove all objects with the same identifier.
     /// </summary>
     /// <param name="includeSameObjects"> 
-    /// If <see langword="true"> then apply to objects whose identifier match that of <see cref="objectToRemove">.
+    /// If <see langword="true"/> then apply to objects whose identifier match that of <see cref="objectToRemove"/>.
     /// </param>
     private void RemoveSelectedObject(LayoutObject objectToRemove, bool includeSameObjects = false)
     {

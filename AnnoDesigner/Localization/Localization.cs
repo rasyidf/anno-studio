@@ -4,6 +4,7 @@ using AnnoDesigner.Models;
 using NLog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 
 namespace AnnoDesigner.Localization;
@@ -1281,6 +1282,8 @@ public class Localization : Notify, ILocalizationHelper
         Instance._commons = commons;
         Instance.Commons_SelectedLanguageChanged(null, null);
         commons.SelectedLanguageChanged += Instance.Commons_SelectedLanguageChanged;
+        // Log any missing translations compared to English to help translators / QA
+        LogMissingTranslations();
     }
 
     private void Commons_SelectedLanguageChanged(object sender, EventArgs e)
@@ -1332,6 +1335,59 @@ public class Localization : Notify, ILocalizationHelper
         {
             _logger.Error(ex, $"error getting localization ({languageCode}) for: \"{valueToTranslate}\"");
             return valueToTranslate;
+        }
+    }
+
+    /// <summary>
+    /// Returns keys that are missing in each language compared to English ("eng").
+    /// Useful for finding translations that don't yet have items.
+    /// </summary>
+    public static IDictionary<string, List<string>> GetMissingTranslations()
+    {
+        var result = new Dictionary<string, List<string>>();
+
+        if (TranslationsRaw == null || !TranslationsRaw.ContainsKey("eng"))
+        {
+            return result;
+        }
+
+        var engKeys = new HashSet<string>(TranslationsRaw["eng"].Keys);
+
+        foreach (var kv in TranslationsRaw)
+        {
+            var lang = kv.Key;
+            if (lang == "eng")
+            {
+                continue;
+            }
+
+            var keys = new HashSet<string>(kv.Value.Keys);
+            var missing = engKeys.Except(keys).OrderBy(k => k).ToList();
+            if (missing.Any())
+            {
+                result[lang] = missing;
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Log missing translations to the configured logger (info level).
+    /// </summary>
+    public static void LogMissingTranslations()
+    {
+        try
+        {
+            var missing = GetMissingTranslations();
+            foreach (var kv in missing)
+            {
+                _logger.Info($"Language '{kv.Key}' missing {kv.Value.Count} keys: {string.Join(", ", kv.Value)}");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.Error(ex, "Failed to compute or log missing translations");
         }
     }
 }
