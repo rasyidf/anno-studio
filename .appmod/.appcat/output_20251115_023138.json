@@ -1,0 +1,5489 @@
+{
+  "version": "1.0.0",
+  "producer": ".NET AppCAT CLI",
+  "metadata": {
+    "analysisStartTime": "2025-11-14T19:32:10.9549501Z",
+    "analysisEndTime": "2025-11-14T19:32:19.6806432Z",
+    "privacyMode": "Protected",
+    "privacyModeHelpUrl": "https://go.microsoft.com/fwlink/?linkid=2271074",
+    "targetIds": [
+      "AppService.Windows",
+      "AppService.Linux",
+      "AKS.Linux",
+      "AKS.Windows",
+      "ACA",
+      "AppServiceContainer.Linux",
+      "AppServiceContainer.Windows",
+      "AppServiceManagedInstance.Windows"
+    ],
+    "targetDisplayNames": [
+      "Azure App Service",
+      "Azure Kubernetes Service",
+      "Azure Container Apps",
+      "Azure App Service Container"
+    ],
+    "os": [
+      "windows",
+      "linux"
+    ]
+  },
+  "summary": {
+    "totalProjects": 7,
+    "totalIssues": 20,
+    "totalIncidents": 115,
+    "totalEffort": 295,
+    "charts": {
+      "severity": {
+        "mandatory": 37,
+        "optional": 31,
+        "potential": 47,
+        "information": 0
+      },
+      "category": {
+        "HTTP": 5,
+        "Local": 107,
+        "Perf": 2,
+        "Dockerfile": 1
+      }
+    }
+  },
+  "projects": [
+    {
+      "path": "AnnoDesigner.Core\\AnnoDesigner.Core.csproj",
+      "issues": 5,
+      "storyPoints": 51,
+      "properties": {
+        "appName": "AnnoDesigner.Core",
+        "frameworks": [
+          "net9.0-windows"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ]
+      },
+      "incidents": [
+        {
+          "ruleId": "HTTP.0001",
+          "incidentId": "05783d96-f308-4f04-b119-36effd136274",
+          "location": "AnnoDesigner.Core\\Helper\\ConnectivityHelper.cs",
+          "locationKind": "File",
+          "snippet": "System.Net.Http.HttpClient",
+          "line": 35,
+          "column": 35,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0006",
+          "incidentId": "a90f0df7-73f8-4e0a-8843-55921405d92a",
+          "location": "AnnoDesigner.Core\\Helper\\ConnectivityHelper.cs",
+          "locationKind": "File",
+          "snippet": "https://",
+          "line": 9,
+          "column": 35,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0006",
+          "incidentId": "0e20bd38-e4fe-4e57-b054-8502fdc0166d",
+          "location": "AnnoDesigner.Core\\Helper\\ConnectivityHelper.cs",
+          "locationKind": "File",
+          "snippet": "https://",
+          "line": 10,
+          "column": 42,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0008",
+          "incidentId": "d011210e-e6a3-44ec-b826-2b9c1b4e2d8e",
+          "location": "AnnoDesigner.Core\\Helper\\KeyboardInteropHelper.cs",
+          "locationKind": "File",
+          "snippet": "GetKeyboardState",
+          "line": 37,
+          "column": 34,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0008",
+          "incidentId": "f6249dd0-ff36-4379-9631-8df32de346b7",
+          "location": "AnnoDesigner.Core\\Interop\\NativeMethods.cs",
+          "locationKind": "File",
+          "snippet": "GetKeyboardState (user32.dll)",
+          "line": 131,
+          "column": 8,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0008",
+          "incidentId": "36aedf86-3da2-4cbf-b6f8-50082acb7b23",
+          "location": "AnnoDesigner.Core\\Interop\\NativeMethods.cs",
+          "locationKind": "File",
+          "snippet": "ToUnicode (user32.dll)",
+          "line": 109,
+          "column": 8,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0008",
+          "incidentId": "10158d1a-fbee-458e-a3a2-5b802a3d7916",
+          "location": "AnnoDesigner.Core\\Interop\\NativeMethods.cs",
+          "locationKind": "File",
+          "snippet": "MapVirtualKey (user32.dll)",
+          "line": 49,
+          "column": 8,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0008",
+          "incidentId": "4f0a0bc5-c2ef-4f92-aa18-5a305f5480ae",
+          "location": "AnnoDesigner.Core\\Helper\\KeyboardInteropHelper.cs",
+          "locationKind": "File",
+          "snippet": "ToUnicode",
+          "line": 43,
+          "column": 76,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0008",
+          "incidentId": "de50cda8-d562-4a58-bbfd-671ea6db223a",
+          "location": "AnnoDesigner.Core\\Helper\\KeyboardInteropHelper.cs",
+          "locationKind": "File",
+          "snippet": "MapVirtualKey",
+          "line": 40,
+          "column": 41,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0009",
+          "incidentId": "4799c1d6-d923-463c-9dce-942e313e1025",
+          "location": "AnnoDesigner.Core\\Helper\\KeyboardInteropHelper.cs",
+          "locationKind": "File",
+          "snippet": "GetKeyboardState",
+          "line": 37,
+          "column": 34,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0009",
+          "incidentId": "1b911de6-d534-4d29-b421-f989a9c05017",
+          "location": "AnnoDesigner.Core\\Interop\\NativeMethods.cs",
+          "locationKind": "File",
+          "snippet": "GetKeyboardState (user32.dll)",
+          "line": 131,
+          "column": 8,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0009",
+          "incidentId": "32307601-80a4-4302-9e28-95460044790a",
+          "location": "AnnoDesigner.Core\\Interop\\NativeMethods.cs",
+          "locationKind": "File",
+          "snippet": "ToUnicode (user32.dll)",
+          "line": 109,
+          "column": 8,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0009",
+          "incidentId": "6efcf7cc-f7f5-4671-8ecd-6953648ceb27",
+          "location": "AnnoDesigner.Core\\Interop\\NativeMethods.cs",
+          "locationKind": "File",
+          "snippet": "MapVirtualKey (user32.dll)",
+          "line": 49,
+          "column": 8,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0009",
+          "incidentId": "9adfbbfb-51f5-4b0a-9bc7-a5af512d7ae6",
+          "location": "AnnoDesigner.Core\\Helper\\KeyboardInteropHelper.cs",
+          "locationKind": "File",
+          "snippet": "ToUnicode",
+          "line": 43,
+          "column": 76,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0009",
+          "incidentId": "203d97c5-56d5-4158-ba13-6990a5a5e59e",
+          "location": "AnnoDesigner.Core\\Helper\\KeyboardInteropHelper.cs",
+          "locationKind": "File",
+          "snippet": "MapVirtualKey",
+          "line": 40,
+          "column": 41,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0012",
+          "incidentId": "575c5cd0-adce-4492-bfbb-da13ca8ff015",
+          "location": "AnnoDesigner.Core\\Extensions\\XamlExtensions\\HyperlinkExtensions.cs",
+          "locationKind": "File",
+          "snippet": "System.Diagnostics.Process",
+          "line": 91,
+          "column": 20,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "ACA": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0012",
+          "incidentId": "0a559c0b-3880-4613-9c2d-5fbeec83a7c8",
+          "location": "AnnoDesigner.Core\\Extensions\\XamlExtensions\\HyperlinkExtensions.cs",
+          "locationKind": "File",
+          "snippet": "System.Diagnostics.ProcessStartInfo",
+          "line": 91,
+          "column": 38,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "ACA": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            }
+          },
+          "labels": []
+        }
+      ]
+    },
+    {
+      "path": "Tests\\AnnoDesigner.Core.Tests\\AnnoDesigner.Core.Tests.csproj",
+      "issues": 3,
+      "storyPoints": 20,
+      "properties": {
+        "appName": "AnnoDesigner.Core.Tests",
+        "frameworks": [
+          "net9.0-windows"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ]
+      },
+      "incidents": [
+        {
+          "ruleId": "Local.0003",
+          "incidentId": "94e58c01-d8d9-4673-942c-ed2ca2982ecb",
+          "location": "Tests\\AnnoDesigner.Core.Tests\\ClipboardServiceTests.cs",
+          "locationKind": "File",
+          "snippet": "System.IO.File",
+          "line": 24,
+          "column": 64,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Perf.0001",
+          "incidentId": "913bb4ad-9c07-47e4-8389-b9180d8e8e5d",
+          "location": "Tests\\AnnoDesigner.Core.Tests\\ClipboardServiceTests.cs",
+          "locationKind": "File",
+          "snippet": "System.IO.File.ReadAllText",
+          "line": 24,
+          "column": 54,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "optional"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "optional"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "optional"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "optional"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "optional"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0002",
+          "incidentId": "87105aa9-dc83-4826-85a1-b8de23521875",
+          "location": "Tests\\AnnoDesigner.Core.Tests\\RecentFilesHelperTests.cs",
+          "locationKind": "File",
+          "snippet": "^[a-zA-Z]:[\\\\/]",
+          "line": 11,
+          "column": 37,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0002",
+          "incidentId": "adcdb61a-b539-436f-b705-f4bfb18acb91",
+          "location": "Tests\\AnnoDesigner.Core.Tests\\RecentFilesHelperTests.cs",
+          "locationKind": "File",
+          "snippet": "^[a-zA-Z]:[\\\\/]",
+          "line": 12,
+          "column": 37,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0002",
+          "incidentId": "f0d4bbdb-47e1-48ca-80d8-e1f08e720fde",
+          "location": "Tests\\AnnoDesigner.Core.Tests\\RecentFilesHelperTests.cs",
+          "locationKind": "File",
+          "snippet": "^[a-zA-Z]:[\\\\/]",
+          "line": 13,
+          "column": 37,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0002",
+          "incidentId": "a5fcb7ed-e2d0-442c-85be-8a75ff2c661e",
+          "location": "Tests\\AnnoDesigner.Core.Tests\\RecentFilesHelperTests.cs",
+          "locationKind": "File",
+          "snippet": "^[a-zA-Z]:[\\\\/]",
+          "line": 14,
+          "column": 37,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0002",
+          "incidentId": "06140642-35ec-4418-8fec-fe5b79824755",
+          "location": "Tests\\AnnoDesigner.Core.Tests\\RecentFilesHelperTests.cs",
+          "locationKind": "File",
+          "snippet": "^[a-zA-Z]:[\\\\/]",
+          "line": 15,
+          "column": 37,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0002",
+          "incidentId": "7ed1e6f9-8cd2-4105-a513-4f6d3041bdfc",
+          "location": "Tests\\AnnoDesigner.Core.Tests\\RecentFilesHelperTests.cs",
+          "locationKind": "File",
+          "snippet": "^[a-zA-Z]:[\\\\/]",
+          "line": 16,
+          "column": 37,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0002",
+          "incidentId": "cd588be5-d331-46b1-955d-9ef64b0c5290",
+          "location": "Tests\\AnnoDesigner.Core.Tests\\RecentFilesHelperTests.cs",
+          "locationKind": "File",
+          "snippet": "^[a-zA-Z]:[\\\\/]",
+          "line": 17,
+          "column": 37,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0002",
+          "incidentId": "b4a21a72-e587-4d7e-9c2c-6cfba50c8828",
+          "location": "Tests\\AnnoDesigner.Core.Tests\\RecentFilesHelperTests.cs",
+          "locationKind": "File",
+          "snippet": "^[a-zA-Z]:[\\\\/]",
+          "line": 18,
+          "column": 37,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0002",
+          "incidentId": "fe323e42-a258-4a23-932c-89ba707af0c6",
+          "location": "Tests\\AnnoDesigner.Core.Tests\\RecentFilesHelperTests.cs",
+          "locationKind": "File",
+          "snippet": "^[a-zA-Z]:[\\\\/]",
+          "line": 19,
+          "column": 37,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0002",
+          "incidentId": "2ddf4d17-906d-4a84-9f2d-f461b338ad48",
+          "location": "Tests\\AnnoDesigner.Core.Tests\\RecentFilesHelperTests.cs",
+          "locationKind": "File",
+          "snippet": "^[a-zA-Z]:[\\\\/]",
+          "line": 20,
+          "column": 37,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0002",
+          "incidentId": "29c11c62-2a8d-4088-87ca-5e1e143f1e8b",
+          "location": "Tests\\AnnoDesigner.Core.Tests\\RecentFilesHelperTests.cs",
+          "locationKind": "File",
+          "snippet": "^[a-zA-Z]:[\\\\/]",
+          "line": 21,
+          "column": 37,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0002",
+          "incidentId": "104b31e1-d735-4655-bfec-fbeb469925be",
+          "location": "Tests\\AnnoDesigner.Core.Tests\\TreeLocalizationLoaderTests.cs",
+          "locationKind": "File",
+          "snippet": "^[a-zA-Z]:[\\\\/]",
+          "line": 84,
+          "column": 27,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0003",
+          "incidentId": "9bf543c2-26d9-446d-8ee4-0ae471f7fedb",
+          "location": "Tests\\AnnoDesigner.Core.Tests\\TreeLocalizationLoaderTests.cs",
+          "locationKind": "File",
+          "snippet": "System.IO.File",
+          "line": 20,
+          "column": 57,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Perf.0001",
+          "incidentId": "c9103670-4a5f-414d-998c-a98d9b457af2",
+          "location": "Tests\\AnnoDesigner.Core.Tests\\TreeLocalizationLoaderTests.cs",
+          "locationKind": "File",
+          "snippet": "System.IO.File.ReadAllText",
+          "line": 20,
+          "column": 47,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "optional"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "optional"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "optional"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "optional"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "optional"
+            }
+          },
+          "labels": []
+        }
+      ]
+    },
+    {
+      "path": "AnnoDesigner\\AnnoDesigner.csproj",
+      "issues": 8,
+      "storyPoints": 182,
+      "properties": {
+        "appName": "AnnoDesigner",
+        "frameworks": [
+          "net9.0-windows"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ]
+      },
+      "incidents": [
+        {
+          "ruleId": "Local.0001",
+          "incidentId": "63f0c1d8-9f8f-49d2-9227-1eb519c9d49e",
+          "location": "AnnoDesigner\\AnnoCanvas.xaml.cs",
+          "locationKind": "File",
+          "snippet": "Microsoft.Win32.OpenFileDialog",
+          "line": 2863,
+          "column": 12,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0001",
+          "incidentId": "e16c73e7-5220-4285-a4db-63ddcd22a860",
+          "location": "AnnoDesigner\\AnnoCanvas.xaml.cs",
+          "locationKind": "File",
+          "snippet": "Microsoft.Win32.OpenFileDialog",
+          "line": 2863,
+          "column": 29,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0001",
+          "incidentId": "ec0ab59c-34de-4f5b-a967-f537d3da2772",
+          "location": "AnnoDesigner\\AnnoCanvas.xaml.cs",
+          "locationKind": "File",
+          "snippet": "Microsoft.Win32.SaveFileDialog",
+          "line": 2838,
+          "column": 12,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0001",
+          "incidentId": "e7ca9381-64c5-4615-9f9e-bf329885dd1a",
+          "location": "AnnoDesigner\\AnnoCanvas.xaml.cs",
+          "locationKind": "File",
+          "snippet": "Microsoft.Win32.SaveFileDialog",
+          "line": 2838,
+          "column": 29,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0004",
+          "incidentId": "a351f9b9-e106-4e49-a57d-dbd81dc46880",
+          "location": "AnnoDesigner\\App.xaml.cs",
+          "locationKind": "File",
+          "snippet": "NLog.Targets.FileTarget",
+          "line": 84,
+          "column": 88,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0007",
+          "incidentId": "4bd62fef-7b85-4d3c-b69d-4fa3c336d5ef",
+          "location": "AnnoDesigner\\App.xaml.cs",
+          "locationKind": "File",
+          "snippet": "System.Environment.Exit",
+          "line": 100,
+          "column": 16,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0007",
+          "incidentId": "6d10a7a9-6d07-4ace-b993-74cec560e28e",
+          "location": "AnnoDesigner\\App.xaml.cs",
+          "locationKind": "File",
+          "snippet": "System.Environment.Exit",
+          "line": 76,
+          "column": 12,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0007",
+          "incidentId": "d972253a-ddfc-46ff-9066-0fceea0894d6",
+          "location": "AnnoDesigner\\App.xaml.cs",
+          "locationKind": "File",
+          "snippet": "System.Environment.Exit",
+          "line": 143,
+          "column": 16,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0012",
+          "incidentId": "efb2449c-bc96-4a40-938c-2223d8b2ccb2",
+          "location": "AnnoDesigner\\App.xaml.cs",
+          "locationKind": "File",
+          "snippet": "System.Diagnostics.Process",
+          "line": 242,
+          "column": 33,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "ACA": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0012",
+          "incidentId": "697cb95d-075b-458d-9a65-cba1dfa23a76",
+          "location": "AnnoDesigner\\App.xaml.cs",
+          "locationKind": "File",
+          "snippet": "System.Diagnostics.Process",
+          "line": 245,
+          "column": 51,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "ACA": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0007",
+          "incidentId": "cb39cdbd-d7ba-45a0-ba23-cffab6d0be2d",
+          "location": "AnnoDesigner\\Commons.cs",
+          "locationKind": "File",
+          "snippet": "System.Environment.Exit",
+          "line": 125,
+          "column": 12,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0012",
+          "incidentId": "f407d7b4-413f-414e-9956-d28bdae77e9c",
+          "location": "AnnoDesigner\\Commons.cs",
+          "locationKind": "File",
+          "snippet": "System.Diagnostics.Process",
+          "line": 121,
+          "column": 30,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "ACA": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0012",
+          "incidentId": "9d93cf77-8fb2-477e-8da0-eda6f76a9f4a",
+          "location": "AnnoDesigner\\Commons.cs",
+          "locationKind": "File",
+          "snippet": "System.Diagnostics.ProcessStartInfo",
+          "line": 110,
+          "column": 26,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "ACA": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0003",
+          "incidentId": "24e9b1d0-b4b5-4ec3-8017-bd3ff52545e3",
+          "location": "AnnoDesigner\\FrameworkElementExtensions.cs",
+          "locationKind": "File",
+          "snippet": "System.IO.FileStream",
+          "line": 41,
+          "column": 33,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "HTTP.0001",
+          "incidentId": "7eb8efd9-5089-49c6-b786-c214dee39335",
+          "location": "AnnoDesigner\\UpdateHelper.cs",
+          "locationKind": "File",
+          "snippet": "System.Net.Http.HttpClient",
+          "line": 71,
+          "column": 38,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "HTTP.0001",
+          "incidentId": "07c455ab-661f-4e6b-a40b-c05d52c6fd32",
+          "location": "AnnoDesigner\\UpdateHelper.cs",
+          "locationKind": "File",
+          "snippet": "System.Net.Http.HttpClient",
+          "line": 47,
+          "column": 16,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "HTTP.0001",
+          "incidentId": "3c1ceeea-16d3-4c10-b79c-4f0a6d5c38e2",
+          "location": "AnnoDesigner\\UpdateHelper.cs",
+          "locationKind": "File",
+          "snippet": "System.Net.Http.HttpClient",
+          "line": 59,
+          "column": 16,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "HTTP.0001",
+          "incidentId": "2bdd41e7-152c-4b62-b394-6a135402e9a4",
+          "location": "AnnoDesigner\\UpdateHelper.cs",
+          "locationKind": "File",
+          "snippet": "System.Net.Http.HttpClient",
+          "line": 302,
+          "column": 44,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0003",
+          "incidentId": "c26bcb1f-a78b-4af3-91d5-ba04e0420247",
+          "location": "AnnoDesigner\\UpdateHelper.cs",
+          "locationKind": "File",
+          "snippet": "System.IO.Compression.ZipFileExtensions.ExtractToFile",
+          "line": 245,
+          "column": 40,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0003",
+          "incidentId": "29de0c46-925c-40d1-a73e-285740183c4f",
+          "location": "AnnoDesigner\\UpdateHelper.cs",
+          "locationKind": "File",
+          "snippet": "System.IO.Compression.ZipFile",
+          "line": 225,
+          "column": 49,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0003",
+          "incidentId": "57bcaa42-850e-4144-9b25-580932b9d3b4",
+          "location": "AnnoDesigner\\UpdateHelper.cs",
+          "locationKind": "File",
+          "snippet": "System.IO.FileStream",
+          "line": 513,
+          "column": 44,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0003",
+          "incidentId": "ae778936-5517-48c1-ba3a-2fb4824d79a8",
+          "location": "AnnoDesigner\\UpdateHelper.cs",
+          "locationKind": "File",
+          "snippet": "System.IO.Path.GetTempFileName",
+          "line": 153,
+          "column": 98,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0006",
+          "incidentId": "03593d72-1e73-4884-bee6-8697d9dfeeee",
+          "location": "AnnoDesigner\\UpdateHelper.cs",
+          "locationKind": "File",
+          "snippet": "https://",
+          "line": 304,
+          "column": 80,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0009",
+          "incidentId": "711d0f64-3174-4b32-b824-4eb35f0752ac",
+          "location": "AnnoDesigner\\CommandLine\\ConsoleManager.cs",
+          "locationKind": "File",
+          "snippet": "AllocConsole",
+          "line": 101,
+          "column": 20,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0009",
+          "incidentId": "212a1174-f216-40d2-be66-fc4eb71a7928",
+          "location": "AnnoDesigner\\CommandLine\\ConsoleManager.cs",
+          "locationKind": "File",
+          "snippet": "FreeConsole",
+          "line": 118,
+          "column": 20,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0009",
+          "incidentId": "19a5784c-a120-40f7-bb6c-cb505493ecda",
+          "location": "AnnoDesigner\\CommandLine\\ConsoleManager.cs",
+          "locationKind": "File",
+          "snippet": "AllocConsole ()",
+          "line": 69,
+          "column": 8,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0009",
+          "incidentId": "5cc7f40f-1026-42bb-a15a-05a284f15d80",
+          "location": "AnnoDesigner\\CommandLine\\ConsoleManager.cs",
+          "locationKind": "File",
+          "snippet": "AttachConsole ()",
+          "line": 78,
+          "column": 8,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0009",
+          "incidentId": "2ae3c460-1940-497c-a324-a1e246b312ce",
+          "location": "AnnoDesigner\\CommandLine\\ConsoleManager.cs",
+          "locationKind": "File",
+          "snippet": "FreeConsole ()",
+          "line": 72,
+          "column": 8,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0009",
+          "incidentId": "a7a52805-65a8-4b29-a579-8110624de4e5",
+          "location": "AnnoDesigner\\CommandLine\\ConsoleManager.cs",
+          "locationKind": "File",
+          "snippet": "GetConsoleWindow ()",
+          "line": 75,
+          "column": 8,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0009",
+          "incidentId": "5c98aef9-1adf-4324-b718-33016ff30d7d",
+          "location": "AnnoDesigner\\CommandLine\\ConsoleManager.cs",
+          "locationKind": "File",
+          "snippet": "AttachConsole",
+          "line": 99,
+          "column": 17,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0009",
+          "incidentId": "9fd4276e-5bbb-408c-a4c1-6d9aa393c30c",
+          "location": "AnnoDesigner\\CommandLine\\ConsoleManager.cs",
+          "locationKind": "File",
+          "snippet": "GetConsoleWindow",
+          "line": 84,
+          "column": 25,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0006",
+          "incidentId": "4656cf81-2424-46e7-9a59-e030e3b67fea",
+          "location": "AnnoDesigner\\ViewModels\\AboutViewModel.cs",
+          "locationKind": "File",
+          "snippet": "http://",
+          "line": 21,
+          "column": 49,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0006",
+          "incidentId": "dd4cbc92-84a0-45cc-8fbb-b0651c4d960c",
+          "location": "AnnoDesigner\\ViewModels\\AboutViewModel.cs",
+          "locationKind": "File",
+          "snippet": "https://",
+          "line": 35,
+          "column": 49,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0006",
+          "incidentId": "47466f07-028b-43c9-93cf-51c101b006a8",
+          "location": "AnnoDesigner\\ViewModels\\AboutViewModel.cs",
+          "locationKind": "File",
+          "snippet": "https://",
+          "line": 28,
+          "column": 49,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0012",
+          "incidentId": "f6fb6f6f-b584-4508-99f8-60c027cde808",
+          "location": "AnnoDesigner\\ViewModels\\AboutViewModel.cs",
+          "locationKind": "File",
+          "snippet": "System.Diagnostics.Process",
+          "line": 21,
+          "column": 35,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "ACA": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0012",
+          "incidentId": "72e3651e-cb95-4b93-ae09-2fd4a4776662",
+          "location": "AnnoDesigner\\ViewModels\\AboutViewModel.cs",
+          "locationKind": "File",
+          "snippet": "System.Diagnostics.Process",
+          "line": 35,
+          "column": 35,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "ACA": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0012",
+          "incidentId": "59fdcb85-d876-473a-bb67-f2dd62d34c8c",
+          "location": "AnnoDesigner\\ViewModels\\AboutViewModel.cs",
+          "locationKind": "File",
+          "snippet": "System.Diagnostics.Process",
+          "line": 28,
+          "column": 35,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "ACA": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0006",
+          "incidentId": "9d16d5aa-483c-42f6-97e7-4beb0fbbd1bd",
+          "location": "AnnoDesigner\\ViewModels\\LicensesViewModel.cs",
+          "locationKind": "File",
+          "snippet": "https://",
+          "line": 27,
+          "column": 33,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0006",
+          "incidentId": "a3084622-9228-4b50-90bf-3cd46c69a6ff",
+          "location": "AnnoDesigner\\ViewModels\\LicensesViewModel.cs",
+          "locationKind": "File",
+          "snippet": "https://",
+          "line": 29,
+          "column": 37,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0006",
+          "incidentId": "83fc33fb-d6f1-4ab3-9920-aebb81d81f5b",
+          "location": "AnnoDesigner\\ViewModels\\LicensesViewModel.cs",
+          "locationKind": "File",
+          "snippet": "https://",
+          "line": 41,
+          "column": 31,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0006",
+          "incidentId": "7aec289f-a852-4c1c-a1fd-18bac9311ae7",
+          "location": "AnnoDesigner\\ViewModels\\LicensesViewModel.cs",
+          "locationKind": "File",
+          "snippet": "https://",
+          "line": 43,
+          "column": 35,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0001",
+          "incidentId": "6595a44a-af9e-4793-9f4a-38e490492e57",
+          "location": "AnnoDesigner\\ViewModels\\MainViewModel.cs",
+          "locationKind": "File",
+          "snippet": "Microsoft.Win32.Registry",
+          "line": 1323,
+          "column": 79,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0001",
+          "incidentId": "768cba2e-b25d-45f3-840f-2c05a4274d55",
+          "location": "AnnoDesigner\\ViewModels\\MainViewModel.cs",
+          "locationKind": "File",
+          "snippet": "Microsoft.Win32.Registry",
+          "line": 1293,
+          "column": 20,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0001",
+          "incidentId": "8d9d505f-b9f5-4574-b036-07d8b1d81e26",
+          "location": "AnnoDesigner\\ViewModels\\MainViewModel.cs",
+          "locationKind": "File",
+          "snippet": "Microsoft.Win32.Registry",
+          "line": 1292,
+          "column": 20,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0001",
+          "incidentId": "748a30af-b955-4c28-a02a-c2e1363bc8d2",
+          "location": "AnnoDesigner\\ViewModels\\MainViewModel.cs",
+          "locationKind": "File",
+          "snippet": "Microsoft.Win32.Registry",
+          "line": 1310,
+          "column": 16,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0001",
+          "incidentId": "7ac34b2a-fb96-49ec-9e37-b5135590171f",
+          "location": "AnnoDesigner\\ViewModels\\MainViewModel.cs",
+          "locationKind": "File",
+          "snippet": "Microsoft.Win32.Registry",
+          "line": 1308,
+          "column": 16,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0001",
+          "incidentId": "7904f715-9fe3-4aa6-902b-21a68838ee08",
+          "location": "AnnoDesigner\\ViewModels\\MainViewModel.cs",
+          "locationKind": "File",
+          "snippet": "Microsoft.Win32.Registry",
+          "line": 1307,
+          "column": 16,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0001",
+          "incidentId": "47183887-9423-42ab-b09f-bc36461dda06",
+          "location": "AnnoDesigner\\ViewModels\\MainViewModel.cs",
+          "locationKind": "File",
+          "snippet": "Microsoft.Win32.Registry",
+          "line": 1325,
+          "column": 16,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0001",
+          "incidentId": "61e6e83b-7719-4aec-99af-2ad2195d3f82",
+          "location": "AnnoDesigner\\ViewModels\\MainViewModel.cs",
+          "locationKind": "File",
+          "snippet": "Microsoft.Win32.SaveFileDialog",
+          "line": 1350,
+          "column": 12,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0001",
+          "incidentId": "308d48bc-72c4-4252-b8d0-a4da61b49ec3",
+          "location": "AnnoDesigner\\ViewModels\\MainViewModel.cs",
+          "locationKind": "File",
+          "snippet": "Microsoft.Win32.SaveFileDialog",
+          "line": 1350,
+          "column": 29,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0001",
+          "incidentId": "18915a6a-6a93-4a5d-9a2b-b97c3003c9bc",
+          "location": "AnnoDesigner\\ViewModels\\MainViewModel.cs",
+          "locationKind": "File",
+          "snippet": "Microsoft.Win32.RegistryKey",
+          "line": 1288,
+          "column": 16,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0001",
+          "incidentId": "559b22fe-e8e1-47c9-a59b-9f5c54ebdee1",
+          "location": "AnnoDesigner\\ViewModels\\MainViewModel.cs",
+          "locationKind": "File",
+          "snippet": "Microsoft.Win32.RegistryKey",
+          "line": 1288,
+          "column": 46,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0001",
+          "incidentId": "60a51faa-59ea-40f3-953c-5d997fe0a8f5",
+          "location": "AnnoDesigner\\ViewModels\\MainViewModel.cs",
+          "locationKind": "File",
+          "snippet": "Microsoft.Win32.RegistryHive",
+          "line": 1288,
+          "column": 70,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0001",
+          "incidentId": "510eae48-632f-4ee7-91ee-a0feb21c662e",
+          "location": "AnnoDesigner\\ViewModels\\MainViewModel.cs",
+          "locationKind": "File",
+          "snippet": "Microsoft.Win32.RegistryView",
+          "line": 1288,
+          "column": 96,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "information"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0006",
+          "incidentId": "581172c8-60f4-4b81-ab89-d501de3a2628",
+          "location": "AnnoDesigner\\ViewModels\\MainViewModel.cs",
+          "locationKind": "File",
+          "snippet": "https://",
+          "line": 1115,
+          "column": 26,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0012",
+          "incidentId": "016925df-fcb9-42ca-a3f8-0b54d86e483d",
+          "location": "AnnoDesigner\\ViewModels\\MainViewModel.cs",
+          "locationKind": "File",
+          "snippet": "System.Diagnostics.Process",
+          "line": 1126,
+          "column": 24,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "ACA": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0012",
+          "incidentId": "ef1fe555-3e90-4b3f-b620-e794974dcee6",
+          "location": "AnnoDesigner\\ViewModels\\MainViewModel.cs",
+          "locationKind": "File",
+          "snippet": "System.Diagnostics.Process",
+          "line": 1122,
+          "column": 24,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "ACA": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0012",
+          "incidentId": "5afb4dad-c7ce-4c90-a1f1-982a13e02f85",
+          "location": "AnnoDesigner\\ViewModels\\MainViewModel.cs",
+          "locationKind": "File",
+          "snippet": "System.Diagnostics.Process",
+          "line": 1118,
+          "column": 24,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "ACA": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0012",
+          "incidentId": "5c8059e6-0183-4f54-b80a-468f9324a0ce",
+          "location": "AnnoDesigner\\ViewModels\\MainViewModel.cs",
+          "locationKind": "File",
+          "snippet": "System.Diagnostics.ProcessStartInfo",
+          "line": 1118,
+          "column": 42,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "ACA": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0007",
+          "incidentId": "9cb2fc62-1b35-4766-a688-b4c13121f55b",
+          "location": "AnnoDesigner\\ViewModels\\StatisticsViewModel.cs",
+          "locationKind": "File",
+          "snippet": "System.Environment.ProcessorCount",
+          "line": 49,
+          "column": 84,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0006",
+          "incidentId": "eb2f90c0-35b6-4c6a-a094-b7548c1ee6e1",
+          "location": "AnnoDesigner\\ViewModels\\UpdateSettingsViewModel.cs",
+          "locationKind": "File",
+          "snippet": "https://",
+          "line": 172,
+          "column": 30,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0006",
+          "incidentId": "4d093d2e-ccb6-44bf-82e5-11cd11bae6c7",
+          "location": "AnnoDesigner\\ViewModels\\UpdateSettingsViewModel.cs",
+          "locationKind": "File",
+          "snippet": "https://",
+          "line": 124,
+          "column": 144,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0007",
+          "incidentId": "c4451e6a-15f5-4453-9632-e6751552b50a",
+          "location": "AnnoDesigner\\ViewModels\\UpdateSettingsViewModel.cs",
+          "locationKind": "File",
+          "snippet": "System.Environment.Exit",
+          "line": 215,
+          "column": 12,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0012",
+          "incidentId": "0351f4d9-c667-4dd3-bb36-b2c97ced6b3b",
+          "location": "AnnoDesigner\\ViewModels\\UpdateSettingsViewModel.cs",
+          "locationKind": "File",
+          "snippet": "System.Diagnostics.Process",
+          "line": 172,
+          "column": 16,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "ACA": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            }
+          },
+          "labels": []
+        }
+      ]
+    },
+    {
+      "path": "Tests\\AnnoDesigner.Tests\\AnnoDesigner.Tests.csproj",
+      "issues": 1,
+      "storyPoints": 1,
+      "properties": {
+        "appName": "AnnoDesigner.Tests",
+        "frameworks": [
+          "net9.0-windows"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ]
+      },
+      "incidents": [
+        {
+          "ruleId": "Local.0002",
+          "incidentId": "b8408a04-0f8b-4525-9cba-42c937dc1d91",
+          "location": "Tests\\AnnoDesigner.Tests\\ArgumentParserTests.cs",
+          "locationKind": "File",
+          "snippet": "^[a-zA-Z]:[\\\\/]",
+          "line": 26,
+          "column": 29,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "mandatory"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "information"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        }
+      ]
+    },
+    {
+      "path": "PresetParser\\PresetParser.csproj",
+      "issues": 2,
+      "storyPoints": 36,
+      "properties": {
+        "appName": "PresetParser",
+        "frameworks": [
+          "net9.0-windows"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ]
+      },
+      "incidents": [
+        {
+          "ruleId": "Local.0003",
+          "incidentId": "80cee4d7-5e5f-4e9a-9268-6c29aa336e36",
+          "location": "PresetParser\\IfoFileProvider.cs",
+          "locationKind": "File",
+          "snippet": "System.Xml.XmlDocument.Load",
+          "line": 22,
+          "column": 16,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0003",
+          "incidentId": "046f2eb3-c093-400b-b7ea-03b12fb7f428",
+          "location": "PresetParser\\Program.cs",
+          "locationKind": "File",
+          "snippet": "System.Xml.XmlDocument.Load",
+          "line": 1012,
+          "column": 12,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0003",
+          "incidentId": "31134de4-96fc-422f-8f08-4e8ca6ab208a",
+          "location": "PresetParser\\Program.cs",
+          "locationKind": "File",
+          "snippet": "System.Xml.XmlDocument.Load",
+          "line": 1316,
+          "column": 12,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0003",
+          "incidentId": "a0704ff6-bba3-4711-bf4d-3d057524279a",
+          "location": "PresetParser\\Program.cs",
+          "locationKind": "File",
+          "snippet": "System.Xml.XmlDocument.Load",
+          "line": 1677,
+          "column": 12,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0003",
+          "incidentId": "cf52d139-bf3b-4214-a0bc-03a6fff4eb7d",
+          "location": "PresetParser\\Program.cs",
+          "locationKind": "File",
+          "snippet": "System.Xml.XmlDocument.Load",
+          "line": 724,
+          "column": 20,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0003",
+          "incidentId": "4123058e-7bf1-4cc8-a5da-ce3c44cb4e0d",
+          "location": "PresetParser\\Program.cs",
+          "locationKind": "File",
+          "snippet": "System.Xml.XmlDocument.Load",
+          "line": 773,
+          "column": 20,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0003",
+          "incidentId": "9bec684c-3ec9-417e-9207-7aefc2ccbf9c",
+          "location": "PresetParser\\Program.cs",
+          "locationKind": "File",
+          "snippet": "System.Xml.XmlDocument.Load",
+          "line": 838,
+          "column": 20,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0003",
+          "incidentId": "26b72fe6-c475-462d-8579-aa323fa4868f",
+          "location": "PresetParser\\Program.cs",
+          "locationKind": "File",
+          "snippet": "System.IO.StreamWriter",
+          "line": 74,
+          "column": 52,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0003",
+          "incidentId": "8b30af37-dc18-4ed7-856d-947ba921eb5e",
+          "location": "PresetParser\\Program.cs",
+          "locationKind": "File",
+          "snippet": "System.IO.StreamWriter",
+          "line": 68,
+          "column": 44,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0003",
+          "incidentId": "8821bfc4-2e8e-4d98-a0ca-b895565aeae4",
+          "location": "PresetParser\\Program.cs",
+          "locationKind": "File",
+          "snippet": "System.IO.StreamWriter",
+          "line": 519,
+          "column": 36,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 3,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0007",
+          "incidentId": "652d8531-3201-45e9-80d3-6d996342d13a",
+          "location": "PresetParser\\Program.cs",
+          "locationKind": "File",
+          "snippet": "System.Environment.Exit",
+          "line": 207,
+          "column": 20,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0007",
+          "incidentId": "0635deb9-c3fb-4d75-9a77-43564e8a4b27",
+          "location": "PresetParser\\Program.cs",
+          "locationKind": "File",
+          "snippet": "System.Environment.Exit",
+          "line": 242,
+          "column": 24,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0007",
+          "incidentId": "0ee8a959-eb4d-4b72-b131-238cab1a4bbe",
+          "location": "PresetParser\\Program.cs",
+          "locationKind": "File",
+          "snippet": "System.Environment.Exit",
+          "line": 251,
+          "column": 24,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0007",
+          "incidentId": "0b550946-f0f8-4821-95ab-94d5d87aa202",
+          "location": "PresetParser\\Program.cs",
+          "locationKind": "File",
+          "snippet": "System.Environment.Exit",
+          "line": 260,
+          "column": 24,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0007",
+          "incidentId": "5180de69-bbca-4234-8720-97f1d21d9481",
+          "location": "PresetParser\\Program.cs",
+          "locationKind": "File",
+          "snippet": "System.Environment.Exit",
+          "line": 681,
+          "column": 20,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        },
+        {
+          "ruleId": "Local.0007",
+          "incidentId": "376539f0-10c5-4f1c-ba35-245b458d44e1",
+          "location": "PresetParser\\Program.cs",
+          "locationKind": "File",
+          "snippet": "System.Environment.CurrentDirectory",
+          "line": 624,
+          "column": 39,
+          "targets": {
+            "AppService.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppService.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AKS.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "ACA": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 1,
+              "severity": "potential"
+            }
+          },
+          "labels": []
+        }
+      ]
+    },
+    {
+      "path": "Tests\\PresetParser.Tests\\PresetParser.Tests.csproj",
+      "issues": 0,
+      "storyPoints": 0,
+      "properties": {
+        "appName": "PresetParser.Tests",
+        "frameworks": [
+          "net9.0-windows"
+        ],
+        "languages": [
+          "C#"
+        ],
+        "tools": [
+          "MSBuild"
+        ]
+      },
+      "incidents": []
+    },
+    {
+      "path": ".",
+      "issues": 1,
+      "storyPoints": 5,
+      "properties": {
+        "appName": "",
+        "frameworks": [],
+        "languages": [
+          ""
+        ],
+        "tools": [
+          "MSBuild"
+        ]
+      },
+      "incidents": [
+        {
+          "ruleId": "Dockerfile.0101",
+          "incidentId": "2c8eb1c0-c2cb-4856-a31b-469a3312c456",
+          "location": ".",
+          "locationKind": "file",
+          "message": "File(s) missing",
+          "snippet": "",
+          "targets": {
+            "AppService.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppService.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AKS.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "ACA": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Linux": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceContainer.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            },
+            "AppServiceManagedInstance.Windows": {
+              "effort": 5,
+              "severity": "optional"
+            }
+          },
+          "labels": []
+        }
+      ]
+    }
+  ],
+  "rules": {
+    "HTTP.0001": {
+      "id": "HTTP.0001",
+      "description": "Your application is trying to reach external resources via HTTP protocol.\n\nEnsure the resources it is trying to reach are accessible from the Azure environment. If those HTTP requests are sent to internal services or services hosted on-prem, you probably will need to migrate those services to Azure as well.\n\nAlso, keep in mind that Azure App Service supports port 80 for HTTP and port 443 for HTTPS traffic. If you are using any other ports, you need to update them before moving to Azure.",
+      "title": "Access to external resources via HTTP is detected",
+      "severity": "potential",
+      "effort": 3,
+      "links": [
+        {
+          "title": "Azure App Service networking features",
+          "url": "https://go.microsoft.com/fwlink/?LinkID=2243264"
+        }
+      ],
+      "labels": []
+    },
+    "Local.0006": {
+      "id": "Local.0006",
+      "description": "Your application has hardcoded URLs that might correspond to services that are not accessible on Azure.\n\nReview and ensure that the application is attempting to access URLs that would be available from Azure. You might need to migrate those services to Azure too, this way you will get the benefit of lower latency in the cloud.\n\nIf your application needs to depend on services that run on-premises, you can connect your Azure and local networks with ExpressRoute, Hybrid Connections, or VPN solutions.",
+      "title": "Hardcoded URLs detected",
+      "severity": "potential",
+      "effort": 1,
+      "links": [
+        {
+          "title": "ExpressRoute",
+          "url": "https://go.microsoft.com/fwlink/?LinkID=2250577"
+        },
+        {
+          "title": "Hybrid Connections",
+          "url": "https://go.microsoft.com/fwlink/?LinkID=2242588"
+        },
+        {
+          "title": "Connect an on-prem network",
+          "url": "https://go.microsoft.com/fwlink/?LinkID=2242591"
+        }
+      ],
+      "labels": []
+    },
+    "Local.0008": {
+      "id": "Local.0008",
+      "description": "User32/GDI32 system calls detected.\n\nFor the sake of radical attack surface area reduction, the sandbox prevents almost all of the Win32k.sys APIs from being called, which practically means that most of User32/GDI32 system calls are blocked. For most applications this is not an issue since most Azure Web Apps do not require access to Windows UI functionality (they are web applications after all).\n\nHowever one common pattern that is affected is PDF file generation. See links below for more details.",
+      "title": "User32/GDI32 system calls detected",
+      "severity": "mandatory",
+      "effort": 3,
+      "links": [
+        {
+          "title": "Win32k.sys (User32/GDI32) restrictions",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2250629"
+        }
+      ],
+      "labels": []
+    },
+    "Local.0009": {
+      "id": "Local.0009",
+      "description": "Native API calls detected.\n\nThe AppService sandbox generally aims to restrict access to shared OS components. While some Windows native system API might work on AppService sandbox or in containers, many of them are blocked.\n\nIt is also important to avoid native Windows calls if you aim to use AppService or containers based on Linux OS in the future.",
+      "title": "Native API calls detected",
+      "severity": "optional",
+      "effort": 3,
+      "links": [
+        {
+          "title": "General App Service sandbox restrictions",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2250496"
+        }
+      ],
+      "labels": []
+    },
+    "Local.0012": {
+      "id": "Local.0012",
+      "description": "Local process start detected.\n\nWhile it is possible to launch new worker processes in either Azure App Service or Azure Kubernetes Service environments, it is an anti-pattern to do so. Both expect to have a single process running and launching others can make it difficult to manage and debug the applications. Expecting another process or service to already be running in parallel with the service will not work in Azure App Service and is an anti-pattern in Kubernetes.",
+      "title": "Local process start detected",
+      "severity": "optional",
+      "effort": 5,
+      "links": [
+        {
+          "url": "https://go.microsoft.com/fwlink/?LinkID=2202641"
+        }
+      ],
+      "labels": []
+    },
+    "Local.0001": {
+      "id": "Local.0001",
+      "description": "Windows local system features usage detected.\n\nWindows features like registry access, starting processes via shell, access to COM objects, using standard OS dialogs etc, will be restricted on Azure App Service. This indicates that your application might be broken in App Service sandbox environment or not scale well.\n\nIf you choose to use containerized Azure hosting options with Windows container, such as Azure AppService sandbox for Windows container, Azure Container Apps (ACA) or Azure Kubernetes Service (AKS), some scenarios might work, however scaling still might be an issue.\n\nRecommendations:\n    1. Avoid using Windows registry or default Windows UI elements and dialogs.\n    2. If your application needs to read app-specific configuration, you can use the App Settings feature of Azure App Service, which allows you to store key-value pairs of configuration data for your application. You can access these settings from your code using environment variables. Another option is to use Azure App Configuration and Azure Key Vault to share application settings in a cloud-native way.\n    3. If your application is writing data (like machine-wide settings cache), use an external data store like Azure SQL DB or Azure Cache for Redis.\n    4. Instead of starting local worker processes use Azure Functions.",
+      "title": "Windows local system features usage detected",
+      "severity": "mandatory",
+      "effort": 3,
+      "links": [
+        {
+          "title": "General App Service sandbox restrictions",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2250496"
+        },
+        {
+          "title": "App Service sandbox for Windows Container Web Apps",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2251963"
+        },
+        {
+          "title": "Design to scale out",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2251007"
+        },
+        {
+          "title": "Azure Functions",
+          "url": "https://go.microsoft.com/fwlink/?LinkID=2251810"
+        },
+        {
+          "title": "App Settings",
+          "url": "https://go.microsoft.com/fwlink/?LinkID=2242590"
+        },
+        {
+          "title": "Azure Key Vault",
+          "url": "https://go.microsoft.com/fwlink/?LinkID=2251612"
+        },
+        {
+          "title": "Azure App Configuration",
+          "url": "https://go.microsoft.com/fwlink/?LinkID=2251640"
+        }
+      ],
+      "labels": []
+    },
+    "Local.0004": {
+      "id": "Local.0004",
+      "description": "Logging to local or network paths detected.\n\nLogging APIs that write to disk might not work on Azure App Service or Container.\n\nUse logging that stores logs in locations outside of the host unless its specifically required by your app. You can also use logging capabilities embedded in Azure, such as Azure App Service logging or Application Insights.\n\nFor migrating to AKS, use LogMonitor tool that can capture logs written to files, the console, or write logs and redirect them to Azure.",
+      "title": "Logging to local or network paths detected",
+      "severity": "mandatory",
+      "effort": 3,
+      "links": [
+        {
+          "title": "Logging in Azure App Service",
+          "url": "https://go.microsoft.com/fwlink/?LinkID=2251711"
+        },
+        {
+          "title": "Logging in Application Insights",
+          "url": "https://go.microsoft.com/fwlink/?LinkID=2251712"
+        },
+        {
+          "title": "LogMonitor",
+          "url": "https://go.microsoft.com/fwlink/?LinkID=2251308"
+        }
+      ],
+      "labels": []
+    },
+    "Local.0007": {
+      "id": "Local.0007",
+      "description": "Local OS environment access detected.\n\nWhen running in Azure App Service environment, your application can read environment variables that you define in App Service settings. Using environment API other than reading environment variables might indicate that your application depends on some local machine\u2019s features and might be broken on App Service sandbox or not scale well. Review your scenarios and either refactor them to be more cloud friendly or choose the option in App Service to host your application in the sandbox for Windows Container Web Apps.\n\nIf you choose to use other Azure hosting options such as Azure Container Apps (ACA) or Azure Kubernetes Service (AKS), environment APIs might work, however scaling still might be an issue.",
+      "title": "Local OS environment access detected",
+      "severity": "potential",
+      "effort": 1,
+      "links": [
+        {
+          "title": "General App Service sandbox restrictions",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2250496"
+        },
+        {
+          "title": "App Service sandbox for Windows Container Web Apps",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2251963"
+        },
+        {
+          "title": "Design to scale out",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2251007"
+        }
+      ],
+      "labels": []
+    },
+    "Local.0003": {
+      "id": "Local.0003",
+      "description": "Your application has local or network IO operations.\n\nIO operations outside of the application folder might not be available on Azure App Service. Review and ensure IO APIs are attempting to access paths that will be available when your app is running on App Service sandbox. If you choose the containerized hosting option, your scenario still might be broken or have scalability issues.\n\nPossible solutions:\n    1. Files that the application needs can be deployed with the application or put in Azure Storage. You can use Azure Storage File Shares as a drop-in replacement for on-premises file share.\n    2. Other services that the application depends on might need to be migrated to Azure, this way you will get the benefit of lower latency in the cloud.\n    3. If your application needs to depend on services that run on-premise, you can connect your Azure and local networks with ExpressRoute, Hybrid Connections, or VPN solutions.",
+      "title": "Local or network IO operations detected",
+      "severity": "potential",
+      "effort": 3,
+      "links": [
+        {
+          "title": "Azure file share",
+          "url": "https://go.microsoft.com/fwlink/?LinkID=2242591"
+        },
+        {
+          "title": "ExpressRoute",
+          "url": "https://go.microsoft.com/fwlink/?LinkID=2250577"
+        },
+        {
+          "title": "Hybrid Connections",
+          "url": "https://go.microsoft.com/fwlink/?LinkID=2242588"
+        },
+        {
+          "title": "Connect an on-prem network",
+          "url": "https://go.microsoft.com/fwlink/?LinkID=2242591"
+        },
+        {
+          "title": "Design to scale out",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2251007"
+        }
+      ],
+      "labels": []
+    },
+    "Perf.0001": {
+      "id": "Perf.0001",
+      "description": "Synchronous API usage detected.\n\nUsing synchronous APIs can lead to more performance issues in Azure compared to on-premises environments due to different latency profiles. Consider adopting asynchronous code patterns.\n\nIn heavily loaded systems, especially where the I/O is substantial, using asynchronous patterns can improve overall throughput and performance. Asynchronous APIs enable a small pool of threads to manage thousands of concurrent requests without waiting on blocking calls. Instead of waiting for a long-running synchronous task to finish, the thread can handle another request. Conversely, numerous synchronous blocking calls can cause thread pool starvation and degrade response times.\n\nRefer to the links below to learn more about asynchronous programming.",
+      "title": "Synchronous API usage detected",
+      "severity": "optional",
+      "effort": 1,
+      "links": [
+        {
+          "title": "Asynchronous programming",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2294824"
+        },
+        {
+          "title": "ASP.NET Core Best Practices: avoid blocking calls",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2294727"
+        }
+      ],
+      "labels": []
+    },
+    "Local.0002": {
+      "id": "Local.0002",
+      "description": "Your application has hardcoded local or network paths that might not be available on Azure.\n\nReview and ensure that you are attempting to access paths that would be available when your application lives in Azure.\n\n Application should use paths relative to application root folder or store them in Azure Storage or Azure CDN.",
+      "title": "Hardcoded local or network paths detected",
+      "severity": "mandatory",
+      "effort": 1,
+      "links": [
+        {
+          "title": "Azure Storage",
+          "url": "https://go.microsoft.com/fwlink/?LinkID=2243159"
+        },
+        {
+          "title": "Azure CDN",
+          "url": "https://go.microsoft.com/fwlink/?LinkID=2251637"
+        },
+        {
+          "title": "Design to scale out",
+          "url": "https://go.microsoft.com/fwlink/?linkid=2251007"
+        }
+      ],
+      "labels": []
+    },
+    "Dockerfile.0101": {
+      "id": "Dockerfile.0101",
+      "description": "Ensure Dockerfile exists in the repository",
+      "title": "Dockerfile Missing",
+      "severity": "optional",
+      "effort": 5,
+      "links": [
+        {
+          "title": "docker",
+          "url": "https://docker.com"
+        }
+      ],
+      "labels": [
+        "domain=cloud-readiness",
+        "category=docker-containerization"
+      ]
+    }
+  }
+}
