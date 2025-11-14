@@ -75,7 +75,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Extended.Wpf.Toolkit" />
-    <PackageReference Include="Microsoft.CSharp" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />
     <PackageReference Include="Octokit" />
     <PackageReference Include="System.CommandLine" />
