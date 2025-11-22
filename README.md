@@ -1,51 +1,99 @@
-[![GitHub](https://img.shields.io/github/license/AnnoDesigner/anno-designer)](https://github.com/AnnoDesigner/anno-designer/blob/master/LICENSE) [![version](https://img.shields.io/badge/latest--version-9.4-blue)](https://github.com/AnnoDesigner/anno-designer/releases/tag/AnnoDesignerv9.4) [![presets version](https://img.shields.io/badge/presets--version-5.1-blue)](https://github.com/AnnoDesigner/anno-designer/releases/tag/Presetsv5.1) [![Discord](https://img.shields.io/discord/571011757317947406?label=help%2Fdiscord)](https://discord.gg/JJpHWRB)
+<div align="center">
 
-# Anno Designer
+<img width="256" height="256" alt="Icon64" src="https://github.com/user-attachments/assets/1c5448de-63fd-48a6-aa97-c7c4ac06b47e" />
 
-A building layout designer for Ubisoft's Anno-series
+[![GitHub](https://img.shields.io/github/license/AnnoDesigner/anno-designer)](https://github.com/AnnoDesigner/anno-designer/blob/master/LICENSE)
+[![version](https://img.shields.io/badge/latest--version-9.4-blue)](https://github.com/AnnoDesigner/anno-designer/releases/tag/AnnoDesignerv9.4)
+[![presets version](https://img.shields.io/badge/presets--version-5.1-blue)](https://github.com/AnnoDesigner/anno-designer/releases/tag/Presetsv5.1)
+[![Discord](https://img.shields.io/discord/571011757317947406?label=help%2Fdiscord)](https://discord.gg/JJpHWRB)
 
-This is a fork of the project created by JcBernack - https://github.com/JcBernack/anno-designer
+<h1>Anno Designer – Fluent Edition</h1>
 
-## Latest Releases
+</div>
 
-### [Anno Designer 9.4](https://github.com/AnnoDesigner/anno-designer/releases/tag/AnnoDesignerv9.4)
+A modernized building-layout designer for Ubisoft’s Anno series.
+This fork updates the original AnnoDesigner with .NET 10, Fluent Design WPF, improved UX, and an overhauled codebase.
 
-#### [Latest Presets file release](https://github.com/AnnoDesigner/anno-designer/releases/tag/Presetsv5.1)
 
-The presets update can also be downloaded automatically by the application.
+> Original project: [https://github.com/AnnoDesinger/anno-designer](https://github.com/AnnoDesinger/anno-designer)
+
+---
+
+## Screenshots
+
+<img width="1823" height="1198" alt="image" src="https://github.com/user-attachments/assets/17952e6f-076f-4aff-b567-d3dce1ec4529" />
+
+ 
+<img width="1879" height="1187" alt="image" src="https://github.com/user-attachments/assets/56fbce69-56d1-472f-8ccb-c132351d0a85" />
+
+<img width="545" height="521" alt="image" src="https://github.com/user-attachments/assets/ba942810-9150-4d7a-a523-5ce0ed4ce92d" />
+
+<img width="2170" height="1345" alt="image" src="https://github.com/user-attachments/assets/c3294253-6c35-447c-a46d-19b6bf808b99" />
+
+<img width="964" height="644" alt="image" src="https://github.com/user-attachments/assets/fc021fbd-2767-475a-a8c2-659bbc13eae0" />
+
+<img width="1879" height="1187" alt="image" src="https://github.com/user-attachments/assets/02e19dd6-b97a-4059-afe0-c456f72d218c" />
+
+---
 
 ## Discord
 
-Keep up to date the latest developments. If you have any ideas or questions that you want to share with us, or are running into an error with the designer, then the discord is the perfect place to join.
+Join the community for updates, questions, bug reports, and feature discussions:
+[https://discord.gg/JJpHWRB](https://discord.gg/JJpHWRB)
 
-<https://discord.gg/JJpHWRB>
+---
 
 ## Summary
 
-The **Anno Designer** is a standalone windows application that can be used for creating and exporting layouts. It uses a drag/drop system and is intuitive and easy to use.  
-**The Anno Designer supports the following Anno versions: 1404, 2070, 2205, 1800**.
+**Anno Designer – Fluent** is a standalone Windows application for creating, editing, and exporting city layouts.
+It offers drag-and-drop placement, grid snapping, advanced export tools, and modern visuals.
 
-## How to use
+Supported game versions:
 
-**Download the latest version from the [here](https://github.com/AnnoDesigner/anno-designer/releases/tag/AnnoDesignerv9.4)** (select the .exe file). Run it, and use it to design layouts!
+* Anno 1404
+* Anno 2070
+* Anno 2205
+* Anno 1800
 
-Anno Designer can also be started from the command line for advanced usages.  
-Please see [this documentation](doc/CommandLineParameters.md) for more information and examples.
+---
 
-## Technology
+## Download & Use
 
-This application is written in C# (.NET Framework 4.8) and uses WPF.  
-The .NET Framework is available via Windows Update and further information about installing is available on [this site](https://docs.microsoft.com/en-us/dotnet/framework/install/).
+Grab the latest release:
+**[https://github.com/AnnoDesigner/anno-designer/releases/latest](https://github.com/AnnoDesigner/anno-designer/releases/latest)**
 
-## Game data and icons
+Download the `.exe`, run it, and start building.
 
-The building presets and icons are extracted from game files using the [RDA explorer](https://github.com/lysannschlegel/RDAExplorer) and a custom script written by Peter Hozak.  
-See the development pages at wikia: <http://anno2070.wikia.com/wiki/Development_Pages>
+For CLI usage and automation, see:
+`doc/CommandLineParameters.md`
 
-[StingMcRay](https://github.com/StingMcRay) has also done a lot of work on this, extracting icons from Anno 2205 and Anno 1800.
+---
 
-Included in this repo is a modified version of the PresetParser - which supports the extraction of data from all the different Anno versions. It is not required to run the app (and is not included in any release).
+## Technology Stack
+
+* **.NET 10**
+* **WPF (Fluent Design)**
+* C# with modularized architecture and updated rendering pipeline
+* Fully Windows-native, no external runtime needed
+
+---
+
+## Game Data & Assets
+
+Building presets and icons come from game data extracted with:
+
+* **RDAExplorer**
+  [https://github.com/lysannschlegel/RDAExplorer](https://github.com/lysannschlegel/RDAExplorer)
+* Custom extraction scripts by Peter Hozak and contributors
+* Additional asset work by **StingMcRay** (Anno 2205, Anno 1800)
+
+A modified **PresetParser** is included for data generation across all supported Anno titles.
+This tool is not required to run the main application.
+
+---
 
 ## License
 
-[MIT](https://github.com/AnnoDesigner/anno-designer/blob/master/LICENSE)
+MIT License
+See `LICENSE` in the repository.
+ 
