@@ -15,7 +15,7 @@ namespace AnnoDesigner.Localization
             {
                 return translation;
             }
-#if DEBUG
+#if !DEBUG
             throw new Exception($"Missing translation or not string translation key \"{parameter}\"");
 #else
             return $"!{parameter}";
