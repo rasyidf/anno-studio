@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Media;
 using AnnoDesigner.Core.Helper;
 using AnnoDesigner.Core.Models;
+using AnnoDesigner.Models.Interface;
 
 namespace AnnoDesigner.Models
 {

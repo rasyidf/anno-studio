@@ -1,4 +1,4 @@
-﻿namespace AnnoDesigner.Models
+﻿namespace AnnoDesigner.Models.Interface
 {
     /// <summary>
     /// This interface is used to help to tranlate texts of the application.

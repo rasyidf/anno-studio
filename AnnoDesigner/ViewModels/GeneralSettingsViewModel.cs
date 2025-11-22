@@ -6,6 +6,7 @@ using System.Windows.Media;
 using AnnoDesigner.Core.Helper;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
+using AnnoDesigner.Models.Interface;
 using NLog;
 
 namespace AnnoDesigner.ViewModels

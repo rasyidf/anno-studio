@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using AnnoDesigner.Core.Models;
-using AnnoDesigner.Undo.Operations;
+using AnnoDesigner.Services.Undo.Operations;
 
-namespace AnnoDesigner.Undo
+namespace AnnoDesigner.Services.Undo
 {
     public class UndoManager : Notify, IUndoManager
     {

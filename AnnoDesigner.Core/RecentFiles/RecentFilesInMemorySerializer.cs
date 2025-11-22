@@ -19,7 +19,7 @@ namespace AnnoDesigner.Core.RecentFiles
 
         public void Serialize(List<RecentFile> recentFiles)
         {
-            _recentFiles = new List<RecentFile>(recentFiles);
+            _recentFiles = [.. recentFiles];
         }
     }
 }

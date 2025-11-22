@@ -1,6 +1,6 @@
 ﻿using System.Windows.Media;
 
-namespace AnnoDesigner.Models
+namespace AnnoDesigner.Models.Interface
 {
     public interface IPenCache
     {

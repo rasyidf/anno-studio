@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Media;
-using AnnoDesigner.Models;
+using AnnoDesigner.Models.Interface;
 
 namespace AnnoDesigner.Helper
 {

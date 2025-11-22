@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AnnoDesigner.Undo.Operations
+namespace AnnoDesigner.Services.Undo.Operations
 {
     public abstract class BaseOperation : IOperation
     {

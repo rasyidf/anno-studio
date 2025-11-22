@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Data;
-using AnnoDesigner.Models;
+using AnnoDesigner.Models.Interface;
 using AnnoDesigner.ViewModels;
 
 namespace AnnoDesigner.PreferencesPages

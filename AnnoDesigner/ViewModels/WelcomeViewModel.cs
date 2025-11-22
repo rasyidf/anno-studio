@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
+using AnnoDesigner.Models.Interface;
 
 namespace AnnoDesigner.ViewModels
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AnnoDesigner.Models
+namespace AnnoDesigner.Models.Interface
 {
     public interface ICommons
     {

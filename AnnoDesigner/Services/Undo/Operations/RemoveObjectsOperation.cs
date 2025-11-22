@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AnnoDesigner.Undo.Operations
+namespace AnnoDesigner.Services.Undo.Operations
 {
     public class RemoveObjectsOperation<T> : BaseOperation
     {

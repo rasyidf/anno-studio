@@ -1,5 +1,5 @@
 ﻿using System.Windows.Controls;
-using AnnoDesigner.Models;
+using AnnoDesigner.Models.Interface;
 using AnnoDesigner.ViewModels;
 
 namespace AnnoDesigner.PreferencesPages

@@ -67,11 +67,7 @@ namespace AnnoDesigner
                 _ = _mainViewModel.PreferencesUpdateViewModel.CheckForUpdates(isAutomaticUpdateCheck: true);
             }
 
-            // load color presets
-            // moved colorPicker into PropertiesPanel user control
-            propertiesPanel.ColorPicker.StandardColors.Clear();
-            //This is currently disabled
-            propertiesPanel.ColorPicker.ShowStandardColors = false;
+            // load color presets 
             //try
             //{
             //    ColorPresetsLoader loader = new ColorPresetsLoader();

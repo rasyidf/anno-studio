@@ -7,16 +7,11 @@ using NLog;
 
 namespace AnnoDesigner.Core.RecentFiles
 {
-    public class RecentFilesAppSettingsSerializer : IRecentFilesSerializer
+    public class RecentFilesAppSettingsSerializer(IAppSettings appSettingsToUse) : IRecentFilesSerializer
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        private readonly IAppSettings _appSettings;
-
-        public RecentFilesAppSettingsSerializer(IAppSettings appSettingsToUse)
-        {
-            _appSettings = appSettingsToUse;
-        }
+        private readonly IAppSettings _appSettings = appSettingsToUse;
 
         public List<RecentFile> Deserialize()
         {

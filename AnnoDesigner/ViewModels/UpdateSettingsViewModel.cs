@@ -8,6 +8,7 @@ using AnnoDesigner.Core.Extensions;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Services;
 using AnnoDesigner.Models;
+using AnnoDesigner.Models.Interface;
 using NLog;
 
 namespace AnnoDesigner.ViewModels

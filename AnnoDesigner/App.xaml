@@ -5,7 +5,6 @@
     xmlns:converters="clr-namespace:AnnoDesigner.Core.Converters;assembly=AnnoDesigner.Core"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-    Startup="Application_Startup"
     ThemeMode="System">
     <Application.Resources>
 
@@ -15,6 +14,7 @@
                 <ui:ControlsDictionary />
                 <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" />
                 <ResourceDictionary Source="/Themes/Compact.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/ColorPicker;component/Styles/DefaultColorPickerStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <xctk:ColorToSolidColorBrushConverter x:Key="converterColorToSolidColorBrush" />

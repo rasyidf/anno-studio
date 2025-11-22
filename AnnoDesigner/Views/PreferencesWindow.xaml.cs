@@ -1,11 +1,12 @@
 ﻿using System.Windows;
 using AnnoDesigner.Core.Models;
-using AnnoDesigner.Models;
+using AnnoDesigner.Models.Interface;
 using AnnoDesigner.ViewModels;
+using Wpf.Ui.Controls;
 
 namespace AnnoDesigner
 {
-    public partial class PreferencesWindow : Window, ICloseable
+    public partial class PreferencesWindow : FluentWindow, ICloseable
     {
         public PreferencesWindow()
         {

@@ -7,9 +7,9 @@ using AnnoDesigner.Core.DataStructures;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Presets.Models;
 using AnnoDesigner.CustomEventArgs;
-using AnnoDesigner.Undo;
+using AnnoDesigner.Services.Undo;
 
-namespace AnnoDesigner.Models
+namespace AnnoDesigner.Models.Interface
 {
     public interface IAnnoCanvas : IHotkeySource
     {

@@ -4,7 +4,8 @@ using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Presets.Models;
 using AnnoDesigner.Core.Services;
 using AnnoDesigner.Models;
-using AnnoDesigner.Undo;
+using AnnoDesigner.Models.Interface;
+using AnnoDesigner.Services.Undo;
 using Moq;
 using Xunit;
 

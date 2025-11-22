@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
+using AnnoDesigner.Models.Interface;
 using static AnnoDesigner.Core.CoreConstants;
 
 namespace AnnoDesigner.ViewModels

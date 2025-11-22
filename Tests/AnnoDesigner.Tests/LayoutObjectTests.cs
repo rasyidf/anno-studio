@@ -2,6 +2,7 @@
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Helper;
 using AnnoDesigner.Models;
+using AnnoDesigner.Models.Interface;
 using Xunit;
 
 namespace AnnoDesigner.Tests

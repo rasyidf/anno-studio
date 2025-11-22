@@ -1,7 +1,7 @@
 ﻿using System;
 using AnnoDesigner.ViewModels;
 
-namespace AnnoDesigner.Undo.Operations
+namespace AnnoDesigner.Services.Undo.Operations
 {
     public class ModifyLayoutVersionOperation : BaseOperation
     {

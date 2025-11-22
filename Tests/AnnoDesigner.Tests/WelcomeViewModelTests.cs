@@ -1,5 +1,5 @@
 ﻿using AnnoDesigner.Core.Models;
-using AnnoDesigner.Models;
+using AnnoDesigner.Models.Interface;
 using AnnoDesigner.ViewModels;
 using Moq;
 using Xunit;

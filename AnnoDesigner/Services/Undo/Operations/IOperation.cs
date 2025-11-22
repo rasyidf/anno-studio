@@ -1,4 +1,4 @@
-﻿namespace AnnoDesigner.Undo.Operations
+﻿namespace AnnoDesigner.Services.Undo.Operations
 {
     public interface IOperation
     {

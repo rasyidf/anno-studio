@@ -29,9 +29,10 @@ using AnnoDesigner.CustomEventArgs;
 using AnnoDesigner.Extensions;
 using AnnoDesigner.Helper;
 using AnnoDesigner.Models;
+using AnnoDesigner.Models.Interface;
 using AnnoDesigner.Services;
-using AnnoDesigner.Undo;
-using AnnoDesigner.Undo.Operations;
+using AnnoDesigner.Services.Undo;
+using AnnoDesigner.Services.Undo.Operations;
 using Microsoft.Win32;
 using NLog;
 

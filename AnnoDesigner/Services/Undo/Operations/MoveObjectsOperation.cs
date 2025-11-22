@@ -2,7 +2,7 @@
 using AnnoDesigner.Core.DataStructures;
 using AnnoDesigner.Core.Models;
 
-namespace AnnoDesigner.Undo.Operations
+namespace AnnoDesigner.Services.Undo.Operations
 {
     public class MoveObjectsOperation<T> : ModifyObjectPropertiesOperation<T, Rect>
         where T : IBounded

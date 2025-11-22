@@ -4,6 +4,7 @@ using System.Linq;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Extensions;
 using AnnoDesigner.Models;
+using AnnoDesigner.Models.Interface;
 using Moq;
 using Xunit;
 

@@ -5,6 +5,7 @@ using System.Windows.Input;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Helper;
 using AnnoDesigner.Models;
+using AnnoDesigner.Models.Interface;
 using Moq;
 using Xunit;
 

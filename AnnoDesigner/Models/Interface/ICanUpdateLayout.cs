@@ -1,4 +1,4 @@
-﻿namespace AnnoDesigner.Models
+﻿namespace AnnoDesigner.Models.Interface
 {
     public interface ICanUpdateLayout
     {

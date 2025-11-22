@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows.Media;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
+using AnnoDesigner.Models.Interface;
 using AnnoDesigner.Undo.Operations;
 using Moq;
 using Xunit;

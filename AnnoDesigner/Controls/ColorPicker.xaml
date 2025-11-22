@@ -10,18 +10,7 @@
     d:DesignHeight="32.456"
     d:DesignWidth="89"
     mc:Ignorable="d">
-    <ui:SplitButton
-        Padding="2,0"
-        HorizontalAlignment="Stretch"
-        VerticalAlignment="Stretch"
-        CornerRadius="4">
-        <Border
-            Width="50"
-            Height="25"
-            Background="Green"
-            CornerRadius="3,0,0,3" />
-        <ui:SplitButton.Flyout>
-            <cp:PortableColorPicker ColorState="{Binding ElementName=main, Path=ColorState, Mode=TwoWay}" />
-        </ui:SplitButton.Flyout>
-    </ui:SplitButton>
+
+    <cp:PortableColorPicker ColorState="{Binding ElementName=main, Path=ColorState, Mode=TwoWay}" />
+
 </UserControl>

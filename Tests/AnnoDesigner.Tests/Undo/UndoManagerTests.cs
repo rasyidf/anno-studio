@@ -1,6 +1,6 @@
 ﻿using System;
-using AnnoDesigner.Undo;
-using AnnoDesigner.Undo.Operations;
+using AnnoDesigner.Services.Undo;
+using AnnoDesigner.Services.Undo.Operations;
 using Moq;
 using Xunit;
 

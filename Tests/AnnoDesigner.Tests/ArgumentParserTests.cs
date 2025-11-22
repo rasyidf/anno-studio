@@ -59,7 +59,7 @@ namespace AnnoDesigner.Tests
         public void Parse_EmptyArguments_ShouldReturnCorrectType()
         {
             // Arrange/Act
-            var parsedArguments = GetParser().Parse(Enumerable.Empty<string>());
+            var parsedArguments = GetParser().Parse([]);
 
             // Assert
             _ = Assert.IsType<EmptyArgs>(parsedArguments);

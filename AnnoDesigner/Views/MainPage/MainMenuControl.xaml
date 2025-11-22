@@ -5,7 +5,9 @@
     xmlns:l="clr-namespace:AnnoDesigner.Localization"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:viewModel="clr-namespace:AnnoDesigner.ViewModels"
-    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit">
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}">
 
     <UserControl.Resources>
         <Style x:Key="RecentFileItemStyle" TargetType="MenuItem">
@@ -63,7 +65,10 @@
                         <ui:SymbolIcon Symbol="Braces24" />
                     </ui:MenuItem.Icon>
                 </ui:MenuItem>
-                <ui:MenuItem Command="{Binding ImportStampCommand}" Header="{l:Localize FromStamps}">
+                <ui:MenuItem
+                    Command="{Binding ImportStampCommand}"
+                    Header="{l:Localize FromStamps}"
+                    IsEnabled="False">
                     <ui:MenuItem.Icon>
                         <ui:SymbolIcon Symbol="Stack24" />
                     </ui:MenuItem.Icon>
@@ -95,16 +100,16 @@
             <Separator />
 
             <ui:MenuItem Header="{l:Localize Export}" TabIndex="11">
-                <ui:MenuItem.Icon>
-                    <ui:SymbolIcon Symbol="ArrowExport24" />
-                </ui:MenuItem.Icon>
 
                 <ui:MenuItem Command="{Binding ExportLayoutToJsonCommand}" Header="{l:Localize ToJson}">
                     <ui:MenuItem.Icon>
                         <ui:SymbolIcon Symbol="Braces24" />
                     </ui:MenuItem.Icon>
                 </ui:MenuItem>
-                <ui:MenuItem Command="{Binding ExportLayoutToStampCommand}" Header="{l:Localize ToStamps}">
+                <ui:MenuItem
+                    Command="{Binding ExportLayoutToStampCommand}"
+                    Header="{l:Localize ToStamps}"
+                    IsEnabled="False">
                     <ui:MenuItem.Icon>
                         <ui:SymbolIcon Symbol="Stack24" />
                     </ui:MenuItem.Icon>
@@ -246,7 +251,7 @@
             </ui:MenuItem>
         </ui:MenuItem>
 
-        <ui:MenuItem Header="{l:Localize Layout}" TabIndex="25">
+        <!--<ui:MenuItem Header="{l:Localize Layout}" TabIndex="25">
             <ui:MenuItem
                 Command="{Binding RotateCommand}"
                 CommandParameter="Clockwise"
@@ -424,7 +429,7 @@
                     <ui:SymbolIcon Symbol="GroupDismiss20" />
                 </ui:MenuItem.Icon>
             </ui:MenuItem>
-        </ui:MenuItem>
+        </ui:MenuItem>-->
 
         <ui:MenuItem Header="{l:Localize View}" TabIndex="30">
 

@@ -1,7 +1,7 @@
 ﻿using System;
-using AnnoDesigner.Undo.Operations;
+using AnnoDesigner.Services.Undo.Operations;
 
-namespace AnnoDesigner.Undo
+namespace AnnoDesigner.Services.Undo
 {
     public interface IUndoManager
     {

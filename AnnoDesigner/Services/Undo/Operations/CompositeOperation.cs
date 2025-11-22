@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace AnnoDesigner.Undo.Operations
+namespace AnnoDesigner.Services.Undo.Operations
 {
     public class CompositeOperation : BaseOperation
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace AnnoDesigner.Models
+namespace AnnoDesigner.Models.Interface
 {
     public interface IUpdateHelper
     {

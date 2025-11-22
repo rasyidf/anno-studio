@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AnnoDesigner.Core.Presets.Models;
-using AnnoDesigner.Models;
+using AnnoDesigner.Models.Interface;
 using NLog;
 
 namespace AnnoDesigner.Localization

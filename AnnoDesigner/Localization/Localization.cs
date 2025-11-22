@@ -4,10 +4,10 @@ using System.Threading;
 using System.Windows;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Helper;
-using AnnoDesigner.Models;
 using NLog;
 using System.IO;
 using Newtonsoft.Json;
+using AnnoDesigner.Models.Interface;
 
 namespace AnnoDesigner.Localization
 {

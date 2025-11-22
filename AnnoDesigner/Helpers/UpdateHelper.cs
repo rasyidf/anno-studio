@@ -14,6 +14,7 @@ using AnnoDesigner.Core.Helper;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Services;
 using AnnoDesigner.Models;
+using AnnoDesigner.Models.Interface;
 using NLog;
 using Octokit;
 

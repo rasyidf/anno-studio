@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Abstractions;
-using AnnoDesigner.Models;
+using AnnoDesigner.Models.Interface;
 using NLog;
 
 namespace AnnoDesigner.Helper

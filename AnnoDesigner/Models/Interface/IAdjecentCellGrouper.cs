@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AnnoDesigner.Models
+namespace AnnoDesigner.Models.Interface
 {
     public interface IAdjacentCellGrouper
     {

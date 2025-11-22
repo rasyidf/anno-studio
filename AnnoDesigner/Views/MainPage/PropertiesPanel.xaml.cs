@@ -10,6 +10,6 @@ namespace AnnoDesigner.Views
         }
 
         // Expose colorPicker for MainWindow code that referenced it
-        public Xceed.Wpf.Toolkit.ColorPicker ColorPicker => colorPicker;
+        public ColorPicker.PortableColorPicker ColorPicker => colorPicker;
     }
 }
