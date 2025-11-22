@@ -43,7 +43,7 @@ namespace AnnoDesigner.ViewModels
             var foundPage = Pages.SingleOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
             if (foundPage != null)
             {
-                NavigationService?.Navigate(new Uri($@"pack://application:,,,/PreferencesPages\{name}.xaml", UriKind.RelativeOrAbsolute), foundPage.ViewModel);
+                NavigationService?.Navigate(new Uri($@"pack://application:,,,/Views\PreferencesPages\{name}.xaml", UriKind.RelativeOrAbsolute), foundPage.ViewModel);
             }
 #if DEBUG
             else

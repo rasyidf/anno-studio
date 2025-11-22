@@ -21,27 +21,27 @@ namespace AnnoDesigner.ViewModels
             [
                 new SupportedLanguage("English")
                 {
-                    FlagPath = "Flags/United Kingdom.png"
+                    FlagPath = "/Assets/Flags/United Kingdom.png"
                 },
                 new SupportedLanguage("Deutsch")
                 {
-                    FlagPath = "Flags/Germany.png"
+                    FlagPath = "/Assets/Flags/Germany.png"
                 },
                 new SupportedLanguage("Français")
                 {
-                    FlagPath = "Flags/France.png"
+                    FlagPath = "/Assets/Flags/France.png"
                 },
                 new SupportedLanguage("Polski")
                 {
-                    FlagPath = "Flags/Poland.png"
+                    FlagPath = "/Assets/Flags/Poland.png"
                 },
                 new SupportedLanguage("Русский")
                 {
-                    FlagPath = "Flags/Russia.png"
+                    FlagPath = "/Assets/Flags/Russia.png"
                 },
                 new SupportedLanguage("Español")
                 {
-                    FlagPath = "Flags/Spain.png"
+                    FlagPath = "/Assets/Flags/Spain.png"
                 },
             ];
 

@@ -21,7 +21,7 @@ namespace AnnoDesigner.Extensions
 
             var annoObjectsWithoutIgnoredObjects = objects.Select(x => x.WrappedAnnoObject).WithoutIgnoredObjects();
 
-            return objects.Where(x => annoObjectsWithoutIgnoredObjects.Contains(x.WrappedAnnoObject)).ToList();
+            return [.. objects.Where(x => annoObjectsWithoutIgnoredObjects.Contains(x.WrappedAnnoObject))];
         }
     }
 }

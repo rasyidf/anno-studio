@@ -1,4 +1,6 @@
-﻿namespace AnnoDesigner.Models
+﻿using AnnoDesigner.Helper;
+
+namespace AnnoDesigner.Models
 {
     public interface IHotkeySource
     {

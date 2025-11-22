@@ -17,7 +17,7 @@ namespace AnnoDesigner.Converters
         }
 
         //see https://docs.microsoft.com/en-us/dotnet/framework/wpf/app-development/pack-uris-in-wpf
-        private const string RESOURCE_ROOT_PATH = "pack://application:,,,/Images/Icons";
+        private const string RESOURCE_ROOT_PATH = "pack://application:,,,/Assets/Icons";
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

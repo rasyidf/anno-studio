@@ -21,16 +21,19 @@ namespace AnnoDesigner.ViewModels
             ClearSearchTextCommand = new RelayCommand(ClearSearchText);
             GotFocusCommand = new RelayCommand(GotFocus);
             LostFocusCommand = new RelayCommand(LostFocus);
-            GameVersionFilterChangedCommand = new RelayCommand(GameVersionFilterChanged);
 
+            ClearGameVersionFilterCommand = new RelayCommand(ClearGameVersionFilter);
             HasFocus = false;
             SearchText = string.Empty;
             GameVersionFilters = [];
             InitGameVersionFilters();
+            SubscribeToFilterChanges();
         }
 
         private void InitGameVersionFilters()
         {
+            UnsubscribeFromFilterChanges();
+
             var order = 0;
             foreach (var curGameVersion in Enum.GetValues<GameVersion>())
             {
@@ -39,13 +42,37 @@ namespace AnnoDesigner.ViewModels
                     continue;
                 }
 
-                GameVersionFilters.Add(new GameVersionFilter
+                var newFilter = new GameVersionFilter
                 {
                     Name = curGameVersion.ToString().Replace("Anno", "Anno "),
                     Type = curGameVersion,
                     Order = ++order
-                });
+                };
+
+                // 🔑 SUBSCRIBE TO THE NEW EVENT HERE
+                newFilter.FilterStateChanged += OnFilterItemStateChanged;
+
+                GameVersionFilters.Add(newFilter);
             }
+        }
+
+        private void UnsubscribeFromFilterChanges()
+        {
+            foreach (var filter in GameVersionFilters)
+            {
+                filter.FilterStateChanged -= OnFilterItemStateChanged;
+            }
+        }
+
+        private void OnFilterItemStateChanged(object sender, EventArgs e)
+        {
+            if (_isUpdatingGameVersionFilter)
+            {
+                return;
+            }
+
+            // 🔑 THIS IS THE KEY FIX: Notify the binding system that the derived property has changed.
+            OnPropertyChanged(nameof(SelectedGameVersionFilters));
         }
 
         public string SearchText
@@ -120,6 +147,27 @@ namespace AnnoDesigner.ViewModels
                 //Debug.WriteLine($"+++ IsFocused: {textBox.IsFocused} | IsKeyboardFocused: {textBox.IsKeyboardFocused} | IsKeyboardFocusWithin: {textBox.IsKeyboardFocusWithin} | CaretIndex: {textBox.CaretIndex}");
             }
         }
+        public ICommand ClearGameVersionFilterCommand { get; private set; }
+
+        private void ClearGameVersionFilter(object param)
+        {
+            try
+            {
+                _isUpdatingGameVersionFilter = true;
+
+                // Set IsSelected to false for every filter item
+                foreach (var filter in GameVersionFilters)
+                {
+                    filter.IsSelected = false;
+                }
+            }
+            finally
+            {
+                _isUpdatingGameVersionFilter = false;
+                // Notify the application that the selected filters have changed
+                OnPropertyChanged(nameof(SelectedGameVersionFilters));
+            }
+        }
 
         public ICommand GotFocusCommand { get; private set; }
 
@@ -137,30 +185,28 @@ namespace AnnoDesigner.ViewModels
 
         public ICommand GameVersionFilterChangedCommand { get; private set; }
 
-        private void GameVersionFilterChanged(object param)
+        #endregion
+
+        private IDisposable _filterSubscription;
+
+
+        private void SubscribeToFilterChanges()
         {
-            if (_isUpdatingGameVersionFilter)
-            {
-                return;
-            }
+            // Clear any old subscription (important if filters list is reset)
+            _filterSubscription?.Dispose();
 
-            try
-            {
-                _isUpdatingGameVersionFilter = true;
+        }
+        private ObservableCollection<string> _suggestionsList;
 
-                if (param is GameVersionFilter x)
-                {
-                    x.IsSelected = !x.IsSelected;
-                }
-            }
-            finally
-            {
-                _isUpdatingGameVersionFilter = false;
-
-                OnPropertyChanged(nameof(SelectedGameVersionFilters));
-            }
+        public ObservableCollection<string> SuggestionsList
+        {
+            get { return _suggestionsList; }
+            set { _ = UpdateProperty(ref _suggestionsList, value); }
         }
 
-        #endregion      
+        public static explicit operator PresetsTreeSearchViewModel(MainViewModel v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

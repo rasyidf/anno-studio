@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using AnnoDesigner.Core.DataStructures;
@@ -48,7 +49,7 @@ namespace AnnoDesigner.Models
         void RaiseStatisticsUpdated(UpdateStatisticsEventArgs args);
         void RaiseColorsInLayoutUpdated();
         Rect ComputeBoundingRect(IEnumerable<LayoutObject> objects);
-        bool CheckUnsavedChanges();
-        void CheckUnsavedChangesBeforeCrash();
+        Task<bool> CheckUnsavedChanges();
+        Task CheckUnsavedChangesBeforeCrash();
     }
 }

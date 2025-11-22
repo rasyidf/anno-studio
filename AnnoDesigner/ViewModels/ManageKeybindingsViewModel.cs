@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using AnnoDesigner.Core.Controls;
 using AnnoDesigner.Core.Extensions;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Services;
+using AnnoDesigner.Helper;
 using AnnoDesigner.Models;
 
 namespace AnnoDesigner.ViewModels
@@ -94,9 +96,9 @@ namespace AnnoDesigner.ViewModels
             UpdateRebindButtonText();
         }
 
-        private void ExecuteResetHotkeys(object param)
+        private async void ExecuteResetHotkeys(object param)
         {
-            if (_messageBoxService.ShowQuestion(_localizationHelper.GetLocalization(RESET_ALL_CONFIRMATION_MESSAGE),
+            if (await _messageBoxService.ShowQuestion(_localizationHelper.GetLocalization(RESET_ALL_CONFIRMATION_MESSAGE),
                 _localizationHelper.GetLocalization(RESET_ALL)))
             {
                 HotkeyCommandManager.ResetHotkeys();

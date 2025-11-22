@@ -1,86 +1,101 @@
-﻿using System.Windows;
-using AnnoDesigner.Core.Services;
-using MessageBox = Xceed.Wpf.Toolkit.MessageBox;
+﻿﻿using AnnoDesigner.Core.Services;
+using System.Threading.Tasks;
+using System.Windows;
 
-namespace AnnoDesigner.Services
+namespace AnnoDesigner.Services;
+
+public class MessageBoxService : IMessageBoxService
 {
-    public class MessageBoxService : IMessageBoxService
+    public async void ShowMessage(object owner, string message, string title)
     {
-        public void ShowMessage(object owner, string message, string title)
+        Wpf.Ui.Controls.MessageBox uiMessageBox = new()
         {
-            _ = owner is Window ownerWindow
-                ? MessageBox.Show(ownerWindow,
-                    message,
-                    title,
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information)
-                : MessageBox.Show(message,
-                    title,
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
-        }
+            Owner = owner as Window,
+            Title = title,
+            Content = message,
+            IsPrimaryButtonEnabled = true,
+            MinWidth = 400,
+            PrimaryButtonText = "OK",
+        };
 
-        public void ShowWarning(object owner, string message, string title)
-        {
-            _ = owner is Window ownerWindow
-                ? MessageBox.Show(ownerWindow,
-                    message,
-                    title,
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning)
-                : MessageBox.Show(message,
-                    title,
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-        }
+        _ = await uiMessageBox.ShowDialogAsync();
 
-        public void ShowError(object owner, string message, string title)
-        {
-            _ = owner is Window ownerWindow
-                ? MessageBox.Show(ownerWindow,
-                    message,
-                    title,
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error)
-                : MessageBox.Show(message,
-                    title,
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-        }
-
-        public bool ShowQuestion(object owner, string message, string title)
-        {
-            var result = owner is Window ownerWindow
-                ? MessageBox.Show(ownerWindow,
-                    message,
-                    title,
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Question)
-                : MessageBox.Show(message,
-                    title,
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Question);
-            return result == MessageBoxResult.Yes;
-        }
-
-        public bool? ShowQuestionWithCancel(object owner, string message, string title)
-        {
-            var result = owner is Window ownerWindow
-                ? MessageBox.Show(ownerWindow,
-                    message,
-                    title,
-                    MessageBoxButton.YesNoCancel,
-                    MessageBoxImage.Question)
-                : MessageBox.Show(message,
-                    title,
-                    MessageBoxButton.YesNoCancel,
-                    MessageBoxImage.Question);
-            return result switch
-            {
-                MessageBoxResult.Yes => true,
-                MessageBoxResult.No => false,
-                _ => null,
-            };
-        }
     }
+
+    public async void ShowWarning(object owner, string message, string title)
+    {
+        Wpf.Ui.Controls.MessageBox uiMessageBox = new()
+        {
+            Owner = owner as Window,
+            Title = title,
+            Content = message,
+            IsPrimaryButtonEnabled = true,
+            MinWidth = 400,
+            PrimaryButtonText = "OK",
+            PrimaryButtonAppearance = Wpf.Ui.Controls.ControlAppearance.Caution
+        };
+
+        _ = await uiMessageBox.ShowDialogAsync();
+    }
+
+    public async void ShowError(object owner, string message, string title)
+    {
+        Wpf.Ui.Controls.MessageBox uiMessageBox = new()
+        {
+            Owner = owner as Window,
+            Title = title,
+            MinWidth = 400,
+            Content = message,
+            IsPrimaryButtonEnabled = true,
+            PrimaryButtonText = "OK",
+            PrimaryButtonAppearance = Wpf.Ui.Controls.ControlAppearance.Danger
+        };
+
+        _ = await uiMessageBox.ShowDialogAsync();
+    }
+
+    public async Task<bool> ShowQuestion(object owner, string message, string title)
+    {
+        Wpf.Ui.Controls.MessageBox uiMessageBox = new()
+        {
+            Owner = owner as Window,
+            Title = title,
+            Content = message,
+            IsPrimaryButtonEnabled = true,
+            IsSecondaryButtonEnabled = true,
+            MinWidth = 400,
+            SecondaryButtonText = "No",
+            PrimaryButtonText = "Yes",
+        };
+
+        Wpf.Ui.Controls.MessageBoxResult result = await uiMessageBox.ShowDialogAsync();
+
+        return result == Wpf.Ui.Controls.MessageBoxResult.Primary;
+    }
+
+    public async Task<bool?> ShowQuestionWithCancel(object owner, string message, string title)
+    {
+        Wpf.Ui.Controls.MessageBox uiMessageBox = new()
+        {
+            Owner = owner as Window,
+            Title = title,
+            Content = message,
+            IsPrimaryButtonEnabled = true,
+            IsSecondaryButtonEnabled = true,
+
+            MinWidth = 400,
+            SecondaryButtonText = "No",
+            PrimaryButtonText = "Yes",
+        };
+
+        Wpf.Ui.Controls.MessageBoxResult result = await uiMessageBox.ShowDialogAsync();
+        return result switch
+        {
+            Wpf.Ui.Controls.MessageBoxResult.Primary => true,
+            Wpf.Ui.Controls.MessageBoxResult.Secondary => false,
+            _ => null,
+        };
+    }
+
+
 }

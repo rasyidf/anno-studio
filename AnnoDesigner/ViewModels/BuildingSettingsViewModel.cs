@@ -8,6 +8,7 @@ using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Presets.Helper;
 using AnnoDesigner.Core.Presets.Models;
 using AnnoDesigner.Core.Services;
+using AnnoDesigner.Helper;
 using AnnoDesigner.Models;
 using AnnoDesigner.Undo.Operations;
 using NLog;

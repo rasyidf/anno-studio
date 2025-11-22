@@ -28,6 +28,7 @@ using AnnoDesigner.Core.Presets.Helper;
 using AnnoDesigner.Core.Presets.Models;
 using AnnoDesigner.Core.Services;
 using AnnoDesigner.CustomEventArgs;
+using AnnoDesigner.Extensions;
 using AnnoDesigner.Helper;
 using AnnoDesigner.Localization;
 using AnnoDesigner.Models;
@@ -189,27 +190,27 @@ namespace AnnoDesigner.ViewModels
             [
                 new SupportedLanguage("English")
                 {
-                    FlagPath = "Flags/United Kingdom.png"
+                    FlagPath = "Assets/Flags/United Kingdom.png"
                 },
                 new SupportedLanguage("Deutsch")
                 {
-                    FlagPath = "Flags/Germany.png"
+                    FlagPath = "Assets/Flags/Germany.png"
                 },
                 new SupportedLanguage("Français")
                 {
-                    FlagPath = "Flags/France.png"
+                    FlagPath = "Assets/Flags/France.png"
                 },
                 new SupportedLanguage("Polski")
                 {
-                    FlagPath = "Flags/Poland.png"
+                    FlagPath = "Assets/Flags/Poland.png"
                 },
                 new SupportedLanguage("Русский")
                 {
-                    FlagPath = "Flags/Russia.png"
+                    FlagPath = "Assets/Flags/Russia.png"
                 },
                 new SupportedLanguage("Español")
                 {
-                    FlagPath = "Flags/Spain.png"
+                    FlagPath = "Assets/Flags/Spain.png"
                 },
             ];
             //Languages.Add(new SupportedLanguage("Italiano"));
@@ -763,7 +764,7 @@ namespace AnnoDesigner.ViewModels
         /// <summary>
         /// Loads a new layout from file.
         /// </summary>
-        public void OpenFile(string filePath, bool forceLoad = false)
+        public async Task OpenFile(string filePath, bool forceLoad = false)
         {
             try
             {
@@ -783,11 +784,11 @@ namespace AnnoDesigner.ViewModels
             {
                 logger.Warn(layoutEx, "Version of layout file is not supported.");
 
-                if (_messageBoxService.ShowQuestion(
+                if (await _messageBoxService.ShowQuestion(
                         _localizationHelper.GetLocalization("FileVersionUnsupportedMessage"),
                         _localizationHelper.GetLocalization("FileVersionUnsupportedTitle")))
                 {
-                    OpenFile(filePath, true);
+                    await OpenFile(filePath, true);
                 }
             }
             catch (Exception ex)
@@ -1017,6 +1018,8 @@ namespace AnnoDesigner.ViewModels
             set { _ = UpdateProperty(ref _languages, value); }
         }
 
+        public SupportedLanguage SelectedLanguage => Languages?.FirstOrDefault(l => l.IsSelected);
+
         private void InitLanguageMenu(string selectedLanguage)
         {
             //unselect all other languages
@@ -1024,6 +1027,8 @@ namespace AnnoDesigner.ViewModels
             {
                 curLanguage.IsSelected = string.Equals(curLanguage.Name, selectedLanguage, StringComparison.OrdinalIgnoreCase);
             }
+
+            OnPropertyChanged(nameof(SelectedLanguage));
         }
 
         public ObservableCollection<IconImage> AvailableIcons
@@ -1223,9 +1228,9 @@ namespace AnnoDesigner.ViewModels
 
         public ICommand LoadLayoutFromJsonCommand { get; private set; }
 
-        private void ExecuteLoadLayoutFromJson(object param)
+        private async void ExecuteLoadLayoutFromJson(object param)
         {
-            if (!AnnoCanvas.CheckUnsavedChanges())
+            if (!await AnnoCanvas.CheckUnsavedChanges())
             {
                 return;
             }
@@ -1233,10 +1238,10 @@ namespace AnnoDesigner.ViewModels
             var input = InputWindow.Prompt(this, _localizationHelper.GetLocalization("LoadLayoutMessage"),
                 _localizationHelper.GetLocalization("LoadLayoutHeader"));
 
-            ExecuteLoadLayoutFromJsonSub(input, false);
+            await ExecuteLoadLayoutFromJsonSub(input, false);
         }
 
-        private void ExecuteLoadLayoutFromJsonSub(string jsonString, bool forceLoad = false)
+        private async Task ExecuteLoadLayoutFromJsonSub(string jsonString, bool forceLoad = false)
         {
             try
             {
@@ -1265,11 +1270,11 @@ namespace AnnoDesigner.ViewModels
             {
                 logger.Warn(layoutEx, "Version of layout does not match.");
 
-                if (_messageBoxService.ShowQuestion(
+                if (await _messageBoxService.ShowQuestion(
                         _localizationHelper.GetLocalization("FileVersionMismatchMessage"),
                         _localizationHelper.GetLocalization("FileVersionMismatchTitle")))
                 {
-                    ExecuteLoadLayoutFromJsonSub(jsonString, true);
+                    await ExecuteLoadLayoutFromJsonSub(jsonString, true);
                 }
             }
             catch (Exception ex)
@@ -1704,7 +1709,7 @@ namespace AnnoDesigner.ViewModels
 
         public ICommand OpenRecentFileCommand { get; private set; }
 
-        private void ExecuteOpenRecentFile(object param)
+        private async void ExecuteOpenRecentFile(object param)
         {
             if (param is not RecentFileItem recentFile)
             {
@@ -1713,12 +1718,12 @@ namespace AnnoDesigner.ViewModels
 
             if (_fileSystem.File.Exists(recentFile.Path))
             {
-                if (!AnnoCanvas.CheckUnsavedChanges())
+                if (!await AnnoCanvas.CheckUnsavedChanges())
                 {
                     return;
                 }
 
-                OpenFile(recentFile.Path);
+                await OpenFile(recentFile.Path);
 
                 _recentFilesHelper.AddFile(new RecentFile(recentFile.Path, DateTime.UtcNow));
             }

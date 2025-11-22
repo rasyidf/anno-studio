@@ -35,7 +35,7 @@ namespace AnnoDesigner.CommandLine
             };
             root.SetHandler(() => parsedArgs = new EmptyArgs());
 
-            _ = root.Invoke(arguments.ToArray(), _console);
+            _ = root.Invoke([.. arguments], _console);
 
             return parsedArgs;
         }
