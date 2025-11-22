@@ -21,6 +21,7 @@ using AnnoDesigner.Helper;
 using AnnoDesigner.Models;
 using AnnoDesigner.Services;
 using AnnoDesigner.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using NLog.Targets;
 
@@ -40,6 +41,7 @@ namespace AnnoDesigner
         private static readonly IFileSystem _fileSystem;
         private static readonly IArgumentParser _argumentParser;
         private static readonly IConsole _console;
+        private static readonly IServiceProvider _serviceProvider;
 
         public new MainWindow MainWindow { get => base.MainWindow as MainWindow; set => base.MainWindow = value; }
         static App()
@@ -61,15 +63,33 @@ namespace AnnoDesigner
             {
                 // ignore any logging setup errors here; LogManager.Configuration may still be null
             }
+
             _commons = Commons.Instance;
             _appSettings = AppSettings.Instance;
-            _messageBoxService = new MessageBoxService();
             Localization.Localization.Init(_commons);
-            _localizationHelper = Localization.Localization.Instance;
-            _updateHelper = new UpdateHelper(ApplicationPath, _appSettings, _messageBoxService, _localizationHelper);
-            _fileSystem = new FileSystem();
-            _console = new ConsoleManager.LazyConsole();
-            _argumentParser = new ArgumentParser(_console, _fileSystem);
+
+            _serviceProvider = new ServiceCollection()
+                .AddSingleton<ICommons>(_commons)
+                .AddSingleton<IAppSettings>(_appSettings)
+                .AddTransient<IMessageBoxService, MessageBoxService>()
+                .AddSingleton<ILocalizationHelper>(AnnoDesigner.Localization.Localization.Instance)
+                .AddTransient<IUpdateHelper>(sp => new UpdateHelper(sp.GetRequiredService<IFileSystem>().Path
+                                                                      .GetDirectoryName(Assembly.GetEntryAssembly().Location),
+                                                                       sp.GetRequiredService<IAppSettings>(),
+                                                                       sp.GetRequiredService<IMessageBoxService>(),
+                                                                       sp.GetRequiredService<ILocalizationHelper>()))
+                .AddTransient<IFileSystem, FileSystem>()
+                .AddTransient<IConsole, ConsoleManager.LazyConsole>()
+                .AddTransient<IArgumentParser, ArgumentParser>()
+                .AddTransient<ITreeLocalizationLoader, TreeLocalizationLoader>()
+                .BuildServiceProvider();
+
+            _messageBoxService = _serviceProvider.GetRequiredService<IMessageBoxService>();
+            _localizationHelper = _serviceProvider.GetRequiredService<ILocalizationHelper>();
+            _updateHelper = _serviceProvider.GetRequiredService<IUpdateHelper>();
+            _fileSystem = _serviceProvider.GetRequiredService<IFileSystem>();
+            _console = _serviceProvider.GetRequiredService<IConsole>();
+            _argumentParser = _serviceProvider.GetRequiredService<IArgumentParser>();
         }
         public App()
         {
@@ -223,7 +243,7 @@ namespace AnnoDesigner
             var recentFilesSerializer = new RecentFilesAppSettingsSerializer(_appSettings);
 
             IRecentFilesHelper recentFilesHelper = new RecentFilesHelper(recentFilesSerializer, _fileSystem, _appSettings.MaxRecentFiles);
-            ITreeLocalizationLoader treeLocalizationLoader = new TreeLocalizationLoader(_fileSystem);
+            ITreeLocalizationLoader treeLocalizationLoader = _serviceProvider.GetRequiredService<ITreeLocalizationLoader>();
 
             var mainVM = new MainViewModel(_commons, _appSettings, recentFilesHelper, _messageBoxService, _updateHelper, _localizationHelper, _fileSystem, treeLocalizationLoader: treeLocalizationLoader);
             MainViewModel.UpdateRegisteredExtension();
