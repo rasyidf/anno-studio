@@ -1241,32 +1241,32 @@ namespace PresetParser
                     {
                         foreach (var Language in Languages)
                         {
-                            b.Localization[Languages[languageCount]] = "(1) " + b.Localization[Languages[languageCount]]; break;
                             languageCount++;
+                            b.Localization[Languages[languageCount]] = "(1) " + b.Localization[Languages[languageCount]]; break;
                         }
                     }
                     if (b.Guid is 10013 or 10076 or 10209)
                     {
                         foreach (var Language in Languages)
                         {
-                            b.Localization[Languages[languageCount]] = "(2) " + b.Localization[Languages[languageCount]]; break;
                             languageCount++;
+                            b.Localization[Languages[languageCount]] = "(2) " + b.Localization[Languages[languageCount]]; break;
                         }
                     }
                     if (b.Guid is 10119 or 10116 or 40000006)
                     {
                         foreach (var Language in Languages)
                         {
-                            b.Localization[Languages[languageCount]] = "(3) " + b.Localization[Languages[languageCount]]; break;
                             languageCount++;
+                            b.Localization[Languages[languageCount]] = "(3) " + b.Localization[Languages[languageCount]]; break;
                         }
                     }
                     if (b.Guid is 10117 or 10118)
                     {
                         foreach (var Language in Languages)
                         {
-                            b.Localization[Languages[languageCount]] = "(4) " + b.Localization[Languages[languageCount]]; break;
                             languageCount++;
+                            b.Localization[Languages[languageCount]] = "(4) " + b.Localization[Languages[languageCount]]; break;
                         }
                     }
                 }

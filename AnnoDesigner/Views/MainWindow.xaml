@@ -7,6 +7,7 @@
     xmlns:converters="clr-namespace:AnnoDesigner.Converters"
     xmlns:coreConverters="clr-namespace:AnnoDesigner.Core.Converters;assembly=AnnoDesigner.Core"
     xmlns:coreModels="clr-namespace:AnnoDesigner.Core.Models;assembly=AnnoDesigner.Core"
+    xmlns:cv2="clr-namespace:AnnoDesigner.Controls.Canvas"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:l="clr-namespace:AnnoDesigner.Localization"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -113,17 +114,18 @@
                         </LayoutAnchorablePane>
 
                         <LayoutDocumentPane>
+
                             <LayoutDocument
-                                Title="{Binding MainWindowTitle, FallbackValue=Designer}"
+                                Title="{Binding MainWindowTitle, FallbackValue=Designer V2}"
                                 CanClose="False"
                                 CanFloat="False"
-                                ContentId="MainDocument">
+                                ContentId="MainDocument2">
                                 <ScrollViewer
                                     CanContentScroll="True"
                                     Focusable="False"
                                     HorizontalScrollBarVisibility="{Binding ShowScrollbars}"
                                     VerticalScrollBarVisibility="{Binding ShowScrollbars}">
-                                    <my:AnnoCanvas x:Name="annoCanvas" />
+                                    <cv2:AnnoCanvas2 x:Name="annoCanvas" />
                                 </ScrollViewer>
                             </LayoutDocument>
                         </LayoutDocumentPane>

@@ -19,9 +19,9 @@ namespace AnnoDesigner.Tests
         private static readonly RelayCommand emptyCommand = new(emptyAction);
 
         /// <summary>
-        /// Returns a <see cref="HotkeyCommandManager"/> instance, a <see cref="string"/> for an id, and a <see cref="PolyBinding{T}"/>.
+        /// Returns a <see cref="HotkeyCommandManager"/> instance, a <see cref="string"/> for an id, and a <see href="PolyBinding{T}"/>.
         /// </summary>
-        /// <param name="addBinding">Set to true to add the binding to the <see cref="HotkeyCommandManager{T}"/> instance</param>
+        /// <param name="addBinding">Set to true to add the binding to the <see href="HotkeyCommandManager{T}"/> instance</param>
         /// <returns></returns>
         private static (HotkeyCommandManager, string, InputBinding) GetDefaultSetup(bool addBinding)
         {

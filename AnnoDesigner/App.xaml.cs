@@ -31,8 +31,16 @@ namespace AnnoDesigner
 {
     public partial class App : Application
     {
+        /// <summary>
+        /// Gets the current <see cref="App"/> instance in use
+        /// </summary>
+        public new static App Current => (App)Application.Current;
 
-        private IServiceProvider _serviceProvider;
+        /// <summary>
+        /// Gets the <see cref="IServiceProvider"/> instance to resolve application services.
+        /// </summary>
+        public IServiceProvider Services { get; } 
+
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private const string AppMutexName = "AnnoDesigner_SingleInstance_Mutex";
         private Mutex _appMutex;
@@ -47,7 +55,11 @@ namespace AnnoDesigner
 
         public App()
         {
-            // Keep lightweight event hooks here
+
+            Services = ConfigureServices();
+
+            this.InitializeComponent();
+
             AppDomain.CurrentDomain.UnhandledException += (s, e) => LogUnhandledException(e.ExceptionObject as Exception, "AppDomain.CurrentDomain.UnhandledException");
 
             DispatcherUnhandledException += (s, e) => LogUnhandledException(e.Exception, "Application.Current.DispatcherUnhandledException");
@@ -81,17 +93,16 @@ namespace AnnoDesigner
                 return;
             }
 
-            ConfigureServices();
 
             base.OnStartup(e);
 
             bool isNewInstance;
             _appMutex = new Mutex(true, AppMutexName, out isNewInstance);
 
-            var appSettings = _serviceProvider.GetRequiredService<IAppSettings>();
-            var updateHelper = _serviceProvider.GetRequiredService<IUpdateHelper>();
-            var messageBoxService = _serviceProvider.GetRequiredService<IMessageBoxService>();
-            var fileSystem = _serviceProvider.GetRequiredService<IFileSystem>();
+            var appSettings = Services.GetRequiredService<IAppSettings>();
+            var updateHelper = Services.GetRequiredService<IUpdateHelper>();
+            var messageBoxService = Services.GetRequiredService<IMessageBoxService>();
+            var fileSystem = Services.GetRequiredService<IFileSystem>();
 
             try
             {
@@ -121,13 +132,13 @@ namespace AnnoDesigner
                 await updateHelper.ReplaceUpdatedPresetsFilesAsync();
             }
              
-            var commons = _serviceProvider.GetRequiredService<ICommons>();
+            var commons = Services.GetRequiredService<ICommons>();
 
             MainViewModel.UpdateRegisteredExtension();
 
-            MainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+            MainWindow = Services.GetRequiredService<MainWindow>();
 
-            var mainVM = _serviceProvider.GetRequiredService<MainViewModel>();
+            var mainVM = Services.GetRequiredService<MainViewModel>();
             MainWindow.DataContext = mainVM;
 
             // Language Setup
@@ -172,13 +183,13 @@ namespace AnnoDesigner
             }
         }
 
-        private void ConfigureServices()
+        private IServiceProvider ConfigureServices()
         {
             var commons = Commons.Instance;
             var appSettings = AppSettings.Instance;
-            Localization.Localization.Init(commons);
+            Localization.Localization.Init(commons);  
 
-            _serviceProvider = new ServiceCollection() 
+            var _services = new ServiceCollection() 
                 .AddSingleton<ICommons>(commons)
                 .AddSingleton<IAppSettings>(appSettings)
                 .AddTransient<IMessageBoxService, MessageBoxService>()
@@ -192,6 +203,17 @@ namespace AnnoDesigner
                     sp.GetRequiredService<IAppSettings>(),
                     sp.GetRequiredService<IMessageBoxService>(),
                     sp.GetRequiredService<ILocalizationHelper>()))
+                // canvas file services
+                .AddTransient<Controls.Canvas.Services.Contracts.IFileDialogService, Controls.Canvas.Services.FileDialogService>()
+                // factory that produces an ILayoutFileService for an IUndoManager. AnnoCanvas has its own UndoManager
+                // so we register a factory that will be used by the control to create a per-canvas LayoutFileService wired
+                // with the app-wide IMessageBoxService and ILocalizationHelper.
+                .AddTransient<Func<Services.Undo.IUndoManager, Controls.Canvas.Services.ILayoutFileService>>(sp =>
+                    undo => new Controls.Canvas.Services.LayoutFileService(
+                        undo,
+                        sp.GetRequiredService<IMessageBoxService>(),
+                        sp.GetRequiredService<ILocalizationHelper>(),
+                        sp.GetService<Controls.Canvas.Services.Contracts.IFileDialogService>()))
                  
                 .AddTransient<RecentFilesAppSettingsSerializer>()
                  
@@ -207,6 +229,7 @@ namespace AnnoDesigner
                 .AddSingleton<MainWindow>()
 
                 .BuildServiceProvider();
+            return _services;
         }
 
         private void HandleConfigCorruption(ConfigurationErrorsException ex, IMessageBoxService msg, IFileSystem fs, IAppSettings settings)

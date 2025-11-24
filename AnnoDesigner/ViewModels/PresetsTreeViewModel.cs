@@ -502,6 +502,8 @@ namespace AnnoDesigner.ViewModels
                     curItem.IsExpanded = !string.IsNullOrWhiteSpace(FilterText);
                 }
             }
+
+            FilteredItems.Refresh();
         }
 
         private bool Filter(GenericTreeItem curItem)

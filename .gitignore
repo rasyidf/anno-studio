@@ -270,3 +270,4 @@ __pycache__/
 # `dotnet run` does not set the working directory of the application to AnnoDesigner/bin/[Debug|Release], 
 # instead it sets the working directory to the root of the csproj file
 AnnoDesigner/logs/
+/AnnoDesigner.Core/Layout/Models/ILayoutModelService.cs

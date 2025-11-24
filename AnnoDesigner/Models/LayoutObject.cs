@@ -85,6 +85,9 @@ namespace AnnoDesigner.Models
             }
         }
 
+        public IBrushCache BrushCache => _brushCache;
+        public IPenCache PenCache => _penCache;
+
         public Color TransparentColor
         {
             get

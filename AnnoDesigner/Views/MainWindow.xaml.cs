@@ -44,15 +44,11 @@ namespace AnnoDesigner
             _mainViewModel = DataContext;
             _mainViewModel.AnnoCanvas = annoCanvas;
             _mainViewModel.AnnoCanvas.RegisterHotkeys(_mainViewModel.HotkeyCommandManager);
-
-            _mainViewModel.ShowStatisticsChanged += MainViewModel_ShowStatisticsChanged;
-
+              
             App.DpiScale = VisualTreeHelper.GetDpi(this);
 
             DpiChanged += MainWindow_DpiChanged;
-
-            ToggleStatisticsView(_mainViewModel.StatisticsViewModel.IsVisible);
-
+             
             _mainViewModel.LoadSettings();
 
             _mainViewModel.LoadAvailableIcons();
@@ -86,7 +82,7 @@ namespace AnnoDesigner
             // load file given by argument
             if (App.StartupArguments is OpenArgs startupArgs && !string.IsNullOrEmpty(startupArgs.FilePath))
             {
-                _mainViewModel.OpenFile(startupArgs.FilePath);
+                using var _ = _mainViewModel.OpenFile(startupArgs.FilePath);
             }
             // export layout to image
             else if (App.StartupArguments is ExportArgs exportArgs && !string.IsNullOrEmpty(exportArgs.LayoutFilePath) && !string.IsNullOrEmpty(exportArgs.ExportedImageFilePath))
@@ -113,12 +109,7 @@ namespace AnnoDesigner
                 Close();
             }
         }
-
-        private void MainViewModel_ShowStatisticsChanged(object sender, EventArgs e)
-        {
-            ToggleStatisticsView(_mainViewModel.StatisticsViewModel.IsVisible);
-        }
-
+         
         #endregion
 
         #region UI events
@@ -127,17 +118,7 @@ namespace AnnoDesigner
         {
             App.DpiScale = e.NewDpi;
         }
-
-        private void ToggleStatisticsView(bool showStatisticsView)
-        {
-            //colStatisticsView.MinWidth = showStatisticsView ? 100 : 0;
-            //colStatisticsView.Width = showStatisticsView ? GridLength.Auto : new GridLength(0);
-
-            statisticsView.Visibility = showStatisticsView ? Visibility.Visible : Visibility.Collapsed;
-            statisticsView.MinWidth = showStatisticsView ? 100 : 0;
-
-            //splitterStatisticsView.Visibility = showStatisticsView ? Visibility.Visible : Visibility.Collapsed;
-        }
+  
 
         #endregion
 

@@ -266,6 +266,8 @@ namespace AnnoDesigner.ViewModels
 
                 RepopulateTreeView();
 
+                PopulateSuggestions();
+
                 BuildingSettingsViewModel.UpdateLanguageBuildingInfluenceType();
 
                 //update settings
@@ -702,6 +704,8 @@ namespace AnnoDesigner.ViewModels
             PreferencesUpdateViewModel.TreeLocalizationVersionValue = _treeLocalizationContainer.Version;
 
             PresetsTreeViewModel.LoadItems(presets);
+
+            PopulateSuggestions();
 
             RestoreSearchAndFilter();
         }
@@ -1714,6 +1718,36 @@ namespace AnnoDesigner.ViewModels
                 _messageBoxService.ShowWarning(Application.Current.MainWindow,
                     _localizationHelper.GetLocalization("FileNotFound"),
                     _localizationHelper.GetLocalization("Warning"));
+            }
+        }
+
+        private void PopulateSuggestions()
+        {
+            PresetsTreeSearchViewModel.SuggestionsList.Clear();
+
+            var suggestions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var item in PresetsTreeViewModel.Items)
+            {
+                CollectBuildingNames(item, suggestions);
+            }
+
+            foreach (var suggestion in suggestions.OrderBy(s => s))
+            {
+                PresetsTreeSearchViewModel.SuggestionsList.Add(suggestion);
+            }
+        }
+
+        private void CollectBuildingNames(Models.PresetsTree.GenericTreeItem item, HashSet<string> suggestions)
+        {
+            if (item.AnnoObject != null)
+            {
+                suggestions.Add(item.Header);
+            }
+
+            foreach (var child in item.Children)
+            {
+                CollectBuildingNames(child, suggestions);
             }
         }
 

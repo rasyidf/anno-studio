@@ -98,14 +98,14 @@
                             IsEnabled="True"
                             Minimum="1"
                             TabIndex="0"
-                            Value="{Binding BuildingSettingsViewModel.BuildingWidth, FallbackValue=4}" />
+                            Value="{Binding BuildingSettingsViewModel.BuildingWidth, FallbackValue=4}" AcceptsExpression="True" Maximum="20000" SpinButtonPlacementMode="Compact" />
                         <Label VerticalAlignment="Center" Content="x" />
                         <ui:NumberBox
                             Width="120"
                             IsEnabled="True"
                             Minimum="1"
                             TabIndex="1"
-                            Value="{Binding BuildingSettingsViewModel.BuildingHeight, FallbackValue=4, TargetNullValue=4}" />
+                            Value="{Binding BuildingSettingsViewModel.BuildingHeight, FallbackValue=4, TargetNullValue=4}" Maximum="20000" PlaceholderEnabled="False" SpinButtonPlacementMode="Compact" AcceptsExpression="True" />
                     </StackPanel>
 
                     <!--  Color Picker  -->
@@ -347,7 +347,7 @@
                         Minimum="0"
                         TabIndex="8"
                         Visibility="{Binding BuildingSettingsViewModel.IsBuildingInfluenceInputRadiusVisible, Converter={StaticResource converterBoolToVisibilityCollapsed}}"
-                        Value="{Binding BuildingSettingsViewModel.BuildingRadius, FallbackValue=0}" />
+                        Value="{Binding BuildingSettingsViewModel.BuildingRadius, FallbackValue=0}" AcceptsExpression="False" SpinButtonPlacementMode="Compact" />
 
                     <!--  Distance  -->
                     <Label
@@ -366,7 +366,7 @@
                         MaxDecimalPlaces="2"
                         TabIndex="9"
                         Visibility="{Binding BuildingSettingsViewModel.IsBuildingInfluenceInputRangeVisible, Converter={StaticResource converterBoolToVisibilityCollapsed}}"
-                        Value="{Binding BuildingSettingsViewModel.BuildingInfluenceRange, FallbackValue=0}" />
+                        Value="{Binding BuildingSettingsViewModel.BuildingInfluenceRange, FallbackValue=0}" AcceptsExpression="False" SpinButtonPlacementMode="Compact" />
 
                     <!--  PavedStreet  -->
                     <Label

@@ -27,8 +27,8 @@ namespace AnnoDesigner.ViewModels
             HasFocus = false;
             SearchText = string.Empty;
             GameVersionFilters = [];
+            SuggestionsList = new ObservableCollection<string>();
             InitGameVersionFilters();
-            SubscribeToFilterChanges();
         }
 
         private void InitGameVersionFilters()
@@ -188,15 +188,6 @@ namespace AnnoDesigner.ViewModels
 
         #endregion
 
-        private IDisposable _filterSubscription;
-
-
-        private void SubscribeToFilterChanges()
-        {
-            // Clear any old subscription (important if filters list is reset)
-            _filterSubscription?.Dispose();
-
-        }
         private ObservableCollection<string> _suggestionsList;
 
         public ObservableCollection<string> SuggestionsList
