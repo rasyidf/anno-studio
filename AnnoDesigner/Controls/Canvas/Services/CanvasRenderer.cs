@@ -408,6 +408,7 @@ namespace AnnoDesigner.Controls.Canvas.Services
 
         /// <summary>
         /// 
+        /// </summary>
         public void DrawObjectList(DrawingContext drawingContext, List<LayoutObject> objects, bool useTransparency, int gridSize, System.Windows.Media.Pen linePen, bool renderHarborBlockedArea, bool renderIcon, bool renderLabel, Dictionary<string, IconImage> icons, Typeface typeface, double pixelsPerDip, bool debugModeEnabled, bool debugShowObjectPositions, System.Windows.Media.Brush debugBrushLight)
         {
             if (objects == null || objects.Count == 0)

@@ -6,7 +6,7 @@ namespace PresetParser.Anno1800
 {
     /// <summary>
     /// This process will set the right Template name to the Enbesa Park Ornamets the green color, all other no listed will be standard yellow/gold color
-
+    /// </summary>
     public static class MapToTemplateName1800
     {
         private static readonly List<string> ChangeTemplateNameToOrnamentalBuilding_Park_1800 = [ "AfriFlowerBed_Single_Tree", "AfriFlowerBed_straight_noTree", "AfriFlowerBed_T", "AfriFlowerBed_Corner", "AfriFlowerBed_X",
