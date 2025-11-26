@@ -982,7 +982,7 @@ namespace AnnoDesigner.Controls.Canvas
             }
 
             HandleMouse(e);
-            HotkeyCommandManager.HandleCommand(e);
+            HotkeyCommandManager?.HandleCommand(e);
             _mouseDragStart = _mousePosition;
 
             // Let the InputInteractionService make a high-level decision; the control will apply the actual changes
@@ -1384,7 +1384,7 @@ namespace AnnoDesigner.Controls.Canvas
             //Used here instead of adding to the InputBindingsCollection as we don't want run `Binding.Matches` on *every* event.
             //When an InputBinding is added to the InputBindingsCollection, the  `Matches` method is fired for every event - KeyUp,
             //KeyDown, MouseUp, MouseMove, MouseWheel etc.
-            HotkeyCommandManager.HandleCommand(e);
+            HotkeyCommandManager?.HandleCommand(e);
 
             if (e.Handled)
             {
@@ -1714,7 +1714,7 @@ namespace AnnoDesigner.Controls.Canvas
         /// <summary>
         /// Holds event handlers for command executions.
         /// </summary>
-        internal static readonly Dictionary<ICommand, Action<AnnoCanvas>> CommandExecuteMappings;
+        internal static readonly Dictionary<ICommand, Action<AnnoCanvas2>> CommandExecuteMappings;
 
         public HotkeyCommandManager HotkeyCommandManager { get; set; }
         /// <summary>
@@ -1723,7 +1723,7 @@ namespace AnnoDesigner.Controls.Canvas
         static AnnoCanvas2()
         {
             // create event handler mapping
-            CommandExecuteMappings = new Dictionary<ICommand, Action<AnnoCanvas>>
+            CommandExecuteMappings = new Dictionary<ICommand, Action<AnnoCanvas2>>
             {
                 { ApplicationCommands.New, async _ => await _.NewFile() },
                 { ApplicationCommands.Open, async _ => await _.OpenFile() },
@@ -1734,7 +1734,7 @@ namespace AnnoDesigner.Controls.Canvas
             // register event handlers for the specified commands
             foreach (var action in CommandExecuteMappings)
             {
-                CommandManager.RegisterClassCommandBinding(typeof(AnnoCanvas), new CommandBinding(action.Key, ExecuteCommand));
+                CommandManager.RegisterClassCommandBinding(typeof(AnnoCanvas2), new CommandBinding(action.Key, ExecuteCommand));
             }
         }
 
@@ -1768,7 +1768,7 @@ namespace AnnoDesigner.Controls.Canvas
         /// <param name="e"></param>
         internal static void ExecuteCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            if (sender is AnnoCanvas canvas && CommandExecuteMappings.TryGetValue(e.Command, out var value))
+            if (sender is AnnoCanvas2 canvas && CommandExecuteMappings.TryGetValue(e.Command, out var value))
             {
                 value.Invoke(canvas);
                 e.Handled = true;

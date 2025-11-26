@@ -6,8 +6,8 @@ namespace PresetParser.Anno1800
 {
     /// <summary>
     /// in this file are made the following lists
-    /// ChangeOrnamentTo<1>_1800 
-    /// <1> can be : ParkPaths
+    /// ChangeOrnamentTo[1]_1800 
+    /// [1] can be : ParkPaths
     ///              ParkFences
     ///              ParkVegetation
     ///              ParkFountains
