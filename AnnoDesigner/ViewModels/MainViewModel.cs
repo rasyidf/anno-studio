@@ -15,6 +15,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using AnnoDesigner.Controls.Canvas;
 using AnnoDesigner.Core;
 using AnnoDesigner.Core.DataStructures;
 using AnnoDesigner.Core.Extensions;
@@ -1447,7 +1448,7 @@ namespace AnnoDesigner.ViewModels
             var quadTree = new QuadTree<LayoutObject>((Rect)statistics);
             quadTree.AddRange(placedObjects.Select(o => new LayoutObject(o, _coordinateHelper, _brushCache, _penCache)));
             // initialize output canvas
-            var target = new AnnoCanvas(AnnoCanvas.BuildingPresets, icons, _appSettings, _coordinateHelper, _brushCache, _penCache, _messageBoxService)
+            var target = new AnnoCanvas2(AnnoCanvas.BuildingPresets, icons, _appSettings, _coordinateHelper, _brushCache, _penCache, _messageBoxService)
             {
                 PlacedObjects = quadTree,
                 RenderGrid = renderSettings.RenderGrid,

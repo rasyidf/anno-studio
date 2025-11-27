@@ -1,0 +1,71 @@
+<UserControl
+    x:Class="AnnoStudio.Views.ToolbarView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:AnnoStudio.ViewModels"
+    d:DesignHeight="40"
+    d:DesignWidth="800"
+    x:DataType="vm:ToolbarViewModel"
+    mc:Ignorable="d">
+
+    <Design.DataContext>
+        <vm:ToolbarViewModel />
+    </Design.DataContext>
+
+    <Border
+        Background="{DynamicResource SystemControlBackgroundAltMediumBrush}"
+        BorderBrush="{DynamicResource SystemControlBackgroundBaseLowBrush}"
+        BorderThickness="0,0,0,1"
+        Height="40"
+        Padding="6,3">
+        <StackPanel Orientation="Horizontal" Spacing="6">
+            <TextBlock
+                VerticalAlignment="Center"
+                FontSize="12"
+                FontWeight="SemiBold"
+                Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
+                Margin="0,0,4,0"
+                Text="Tools:" />
+
+            <ItemsControl ItemsSource="{Binding AvailableTools}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" Spacing="4" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ToolItemViewModel">
+                        <RadioButton
+                            MinWidth="70"
+                            Height="28"
+                            Padding="8,4"
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            GroupName="Tools"
+                            IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                            Command="{Binding $parent[UserControl].((vm:ToolbarViewModel)DataContext).SelectToolCommand}"
+                            CommandParameter="{Binding Tool}">
+                            <TextBlock
+                                FontSize="11"
+                                FontWeight="Medium"
+                                Text="{Binding Name}" />
+                        </RadioButton>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Separator
+                Margin="6,0"
+                Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"
+                Width="1" />
+
+            <TextBlock
+                VerticalAlignment="Center"
+                FontSize="11"
+                Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                Text="{Binding SelectedTool.Name, StringFormat='Selected: {0}'}" />
+        </StackPanel>
+    </Border>
+</UserControl>

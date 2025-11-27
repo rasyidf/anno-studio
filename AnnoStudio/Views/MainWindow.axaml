@@ -1,0 +1,61 @@
+<Window
+    x:Class="AnnoStudio.Views.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dock="using:Dock.Avalonia.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:AnnoStudio.ViewModels"
+    xmlns:views="using:AnnoStudio.Views"
+    Title="{Binding MainWindowTitle}"
+    d:DesignHeight="768"
+    d:DesignWidth="1024"
+    x:DataType="vm:MainWindowViewModel" 
+    Icon="/Assets/avalonia-logo.ico"
+    Width="1024"
+    Height="768"
+    mc:Ignorable="d">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <!--  Menu Bar  -->
+        <views:MenuControl Grid.Row="0" />
+
+        <!--  Main Content Area with Dock Control  -->
+        <dock:DockControl Grid.Row="1" Layout="{Binding Layout}" />
+
+        <!--  Status Bar  -->
+        <Border
+            Grid.Row="2"
+            Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"
+            BorderBrush="{DynamicResource SystemControlBackgroundBaseMediumBrush}"
+            BorderThickness="0,1,0,0"
+            Padding="10,5">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                <TextBlock 
+                    Grid.Column="0"
+                    Text="{Binding StatusMessage}" 
+                    VerticalAlignment="Center" />
+                <TextBlock 
+                    Grid.Column="1"
+                    Text="{Binding SelectedTool, StringFormat='Tool: {0}'}"
+                    Margin="20,0,0,0"
+                    VerticalAlignment="Center" />
+                <TextBlock 
+                    Grid.Column="2"
+                    Text="{Binding CursorPosition}"
+                    Margin="20,0,0,0"
+                    VerticalAlignment="Center" />
+                <TextBlock 
+                    Grid.Column="3"
+                    Text="{Binding CanvasSize, StringFormat='Canvas: {0}'}"
+                    Margin="20,0,0,0"
+                    VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+    </Grid>
+
+</Window>

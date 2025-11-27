@@ -1,0 +1,412 @@
+<Window
+    x:Class="AnnoStudio.Views.PlaygroundWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:AnnoStudio.ViewModels"
+    xmlns:canvas="using:AnnoStudio.EditorCanvas.Controls"
+    Title="Editor Canvas Playground"
+    Width="1200"
+    Height="800"
+    x:DataType="vm:PlaygroundViewModel"
+    mc:Ignorable="d">
+
+    <Design.DataContext>
+        <vm:PlaygroundViewModel />
+    </Design.DataContext>
+
+    <Grid RowDefinitions="Auto,*,Auto,Auto">
+        <!-- Toolbar -->
+        <Border
+            Grid.Row="0"
+            Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"
+            BorderBrush="{DynamicResource SystemControlBackgroundBaseMediumBrush}"
+            BorderThickness="0,0,0,1"
+            Padding="10,5">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock
+                    Text="Tools:"
+                    VerticalAlignment="Center"
+                    Margin="0,0,10,0" />
+                <ItemsControl ItemsSource="{Binding Tools}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="5" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button
+                                Content="{Binding Name}"
+                                Command="{Binding $parent[Window].DataContext.SelectToolCommand}"
+                                CommandParameter="{Binding}"
+                                MinWidth="80"
+                                Classes.selected="{Binding $parent[Window].DataContext.SelectedTool, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={Binding .}}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Separator />
+
+                <Button Content="Clear Canvas" Command="{Binding ClearCanvasCommand}" />
+                <Button Content="Undo" Command="{Binding UndoCommand}" />
+                <Button Content="Redo" Command="{Binding RedoCommand}" />
+
+                <Separator />
+
+                <TextBlock Text="Grid:" VerticalAlignment="Center" Margin="10,0,5,0" />
+                <CheckBox
+                    Content="Show"
+                    IsChecked="{Binding GridVisible}"
+                    VerticalAlignment="Center" />
+                <TextBlock Text="Size:" VerticalAlignment="Center" Margin="10,0,5,0" />
+                <NumericUpDown
+                    Value="{Binding GridSize}"
+                    Minimum="4"
+                    Maximum="64"
+                    Increment="4"
+                    Width="80"
+                    VerticalAlignment="Center" />
+
+                <Separator />
+
+                <TextBlock Text="Zoom:" VerticalAlignment="Center" Margin="10,0,5,0" />
+                <Button Content="-" Command="{Binding ZoomOutCommand}" Width="30" />
+                <TextBlock
+                    Text="{Binding ZoomLevel, StringFormat='{}{0:P0}'}"
+                    VerticalAlignment="Center"
+                    MinWidth="50"
+                    TextAlignment="Center" />
+                <Button Content="+" Command="{Binding ZoomInCommand}" Width="30" />
+                <Button Content="Reset" Command="{Binding ZoomResetCommand}" />
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto,300">
+            <!-- Canvas Area -->
+            <Border
+                Grid.Column="0"
+                Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                BorderBrush="{DynamicResource SystemControlBackgroundBaseMediumBrush}"
+                BorderThickness="0,0,1,0">
+                <canvas:EditorCanvas x:Name="PlaygroundCanvas" />
+            </Border>
+
+            <GridSplitter
+                Grid.Column="1"
+                Width="4"
+                ResizeDirection="Columns" />
+
+            <!-- Debug Panel -->
+            <Grid Grid.Column="2" RowDefinitions="Auto,*,Auto,200">
+                <!-- Tabbed Settings & Info -->
+                <TabControl Grid.Row="0" Grid.RowSpan="2">
+                    <!-- Objects Tab -->
+                    <TabItem Header="Objects">
+                        <Border
+                            Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                            Padding="10">
+                            <StackPanel Spacing="10">
+                                <!-- Selection Info -->
+                                <StackPanel Spacing="5">
+                                    <TextBlock Text="Selection Info" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding SelectionCount, StringFormat='Selected: {0} objects'}" />
+                                    <TextBlock Text="{Binding ObjectCount, StringFormat='Total objects: {0}'}" />
+                                </StackPanel>
+
+                                <Separator />
+
+                                <!-- Object List -->
+                                <StackPanel Spacing="5">
+                                    <TextBlock Text="Objects on Canvas" FontWeight="Bold" />
+                                    <ScrollViewer MaxHeight="400">
+                                        <ItemsControl ItemsSource="{Binding CanvasObjects}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border
+                                                        Padding="5"
+                                                        Margin="0,2"
+                                                        Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"
+                                                        CornerRadius="3">
+                                                        <TextBlock Text="{Binding Name}" />
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </TabItem>
+
+                    <!-- Grid Settings Tab -->
+                    <TabItem Header="Grid">
+                        <Border
+                            Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                            Padding="10">
+                            <StackPanel Spacing="15">
+                                <TextBlock Text="Grid Settings" FontWeight="Bold" FontSize="14" />
+
+                                <!-- Grid Visibility -->
+                                <StackPanel Spacing="5">
+                                    <TextBlock Text="Visibility" FontWeight="SemiBold" />
+                                    <CheckBox Content="Show Grid" IsChecked="{Binding GridVisible}" />
+                                </StackPanel>
+
+                                <!-- Grid Size -->
+                                <StackPanel Spacing="5">
+                                    <TextBlock Text="Grid Size" FontWeight="SemiBold" />
+                                    <NumericUpDown
+                                        Value="{Binding GridSize}"
+                                        Minimum="4"
+                                        Maximum="128"
+                                        Increment="4"
+                                        Width="320"
+                                        HorizontalAlignment="Left" />
+                                    <TextBlock
+                                        Text="{Binding GridSize, StringFormat='Size: {0} units'}"
+                                        FontSize="11"
+                                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                                </StackPanel>
+
+                                <!-- Grid Type -->
+                                <StackPanel Spacing="5">
+                                    <TextBlock Text="Grid Type" FontWeight="SemiBold" />
+                                    <ComboBox SelectedIndex="{Binding GridTypeIndex, Mode=TwoWay}" Width="150" HorizontalAlignment="Left">
+                                        <ComboBoxItem Content="Standard Grid" />
+                                        <ComboBoxItem Content="Dot Grid" />
+                                        <ComboBoxItem Content="Cross Grid" />
+                                    </ComboBox>
+                                </StackPanel>
+
+                                <!-- Grid Color & Opacity -->
+                                <StackPanel Spacing="5">
+                                    <TextBlock Text="Appearance" FontWeight="SemiBold" />
+                                    <StackPanel Spacing="8">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto">
+                                            <TextBlock
+                                                Grid.Row="0"
+                                                Grid.Column="0"
+                                                Text="Opacity:"
+                                                VerticalAlignment="Center"
+                                                Margin="0,0,10,0" />
+                                            <Slider
+                                                Grid.Row="0"
+                                                Grid.Column="1"
+                                                Minimum="0"
+                                                Maximum="1"
+                                                Value="{Binding GridOpacity, Mode=TwoWay}"
+                                                TickFrequency="0.05"
+                                                Width="150"
+                                                HorizontalAlignment="Left" />
+                                            <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding GridOpacity, StringFormat='{}{0:P0}'}" VerticalAlignment="Center" Margin="8,0,0,0" />
+
+                                            <TextBlock
+                                                Grid.Row="1"
+                                                Grid.Column="0"
+                                                Text="Minor width:"
+                                                VerticalAlignment="Center"
+                                                Margin="0,8,10,0" />
+                                            <NumericUpDown
+                                                Grid.Row="1"
+                                                Grid.Column="1"
+                                                Minimum="0.1"
+                                                Maximum="8"
+                                                Value="{Binding MinorGridThickness, Mode=TwoWay}"
+                                                Increment="0.1"
+                                                Width="120"
+                                                HorizontalAlignment="Left"
+                                                Margin="0,5,0,0" />
+                                            <TextBlock Grid.Row="1" Grid.Column="2" Text="" />
+
+                                            <TextBlock
+                                                Grid.Row="2"
+                                                Grid.Column="0"
+                                                Text="Major width:"
+                                                VerticalAlignment="Center"
+                                                Margin="0,8,10,0" />
+                                            <NumericUpDown
+                                                Grid.Row="2"
+                                                Grid.Column="1"
+                                                Minimum="0.1"
+                                                Maximum="12"
+                                                Value="{Binding MajorGridThickness, Mode=TwoWay}"
+                                                Increment="0.1"
+                                                Width="120"
+                                                HorizontalAlignment="Left"
+                                                Margin="0,5,0,0" />
+                                            <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" Spacing="4">
+                                                <TextBlock Text="Interval:" VerticalAlignment="Center" />
+                                                <NumericUpDown Value="{Binding MajorGridInterval, Mode=TwoWay}" Minimum="1" Maximum="64" Width="60" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <!-- Snap to Grid -->
+                                <StackPanel Spacing="5">
+                                    <TextBlock Text="Snapping" FontWeight="SemiBold" />
+                                    <CheckBox Content="Snap to Grid" IsChecked="{Binding SnapToGrid, Mode=TwoWay}" />
+                                    <TextBlock
+                                        Text="Objects will align to grid points when moved"
+                                        FontSize="11"
+                                        TextWrapping="Wrap"
+                                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}"
+                                        Margin="25,0,0,0" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </TabItem>
+
+                    <!-- Viewport Tab -->
+                    <TabItem Header="Viewport">
+                        <Border
+                            Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                            Padding="10">
+                            <StackPanel Spacing="15">
+                                <TextBlock Text="Viewport Settings" FontWeight="Bold" FontSize="14" />
+
+                                <!-- Zoom Controls -->
+                                <StackPanel Spacing="5">
+                                    <TextBlock Text="Zoom" FontWeight="SemiBold" />
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="{Binding ZoomLevel, StringFormat='Current: {0:P0}'}" />
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <Button Content="Zoom In" Command="{Binding ZoomInCommand}" Width="80" />
+                                            <Button Content="Zoom Out" Command="{Binding ZoomOutCommand}" Width="80" />
+                                            <Button Content="Reset" Command="{Binding ZoomResetCommand}" Width="80" />
+                                        </StackPanel>
+                                        <Button Content="Zoom to Fit" Command="{Binding ZoomToFitCommand}" Width="120" HorizontalAlignment="Left" />
+                                        <Button Content="Zoom to Selection" Command="{Binding ZoomToSelectionCommand}" Width="120" HorizontalAlignment="Left" />
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <Separator />
+
+                                <!-- Pan Settings -->
+                                <StackPanel Spacing="5">
+                                    <TextBlock Text="Pan Controls" FontWeight="SemiBold" />
+                                    <TextBlock
+                                        Text="• Middle mouse button: Pan&#x0a;• Ctrl + Left mouse: Pan&#x0a;• Arrow keys: Nudge view"
+                                        FontSize="11"
+                                        TextWrapping="Wrap"
+                                        Foreground="{DynamicResource SystemControlForegroundBaseMediumBrush}" />
+                                    <Button Content="Center View" Command="{Binding CenterViewCommand}" Width="120" HorizontalAlignment="Left" Margin="0,5,0,0" />
+                                </StackPanel>
+
+                                <Separator />
+
+                                <!-- Background -->
+                                <StackPanel Spacing="5">
+                                    <TextBlock Text="Background" FontWeight="SemiBold" />
+                                    <ComboBox SelectedIndex="0" Width="150" HorizontalAlignment="Left">
+                                        <ComboBoxItem Content="Default" />
+                                        <ComboBoxItem Content="Dark" />
+                                        <ComboBoxItem Content="Light" />
+                                        <ComboBoxItem Content="Checkerboard" />
+                                    </ComboBox>
+                                </StackPanel>
+
+                                <Separator />
+
+                                <!-- Debug / Settings -->
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Developer" FontWeight="SemiBold" />
+                                    <CheckBox Content="Show Debug Overlay" IsChecked="{Binding DebugOverlay}" />
+                                    <CheckBox Content="Show Origin Marker" IsChecked="{Binding ShowOrigin}" />
+                                    <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,5,0,0">
+                                        <Button Content="Save Settings" Command="{Binding SaveSettingsCommand}" Width="120" />
+                                        <Button Content="Load Settings" Command="{Binding LoadSettingsCommand}" Width="120" />
+                                    </StackPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </TabItem>
+                </TabControl>
+
+                <GridSplitter
+                    Grid.Row="2"
+                    Height="4"
+                    ResizeDirection="Rows" />
+
+                <!-- Debug Console -->
+                <Border
+                    Grid.Row="3"
+                    Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"
+                    BorderBrush="{DynamicResource SystemControlBackgroundBaseMediumBrush}"
+                    BorderThickness="0,1,0,0"
+                    Padding="10">
+                    <Grid RowDefinitions="Auto,*,Auto">
+                        <TextBlock
+                            Grid.Row="0"
+                            Text="Debug Console"
+                            FontWeight="Bold"
+                            Margin="0,0,0,5" />
+                        <ScrollViewer Grid.Row="1" MaxHeight="150">
+                            <TextBlock
+                                Text="{Binding DebugLog}"
+                                FontFamily="Consolas"
+                                FontSize="11"
+                                TextWrapping="Wrap" />
+                        </ScrollViewer>
+                        <Button
+                            Grid.Row="2"
+                            Content="Clear Log"
+                            Command="{Binding ClearLogCommand}"
+                            HorizontalAlignment="Right"
+                            Margin="0,5,0,0" />
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- Test Actions -->
+        <Border
+            Grid.Row="2"
+            Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"
+            BorderBrush="{DynamicResource SystemControlBackgroundBaseMediumBrush}"
+            BorderThickness="0,1,0,1"
+            Padding="10,5">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Text="Test Actions:" VerticalAlignment="Center" FontWeight="Bold" />
+                <Button Content="Add Test Rectangle" Command="{Binding AddTestRectangleCommand}" />
+                <Button Content="Add Test Circle" Command="{Binding AddTestCircleCommand}" />
+                <Button Content="Add Test Building" Command="{Binding AddTestBuildingCommand}" />
+                <Button Content="Test Selection" Command="{Binding TestSelectionCommand}" />
+                <Button Content="Test Keyboard Shortcuts" Command="{Binding TestKeyboardCommand}" />
+            </StackPanel>
+        </Border>
+
+        <!-- Status Bar -->
+        <Border
+            Grid.Row="3"
+            Background="{DynamicResource SystemControlBackgroundBaseLowBrush}"
+            BorderBrush="{DynamicResource SystemControlBackgroundBaseMediumBrush}"
+            BorderThickness="0,1,0,0"
+            Padding="10,5">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                <TextBlock
+                    Grid.Column="0"
+                    Text="{Binding StatusMessage}"
+                    VerticalAlignment="Center" />
+                <TextBlock
+                    Grid.Column="1"
+                    Text="{Binding SelectedTool.Name, StringFormat='Tool: {0}'}"
+                    Margin="20,0,0,0"
+                    VerticalAlignment="Center" />
+                <TextBlock
+                    Grid.Column="2"
+                    Text="{Binding CursorPosition}"
+                    Margin="20,0,0,0"
+                    VerticalAlignment="Center" />
+                <TextBlock
+                    Grid.Column="3"
+                    Text="{Binding CanvasSize, StringFormat='Canvas: {0}'}"
+                    Margin="20,0,0,0"
+                    VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
