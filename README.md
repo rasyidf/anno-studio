@@ -62,7 +62,7 @@ Anno Studio is detached and maintained independently to facilitate significant a
 
 Grab the latest stable release from the new repository:
 
-**[https://github.com/YOUR\_GITHUB\_USERNAME/anno-studio/releases/latest](https://www.google.com/search?q=https://github.com/YOUR_GITHUB_USERNAME/anno-studio/releases/latest)**
+**[https://github.com/rasyidf/anno-studio/releases/latest](https://www.google.com/search?q=https://github.com/rasyidf/anno-studio/releases/latest)**
 
 1.  Download the `.exe` installer or portable ZIP file.
 2.  Run the application and start building\!
