@@ -1,0 +1,22 @@
+<Application
+    x:Class="AnnoStudio.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dock="using:Dock.Avalonia.Controls"
+    xmlns:dockThemes="using:Dock.Avalonia.Themes.Fluent"
+    xmlns:local="using:AnnoStudio"
+    xmlns:sty="using:FluentAvalonia.Styling"
+    xmlns:views="using:AnnoStudio.Views"
+    RequestedThemeVariant="Light">
+    <!--  "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options.  -->
+
+    <Application.DataTemplates>
+        <local:DockViewLocator />
+        <local:ViewLocator />
+    </Application.DataTemplates>
+
+    <Application.Styles>
+        <sty:FluentAvaloniaTheme />
+        <dockThemes:DockFluentTheme />
+    </Application.Styles>
+</Application>
