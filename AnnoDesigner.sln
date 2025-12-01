@@ -11,6 +11,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		docs = docs/
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnnoDesigner.Core", "AnnoDesigner.Core\AnnoDesigner.Core.csproj", "{C73FBFF0-1A11-40FC-8F1F-29637699419A}"
 EndProject
@@ -21,8 +24,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresetParser.Tests", "Tests\PresetParser.Tests\PresetParser.Tests.csproj", "{D49B557D-320C-425E-8822-051AC5A1A26F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnnoDesigner.Tests", "Tests\AnnoDesigner.Tests\AnnoDesigner.Tests.csproj", "{809FDE16-4864-4CD2-83A5-75315E970BFD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnnoStudio", "AnnoStudio\AnnoStudio.csproj", "{C6593022-7649-407D-A2DA-AE57253C69FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -3,8 +3,10 @@ using System.Windows.Media;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Presets.Models;
 using AnnoDesigner.Core.Services;
+using AnnoDesigner.Controls.Canvas;
 using AnnoDesigner.Models;
 using AnnoDesigner.Models.Interface;
+using AnnoDesigner.Controls.Canvas.Services;
 using AnnoDesigner.Services.Undo;
 using Moq;
 using Xunit;
@@ -21,6 +23,8 @@ namespace AnnoDesigner.Tests
         private readonly ILocalizationHelper _localizationHelper;
         private readonly IUndoManager _undoManager;
         private readonly IClipboardService _clipboardService;
+
+        private readonly ILayoutFileService _layoutFileService;
 
         public AnnoCanvasTests()
         {
@@ -42,6 +46,7 @@ namespace AnnoDesigner.Tests
             _localizationHelper = new Mock<ILocalizationHelper>().Object;
             _undoManager = new Mock<IUndoManager>().Object;
             _clipboardService = new Mock<IClipboardService>().Object;
+            _layoutFileService = new Mock<ILayoutFileService>().Object;
         }
 
         #region helper methods
@@ -57,8 +62,8 @@ namespace AnnoDesigner.Tests
 
         private IAnnoCanvas GetCanvas()
         {
-            return new AnnoCanvas(new BuildingPresets(),
-                [],
+            return new AnnoCanvas2(new BuildingPresets(),
+                new System.Collections.Generic.Dictionary<string, AnnoDesigner.Core.Models.IconImage>(),
                 _appSettings,
                 _coordinateHelper,
                 _brushCache,
@@ -66,6 +71,7 @@ namespace AnnoDesigner.Tests
                 _messageBoxService,
                 _localizationHelper,
                 _undoManager,
+                um => _layoutFileService,
                 _clipboardService);
         }
 

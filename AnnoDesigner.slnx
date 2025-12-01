@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/AnnoDesigner.Core.Tests/AnnoDesigner.Core.Tests.csproj" />
+    <Project Path="Tests/AnnoDesigner.Tests/AnnoDesigner.Tests.csproj" />
+    <Project Path="Tests/PresetParser.Tests/PresetParser.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Tests/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="docs" />
+  </Folder>
+  <Project Path="AnnoDesigner.Core/AnnoDesigner.Core.csproj" />
+  <Project Path="AnnoDesigner/AnnoDesigner.csproj" />
+  <Project Path="PresetParser/PresetParser.csproj" />
+</Solution>
