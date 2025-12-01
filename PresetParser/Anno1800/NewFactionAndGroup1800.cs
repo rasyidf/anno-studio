@@ -6,14 +6,14 @@ namespace PresetParser.Anno1800
 {
     /// <summary>
     /// in this file are made the following lists
-    /// ChangeBuildingTo<1>_<2>_1800 
-    /// <1> can be : OW (All Worlds) - OW1 (New World - (1) Farmers) - OW2 (New World - (2) Workers) - OW3 (New World - (3) Artisans)
+    /// ChangeBuildingTo[1]_[2]_1800 
+    /// [1] can be : OW (All Worlds) - OW1 (New World - (1) Farmers) - OW2 (New World - (2) Workers) - OW3 (New World - (3) Artisans)
     ///              OW4 (New World - (4) Engineers  - OW5 (New World - (5) Investors) - OW6 (New World (13) Scholars)  
     ///              NW1 (Old World - (7) Jornaleros  - NW2 (Old World - (8) Obreros)
     ///              AT1 (Arctic - (10) Explorers)  - AT2 (Arctic - (11) Technicians)
     ///              AF1 (Africa - (14) Shepherds)  - AF2 (Africa - (15) Elders) 
     ///              Tou ((17) Tourists) - HL1 ((18) High Live)
-    /// <2> wil be the Group under <1>, like Production, Public, etc
+    /// [2] wil be the Group under [1], like Production, Public, etc
     ///
     /// Changed the mistake OW/NW (23-10-2020) it is as in game now OW = Old World and NW = New World
     /// 

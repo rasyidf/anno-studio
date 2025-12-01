@@ -270,7 +270,7 @@ namespace PresetParser
 
             if (annoVersion != "-ALL")
             {
-                ///Add a trailing backslash if one is not present.
+                // Add a trailing backslash if one is not present.
                 BASE_PATH = GetBASE_PATH(annoVersion);
             }
             else
@@ -297,12 +297,12 @@ namespace PresetParser
             #endregion
 
             #region Anno Version Data Paths
-            /// <summary>
-            /// Holds the paths and xpath's to parse the extracted RDA's for different Anno versions
-            /// 
-            /// The RDA's should all be extracted into the same directory.
-            /// </summary>
-            //These should stay constant for different anno versions (hopefully!)
+            // <summary>
+            // Holds the paths and xpath's to parse the extracted RDA's for different Anno versions
+            // 
+            // The RDA's should all be extracted into the same directory.
+            // </summary>
+            // These should stay constant for different anno versions (hopefully!)
             #region Anno 1404 xPaths
             if (annoVersion is Constants.ANNO_VERSION_1404 or "-ALL")
             {
@@ -360,7 +360,7 @@ namespace PresetParser
             if (annoVersion is Constants.ANNO_VERSION_2205 or "-ALL")
             {
                 VersionSpecificPaths.Add(Constants.ANNO_VERSION_2205, []);
-                /// Trying to read data from the objects.exm 
+                // Trying to read data from the objects.exm 
                 Console.WriteLine();
                 Console.WriteLine("Trying to read Buildings Data from the objects.xml of anno 2205");
                 VersionSpecificPaths[Constants.ANNO_VERSION_2205].Add("assets", new PathRef[]
@@ -408,11 +408,11 @@ namespace PresetParser
             if (annoVersion is Constants.ANNO_VERSION_1800 or "-ALL")
             {
                 VersionSpecificPaths.Add(Constants.ANNO_VERSION_1800, []);
-                /// Trying to read data from the objects.exm 
+                // Trying to read data from the objects.exm 
                 Console.WriteLine();
                 Console.WriteLine("Trying to read Buildings Data from the objects.xml of anno 1800");
-                /// I have removed the lat pathname 'Values' as it does the same i wanted, 
-                /// only the 'Values' will skip the <template> tag that i still need
+                // I have removed the lat pathname 'Values' as it does the same i wanted, 
+                // only the 'Values' will skip the <template/> tag that i still need
                 VersionSpecificPaths[Constants.ANNO_VERSION_1800].Add("assets", new PathRef[]
                 {
                     // Base Game with DLC's
@@ -430,7 +430,7 @@ namespace PresetParser
                     new("data/eoy21/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
                     new("data/eoy21/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
                     // Scenario 2 Extra / Changed Building Lists
-                    /// Nothing in the assets to add, ad there are no buildings in it (not with GUID's) and the other buildings are in the normal Base Xpath's
+                    // Nothing in the assets to add, ad there are no buildings in it (not with GUID's) and the other buildings are in the normal Base Xpath's
                     new("data/dlc10/scenario02/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
                     new("data/dlc10/scenario02/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
                     new("data/dlc10/scenario02/config/game/assets/scenario/config/export/main/asset/assets.xml", "AssetList/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Groups/Group/Assets/Asset"),
@@ -691,7 +691,7 @@ namespace PresetParser
                     Console.WriteLine("Invalid input, please try again or enter 'quit' to exit.");
                 }
             }
-            ///Add a trailing backslash if one is not present.
+            // Add a trailing backslash if one is not present.
             return path.LastOrDefault() == '\\' ? path : path + "\\";
         }
         #endregion
@@ -1207,8 +1207,8 @@ namespace PresetParser
             {
                 b.Localization = value;
                 #region Change default known language text (can be used for anno 1404 and 2070).
-                /// if something need to be added or changed to the languages, put guid and header as checker, 
-                /// and make the changes you want.
+                // if something need to be added or changed to the languages, put guid and header as checker, 
+                // and make the changes you want.
                 #region ANNO 1404:
                 //if (annoVersion == Constants.ANNO_VERSION_1404)
                 //{
@@ -2270,7 +2270,7 @@ namespace PresetParser
 
             if (DVicon != null)
             {
-                /// Split the Value <IconFilenames>innertext</IconFilenames> to get only the Name.png
+                // Split the Value <IconFilenames>innertext</IconFilenames> to get only the Name.png
                 var sDVIcons = DVicon.Split('/');
                 DVicon = sDVIcons.LastOrDefault().StartsWith("icon_")
                     ? sDVIcons.LastOrDefault().Replace("icon_", DVreplaceName)
@@ -2383,10 +2383,10 @@ namespace PresetParser
             #endregion
 
             #region Set the BlockedArea's and Start Direction
-            /// Set the BlockedArea's and Start Direction for Coastal buildings that have a Blocked Area
-            /// I do this by hand, as automatically is not an option for now, as the .ifo file are messy to get the
-            ///  <QuayArea> blocks from it. Read here for the complete story why 
-            ///  https://discord.com/channels/571011757317947406/571064812042321927/885817431136817162
+            // Set the BlockedArea's and Start Direction for Coastal buildings that have a Blocked Area
+            // I do this by hand, as automatically is not an option for now, as the .ifo file are messy to get the
+            //  <QuayArea/> blocks from it. Read here for the complete story why 
+            //  https://discord.com/channels/571011757317947406/571064812042321927/885817431136817162
 
             switch (b.Identifier)
             {
@@ -2427,7 +2427,7 @@ namespace PresetParser
 
             if (icon != null)
             {
-                /// Split the Value <IconFilenames>innertext</IconFilenames> to get only the Name.png
+                // Split the Value <IconFilenames>innertext</IconFilenames> to get only the Name.png
                 var sIcons = icon.Split('/');
                 icon = sIcons.LastOrDefault().StartsWith("icon_")
                     ? sIcons.LastOrDefault().Replace("icon_", replaceName)
@@ -3184,7 +3184,7 @@ namespace PresetParser
             if (b.Header == "(A7) Anno 1800" && b.Faction == "All Worlds" && (b.Group == "CultureModule" || b.Group == "OrnamentalBuilding")) { return; }
 
             // Remove the Not Placed Buildings
-            /// comment out the line below if you make a new preset after update of the game 'ANNO 1800', or when a new 'ANNO 1800 DLC' is released 
+            // comment out the line below if you make a new preset after update of the game 'ANNO 1800', or when a new 'ANNO 1800 DLC' is released 
             if (b.Faction is "Not Placed Yet -Moderate" or "Not Placed Yet -Arctic" or "Not Placed Yet -Africa" or "Not Placed Yet -Colony01" or "Not Placed Yet -All Worlds") { return; }
             if (b.Faction == "Not Placed Yet -") { return; };
 
