@@ -870,7 +870,7 @@ namespace AnnoDesigner.Controls.Canvas
         /// <remarks>As this method can be called when AppSettings are updated, we make sure to not call anything that relies on the UI thread from here.</remarks>
         internal void LoadObjectBorderLineColor()
         {
-            var colorFromJson = SerializationHelper.LoadFromJsonString<UserDefinedColor>(_appSettings.ColorObjectBorderLines);//explicit variable to make debugging easier
+            var colorFromJson = SerializationHelper.LoadFromJsonString<UserDefinedColor>(_appSettings.ColorObjectBorderLines);
             _linePen = _penCache.GetPen(_brushCache.GetSolidBrush(colorFromJson.Color), DPI_FACTOR * 1);
         }
 
@@ -878,13 +878,7 @@ namespace AnnoDesigner.Controls.Canvas
         /// Reindexes given objects in the <see cref="PlacedObjects"/>. This is potentially a very expensive operation.
         /// Calling this method when the LayoutObjects in <see name="newPositions"/> and <see name="oldPositions"/> do not
         /// match can cause object duplication.
-        /// </summary>
-        /// <remarks>
-        /// When the parameter types were IEnumerable, sequences passed in sometimes got GC'd between calls when using MouseMode.DragAll, 
-        /// as the objects were not referenced anywhere between the end of the foreach loop and the AddRange call (the variables
-        /// themselves did not count as references due to IEnumerable lazy evaluation).
-        /// By making sure the parameters are lists, we avoid this issues.
-        /// </remarks>
+        /// </summary> 
         internal void ReindexMovedObjects()
         {
             foreach (var (item, oldBounds) in _oldObjectPositions)

@@ -95,7 +95,8 @@
 
             <DockingManager
                 x:Name="dockManager"
-                Grid.Row="1"
+                Grid.Row="1" 1514
+                Padding="2"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Theme="{StaticResource adWpfUITheme}">
