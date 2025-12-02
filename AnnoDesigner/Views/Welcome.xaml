@@ -8,7 +8,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:properties="clr-namespace:AnnoDesigner.Properties"
     xmlns:viewModel="clr-namespace:AnnoDesigner.ViewModels"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     x:Name="welcomeWindow"
+    FontFamily="Segoe UI"
     Title="Welcome"
     Width="525"
     Height="705"
@@ -51,7 +53,7 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             FontSize="22"><Run Text="Please select a language:" /></TextBlock>
-        <ListBox
+        <ui:ListView
             Margin="10,83,10,48"
             HorizontalContentAlignment="Stretch"
             d:ItemsSource="{d:SampleData ItemCount=5}"
@@ -65,22 +67,23 @@
                     <i:InvokeCommandAction Command="{Binding ContinueCommand}" CommandParameter="{Binding ElementName=welcomeWindow}" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
+            <ListView.ItemTemplate>
+                <DataTemplate >
                     <StackPanel
                         Margin="20"
                         HorizontalAlignment="Stretch"
                         Orientation="Horizontal">
                         <Image Width="100" Source="{Binding FlagPath}" />
                         <Label
+                            Padding="5"
                             Width="Auto"
                             VerticalContentAlignment="Center"
                             Content="{Binding Name}"
                             FontSize="16" />
                     </StackPanel>
                 </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+            </ListView.ItemTemplate>
+        </ui:ListView>
         <Button
             Margin="10,0,373,10"
             HorizontalAlignment="Stretch"

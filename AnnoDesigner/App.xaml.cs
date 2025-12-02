@@ -26,6 +26,8 @@ using AnnoDesigner.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using NLog.Targets;
+using AnnoDesigner.Services;
+using Wpf.Ui.Appearance;
 
 namespace AnnoDesigner
 {
@@ -100,6 +102,7 @@ namespace AnnoDesigner
             _appMutex = new Mutex(true, AppMutexName, out isNewInstance);
 
             var appSettings = Services.GetRequiredService<IAppSettings>();
+            var themeService = Services.GetRequiredService<ThemeService>();
             var updateHelper = Services.GetRequiredService<IUpdateHelper>();
             var messageBoxService = Services.GetRequiredService<IMessageBoxService>();
             var fileSystem = Services.GetRequiredService<IFileSystem>();
@@ -118,6 +121,14 @@ namespace AnnoDesigner
             {
                 HandleConfigCorruption(ex, messageBoxService, fileSystem, appSettings);
             }
+
+            // WPF-UI: watch system theme and apply saved preference
+            themeService.WatchSystemTheme(this);
+            themeService.ApplyFromString(appSettings.ThemePreference);
+            appSettings.SettingsChanged += (s, ev) =>
+            {
+                themeService.ApplyFromString(appSettings.ThemePreference);
+            };
 
             if (!isNewInstance)
             {
@@ -192,6 +203,7 @@ namespace AnnoDesigner
             var _services = new ServiceCollection() 
                 .AddSingleton<ICommons>(commons)
                 .AddSingleton<IAppSettings>(appSettings)
+                .AddSingleton<ThemeService>()
                 .AddTransient<IMessageBoxService, MessageBoxService>()
                 .AddSingleton<ILocalizationHelper>(AnnoDesigner.Localization.Localization.Instance)
                 .AddTransient<IFileSystem, FileSystem>()

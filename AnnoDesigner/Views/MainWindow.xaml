@@ -2,19 +2,13 @@
     x:Class="AnnoDesigner.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-    xmlns:controls="clr-namespace:AnnoDesigner.Controls"
-    xmlns:converters="clr-namespace:AnnoDesigner.Converters"
-    xmlns:coreConverters="clr-namespace:AnnoDesigner.Core.Converters;assembly=AnnoDesigner.Core"
+    
     xmlns:coreModels="clr-namespace:AnnoDesigner.Core.Models;assembly=AnnoDesigner.Core"
     xmlns:cv2="clr-namespace:AnnoDesigner.Controls.Canvas"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:l="clr-namespace:AnnoDesigner.Localization"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:modelPresetsTree="clr-namespace:AnnoDesigner.Models.PresetsTree"
-    xmlns:my="clr-namespace:AnnoDesigner"
-    xmlns:myBehaviors="clr-namespace:AnnoDesigner.Behaviors"
-    xmlns:properties="clr-namespace:AnnoDesigner.Properties"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:my="clr-namespace:AnnoDesigner" 
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:viewModel="clr-namespace:AnnoDesigner.ViewModels"
     xmlns:views="clr-namespace:AnnoDesigner.Views"
@@ -25,7 +19,9 @@
     Height="{Binding MainWindowHeight, Mode=TwoWay}"
     MinWidth="640"
     MinHeight="480"
+    FontFamily="Segoe UI"
     d:Background="White"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     d:DataContext="{d:DesignInstance Type=viewModel:MainViewModel,
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="716.412"
@@ -41,19 +37,19 @@
     mc:Ignorable="d">
     <ui:FluentWindow.Resources>
         <!--  AvalonDock theme resource  -->
-        <wpfui:WPFUITheme x:Key="adWpfUITheme" />
+        <wpfui:WPFUITheme x:Key="AdWpfUiTheme" />
         <HierarchicalDataTemplate DataType="{x:Type coreModels:AnnoObject}">
             <TextBlock Text="{Binding Label}" />
         </HierarchicalDataTemplate>
     </ui:FluentWindow.Resources>
     <ui:FluentWindow.Title>
-        <MultiBinding Converter="{StaticResource converterUnsavedChanges}">
+        <MultiBinding Converter="{StaticResource ConverterUnsavedChanges}">
             <Binding Path="MainWindowTitle" />
             <Binding Path="AnnoCanvas.UndoManager.IsDirty" />
         </MultiBinding>
     </ui:FluentWindow.Title>
-    <xctk:BusyIndicator x:Name="busyIndicator">
-        <Grid>
+    <xctk:BusyIndicator x:Name="BusyIndicator">
+        <Grid Margin="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="1*" />
@@ -66,49 +62,47 @@
             <ui:TitleBar
                 x:Name="titleBar"
                 Grid.Row="0"
-                Grid.ColumnSpan="3"
-                Margin="2">
+                Grid.ColumnSpan="3">
                 <ui:TitleBar.Icon>
                     <ui:ImageIcon Source="/Assets/icon.ico" />
                 </ui:TitleBar.Icon>
                 <ui:TitleBar.Title>
-                    <MultiBinding Converter="{StaticResource converterUnsavedChanges}">
+                    <MultiBinding Converter="{StaticResource ConverterUnsavedChanges}">
                         <Binding Path="MainWindowTitle" />
                         <Binding Path="AnnoCanvas.UndoManager.IsDirty" />
                     </MultiBinding>
                 </ui:TitleBar.Title>
                 <ui:TitleBar.Header>
                     <!--  Extracted main menu to a UserControl  -->
-                    <views:MainMenuControl x:Name="mainMenuControl" />
+                    <views:MainMenuControl x:Name="MainMenuControl" />
                 </ui:TitleBar.Header>
-                <ui:TitleBar.TrailingContent>
-                    <StackPanel Orientation="Horizontal">
+                <ui:TitleBar.TrailingContent > 
                         <ui:Button Command="{Binding ShowPreferencesWindowCommand}">
                             <ui:Button.Icon>
                                 <ui:SymbolIcon Symbol="Settings24" />
                             </ui:Button.Icon>
-                        </ui:Button>
-                    </StackPanel>
+                        </ui:Button> 
                 </ui:TitleBar.TrailingContent>
             </ui:TitleBar>
 
 
             <DockingManager
                 x:Name="dockManager"
-                Grid.Row="1" 1514
+                Grid.Row="1"
                 Padding="2"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                Theme="{StaticResource adWpfUITheme}">
+                Theme="{StaticResource AdWpfUiTheme}">
                 <LayoutRoot>
                     <LayoutPanel Orientation="Horizontal">
                         <LayoutAnchorablePane DockWidth="320">
                             <LayoutAnchorable
                                 Title="Building Presets"
-                                AutoHideMinWidth="300"
+                                AutoHideMinWidth="200" 
                                 CanClose="False"
                                 CanDockAsTabbedDocument="False"
                                 CanHide="False"
+                                CanAutoHide="False"
                                 ContentId="PresetsPane">
                                 <views:BuildingPresetsPanel x:Name="buildingPresetsPanel" />
                             </LayoutAnchorable>

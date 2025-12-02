@@ -296,6 +296,12 @@ namespace AnnoDesigner.Models
             get => Settings.Default.IncludeRoadsInStatisticCalculation;
             set => Settings.Default.IncludeRoadsInStatisticCalculation = value;
         }
+
+        public string ThemePreference
+        {
+            get;// => Settings.Default.ThemePreference;
+            set;//=> Settings.Default.ThemePreference = value;
+        }
     }
 }
 

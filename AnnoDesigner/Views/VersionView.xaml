@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:AnnoDesigner.ViewModels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:Background="White"
+    FontFamily="Segoe UI"
     mc:Ignorable="d">
     <UserControl.DataContext>
         <local:LayoutSettingsViewModel />

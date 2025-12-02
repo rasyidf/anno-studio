@@ -9,6 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:viewModel="clr-namespace:AnnoDesigner.ViewModels"
+    FontFamily="Segoe UI"
     Name="Preferences"
     Title="{l:Localize Preferences}"
     Width="800"

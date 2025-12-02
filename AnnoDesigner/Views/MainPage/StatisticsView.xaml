@@ -9,6 +9,7 @@
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:viewModel="clr-namespace:AnnoDesigner.ViewModels"
     d:Background="White"
+    d:Foreground="Black"
     d:DataContext="{d:DesignInstance Type=viewModel:StatisticsViewModel,
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="350"
@@ -29,7 +30,7 @@
 
             <!--  Use theme-aware brushes from ui library when available  -->
             <SolidColorBrush x:Key="CardBackgroundBrush" Color="Transparent" />
-            <SolidColorBrush x:Key="MutedTextBrush" Color="#666666" />
+            <!-- Prefer theme-provided dynamic resources instead of fixed colors -->
 
         </ResourceDictionary>
     </UserControl.Resources>
@@ -49,7 +50,7 @@
                 Margin="5"
                 HorizontalAlignment="Center"
                 FontStyle="Italic"
-                Foreground="{StaticResource MutedTextBrush}"
+                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                 Text="{l:Localize StatNothingPlaced}"
                 Visibility="{Binding AreStatisticsAvailable, Converter={StaticResource invertedBoolToVisConverter}}" />
 
@@ -99,7 +100,7 @@
                         <ProgressBar
                             Height="8"
                             Background="{DynamicResource {x:Static SystemColors.AccentColorBrushKey}}"
-                            Foreground="#2196F3"
+                            Foreground="{DynamicResource {x:Static SystemColors.AccentColorBrushKey}}"
                             Maximum="100"
                             Minimum="0"
                             Value="{Binding EfficiencyPercent}" />
@@ -120,7 +121,7 @@
                                             Text="{Binding Count}" />
                                         <TextBlock
                                             Margin="4,0,6,0"
-                                            Foreground="{StaticResource MutedTextBrush}"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                             Text="x" />
                                         <TextBlock Text="{Binding Name}" />
                                     </StackPanel>
@@ -144,7 +145,7 @@
                                             Text="{Binding Count}" />
                                         <TextBlock
                                             Margin="4,0,6,0"
-                                            Foreground="{StaticResource MutedTextBrush}"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                             Text="x" />
                                         <TextBlock Text="{Binding Name}" />
                                     </StackPanel>

@@ -8,7 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:modelPresetsTree="clr-namespace:AnnoDesigner.Models.PresetsTree"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    xmlns:viewModel="clr-namespace:AnnoDesigner.ViewModels"
+     
     d:DesignWidth="358.066"
     mc:Ignorable="d">
     <DockPanel
@@ -123,7 +123,7 @@
                     <TreeView.ItemContainerStyle>
                         <Style BasedOn="{StaticResource {x:Type TreeViewItem}}" TargetType="{x:Type TreeViewItem}">
                             <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                            <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource converterBoolToVisibilityCollapsed}, Mode=TwoWay}" />
+                            <Setter Property="Visibility" Value="{Binding IsVisible, Converter={StaticResource ConverterBoolToVisibilityCollapsed}, Mode=TwoWay}" />
                             <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                         </Style>
                     </TreeView.ItemContainerStyle>

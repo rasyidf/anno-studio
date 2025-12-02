@@ -1,4 +1,5 @@
-﻿<Application
+﻿<!-- ReSharper disable once ObsoleteElementError -->
+<Application
     x:Class="AnnoDesigner.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10,21 +11,22 @@
 
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ui:ThemesDictionary Theme="Light" />
                 <ui:ControlsDictionary />
-                <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" />
+                <ui:ThemesDictionary Theme="Light" />
+                
+                <!-- <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" /> -->
                 <ResourceDictionary Source="/Themes/Compact.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/ColorPicker;component/Styles/DefaultColorPickerStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <xctk:ColorToSolidColorBrushConverter x:Key="converterColorToSolidColorBrush" />
-            <converters:UnsavedChangesConverter x:Key="converterUnsavedChanges" />
+            <xctk:ColorToSolidColorBrushConverter x:Key="ConverterColorToSolidColorBrush" />
+            <converters:UnsavedChangesConverter x:Key="ConverterUnsavedChanges" />
             <converters:BoolToVisibilityConverter
-                x:Key="converterBoolToVisibility"
+                x:Key="ConverterBoolToVisibility"
                 FalseValue="Hidden"
                 TrueValue="Visible" />
             <converters:BoolToVisibilityConverter
-                x:Key="converterBoolToVisibilityCollapsed"
+                x:Key="ConverterBoolToVisibilityCollapsed"
                 FalseValue="Collapsed"
                 TrueValue="Visible" />
             <Style x:Key="FilterToggleButtonStyle" TargetType="{x:Type ToggleButton}">

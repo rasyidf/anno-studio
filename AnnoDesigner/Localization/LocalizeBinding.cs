@@ -9,9 +9,7 @@ namespace AnnoDesigner.Localization
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var translations = value as IDictionary<string, string>;
-
-            if (parameter is string key && translations.TryGetValue(key, out var translation))
+            if (parameter is string key && value is IDictionary<string, string> translations && translations.TryGetValue(key, out var translation))
             {
                 return translation;
             }
@@ -42,7 +40,7 @@ namespace AnnoDesigner.Localization
 
     public class Localize : Binding
     {
-        private static LocalizeConverter LocalizeConverter { get; } = new LocalizeConverter();
+        private static LocalizeConverter LocalizeConverter { get; } = new();
 
         public string Key
         {

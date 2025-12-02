@@ -35,6 +35,8 @@ namespace AnnoDesigner.ViewModels
         private bool _invertScrollingDirection;
         private bool _includeRoadsInStatisticCalculation;
         private int _maxRecentFiles;
+        private System.Collections.ObjectModel.ObservableCollection<AnnoDesigner.Services.ThemePreference> _themeOptions;
+        private AnnoDesigner.Services.ThemePreference _selectedTheme;
 
         public GeneralSettingsViewModel(IAppSettings appSettingsToUse, ICommons commonsToUse, IRecentFilesHelper recentFilesHelperToUse)
         {
@@ -50,6 +52,18 @@ namespace AnnoDesigner.ViewModels
             InvertPanningDirection = _appSettings.InvertPanningDirection;
             InvertScrollingDirection = _appSettings.InvertScrollingDirection;
             MaxRecentFiles = _appSettings.MaxRecentFiles;
+
+            // Theme options
+            ThemeOptions = new System.Collections.ObjectModel.ObservableCollection<AnnoDesigner.Services.ThemePreference>(
+                Enum.GetValues<AnnoDesigner.Services.ThemePreference>());
+            if (Enum.TryParse<AnnoDesigner.Services.ThemePreference>(_appSettings.ThemePreference, true, out var parsedTheme))
+            {
+                SelectedTheme = parsedTheme;
+            }
+            else
+            {
+                SelectedTheme = AnnoDesigner.Services.ThemePreference.System;
+            }
 
             ResetZoomSensitivityCommand = new RelayCommand(ExecuteResetZoomSensitivity, CanExecuteResetZoomSensitivity);
             ResetMaxRecentFilesCommand = new RelayCommand(ExecuteResetMaxRecentFiles, CanExecuteResetMaxRecentFiles);
@@ -81,6 +95,25 @@ namespace AnnoDesigner.ViewModels
             {
                 SelectedObjectBorderLineColor = ObjectBorderLineColors.SingleOrDefault(x => x.Type == savedObjectBorderLineColor.Type);
                 SelectedCustomObjectBorderLineColor = savedObjectBorderLineColor.Color;
+            }
+        }
+
+        public System.Collections.ObjectModel.ObservableCollection<AnnoDesigner.Services.ThemePreference> ThemeOptions
+        {
+            get => _themeOptions;
+            set => _ = UpdateProperty(ref _themeOptions, value);
+        }
+
+        public AnnoDesigner.Services.ThemePreference SelectedTheme
+        {
+            get => _selectedTheme;
+            set
+            {
+                if (UpdateProperty(ref _selectedTheme, value))
+                {
+                    _appSettings.ThemePreference = value.ToString();
+                    _appSettings.Save();
+                }
             }
         }
 

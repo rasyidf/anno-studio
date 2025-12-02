@@ -10,9 +10,9 @@ using PresetParser.Extensions;
 
 namespace PresetParser
 {
-    public class BuildingBlockProvider
+    public class BuildingBlockProvider(IIfoFileProvider ifoFileProviderToUse)
     {
-        private readonly IFileSystem _fileSystem;
+        private readonly IFileSystem _fileSystem = new FileSystem();
         private const char BUILDING_BLOCKER_SEPARATOR = '.';
         private const string BUILDBLOCKER = "BuildBlocker";
         private const string X = "x";
@@ -27,12 +27,8 @@ namespace PresetParser
         "production food arctic facility 02", "production food arctic facility 01", "production heavy arctic facility 04"];
 
 
-        private readonly IIfoFileProvider _ifoFileProvider;
-        public BuildingBlockProvider(IIfoFileProvider ifoFileProviderToUse)
-        {
-            _ifoFileProvider = ifoFileProviderToUse ?? throw new ArgumentNullException(nameof(ifoFileProviderToUse));
-            _fileSystem = new FileSystem();
-        }
+        private readonly IIfoFileProvider _ifoFileProvider = ifoFileProviderToUse ?? throw new ArgumentNullException(nameof(ifoFileProviderToUse));
+
         public bool GetBuildingBlocker(string basePath, IBuildingInfo building, string variationFilename, string annoVersion)
         {
             var ifoDocument = _ifoFileProvider.GetIfoFileContent(basePath, variationFilename);
@@ -67,8 +63,8 @@ namespace PresetParser
 
                 var node1 = ifoDocument.FirstChild?[BUILDBLOCKER].FirstChild;
                 var node2 = ifoDocument.FirstChild?[BUILDBLOCKER].FirstChild.NextSibling;
-                var node3 = ifoDocument.FirstChild?[BUILDBLOCKER].FirstChild.NextSibling.NextSibling;
-                var node4 = ifoDocument.FirstChild?[BUILDBLOCKER].FirstChild.NextSibling.NextSibling.NextSibling;
+                var node3 = (ifoDocument.FirstChild?[BUILDBLOCKER].FirstChild.NextSibling!).NextSibling;
+                var node4 = (ifoDocument.FirstChild?[BUILDBLOCKER].FirstChild.NextSibling.NextSibling!).NextSibling;
 
                 //check of the nodes contains data
                 if (string.IsNullOrEmpty(node1?.InnerText) || string.IsNullOrEmpty(node2?.InnerText) || string.IsNullOrEmpty(node3?.InnerText) || string.IsNullOrEmpty(node4?.InnerText))
@@ -83,14 +79,14 @@ namespace PresetParser
                 building.BuildBlocker = new SerializableDictionary<int>();
 
                 //Convert the strings to a Variable and replace the "." for a "," to keep calculatable numbers
-                var xfNormal1 = double.Parse(node1["xf"].InnerText, NumberStyles.Any, CultureInfo.InvariantCulture);
-                var zfNormal1 = double.Parse(node1["zf"].InnerText, NumberStyles.Any, CultureInfo.InvariantCulture);
-                var xfNormal2 = double.Parse(node2["xf"].InnerText, NumberStyles.Any, CultureInfo.InvariantCulture);
-                var zfNormal2 = double.Parse(node2["zf"].InnerText, NumberStyles.Any, CultureInfo.InvariantCulture);
-                var xfNormal3 = double.Parse(node3["xf"].InnerText, NumberStyles.Any, CultureInfo.InvariantCulture);
-                var zfNormal3 = double.Parse(node3["zf"].InnerText, NumberStyles.Any, CultureInfo.InvariantCulture);
-                var xfNormal4 = double.Parse(node4["xf"].InnerText, NumberStyles.Any, CultureInfo.InvariantCulture);
-                var zfNormal4 = double.Parse(node4["zf"].InnerText, NumberStyles.Any, CultureInfo.InvariantCulture);
+                var xfNormal1 = double.Parse(node1["xf"]?.InnerText ?? "", NumberStyles.Any, CultureInfo.InvariantCulture);
+                var zfNormal1 = double.Parse(node1["zf"]?.InnerText ?? "", NumberStyles.Any, CultureInfo.InvariantCulture);
+                var xfNormal2 = double.Parse(node2["xf"]?.InnerText ?? "", NumberStyles.Any, CultureInfo.InvariantCulture);
+                var zfNormal2 = double.Parse(node2["zf"]?.InnerText ?? "", NumberStyles.Any, CultureInfo.InvariantCulture);
+                var xfNormal3 = double.Parse(node3["xf"]?.InnerText ?? "", NumberStyles.Any, CultureInfo.InvariantCulture);
+                var zfNormal3 = double.Parse(node3["zf"]?.InnerText ?? "", NumberStyles.Any, CultureInfo.InvariantCulture);
+                var xfNormal4 = double.Parse(node4["xf"]?.InnerText ?? "", NumberStyles.Any, CultureInfo.InvariantCulture);
+                var zfNormal4 = double.Parse(node4["zf"]?.InnerText ?? "", NumberStyles.Any, CultureInfo.InvariantCulture);
 
                 // Calculation mode check highest number minus lowest number
                 // example 1:  9 - -2 = 11
@@ -115,7 +111,7 @@ namespace PresetParser
                     zf = Convert.ToInt32(zfNormal1 - zfNormal2);
                     zc = "MA";// just information for checking line calculated mode
                 }
-                else if (zfNormal1 == zfNormal2)
+                else if (Math.Abs(zfNormal1 - zfNormal2) < 0.01)
                 {
                     if (zfNormal1 > zfNormal3)
                     {
@@ -192,98 +188,101 @@ namespace PresetParser
 
             try
             {
-                var node = ifoDocument.FirstChild[BUILDBLOCKER]?.FirstChild;
-                building.BuildBlocker = new SerializableDictionary<int>();
-
-                var x = 0;
-                var z = 0;
-
-                if (node is null)
+                if (ifoDocument.FirstChild != null)
                 {
-                    //I have to do this here, as file does not contain <BuildBlocker> tag, and this farm field is needed
-                    if (building.Header == "(A6) Anno 2205" && building.Identifier == "production heavy arctic facility module 04 tier 01")
+                    var node = ifoDocument.FirstChild[BUILDBLOCKER]?.FirstChild;
+                    building.BuildBlocker = new SerializableDictionary<int>();
+
+                    var x = 0;
+                    var z = 0;
+
+                    if (node is null)
+                    {
+                        //I have to do this here, as file does not contain <BuildBlocker> tag, and this farm field is needed
+                        if (building.Header == "(A6) Anno 2205" && building.Identifier == "production heavy arctic facility module 04 tier 01")
+                        {
+                            x = 3;
+                            z = 3;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    if (building.Identifier != "production heavy arctic facility module 04 tier 01")
+                    {
+                        x = Math.Abs(Convert.ToInt32(node[X].InnerText) / 2048);
+                        z = Math.Abs(Convert.ToInt32(node[Z].InnerText) / 2048);
+                    }
+
+                    //if both values are zero, then skip building
+                    if (x < 1 && z < 1)
+                    {
+                        Console.WriteLine("-'X' and 'Z' are both 0 - Building will skipped!");
+                        return false;
+                    }
+                    //correcting measurement of anno 2205 building: Cybernetics Factory (file say 6x7, in game it is 6x8) (10-01-2021)
+                    if (variationFilenameWithoutExtension == "production_biotech_moon_facility_02")
+                    {
+                        x = 6;
+                        z = 8;
+                    }
+                    //correcting Measurement of anno 1404 building: Coal Mine (on assets 2x3, as all others are 4x3 i set it equal as that (18-06-2022)
+                    if (building.Header == "(A4) Anno 1404" && building.Identifier == "CoalMine")
+                    {
+                        x = 4;
+                        z = 3;
+                    }
+                    //correcting Underwater Warehouse (GUID 10035) from 2x6 to 3x6 (anno 2070, 28-06-2022)
+                    if (building.Header == "(A5) Anno 2070" && building.Identifier == "warehouse")
+                    {
+                        x = 3;
+                        z = 6;
+                    }
+                    //correcting Center Statistics (Tycoons) from 3x4 to 6x6 (anno 2070, 29-06-2022)
+                    if (building.Header == "(A5) Anno 2070" && building.Identifier == "statistic_center_tycoons")
+                    {
+                        x = 6;
+                        z = 6;
+                    }
+                    //Correcting some Water Farm Fields from 2x? to 3x3 (Anno 2205, 30-06-2022)
+                    if (building.Header == "(A6) Anno 2205" && building.Identifier.IsMatch(Anno2205_CoastalFarmFieldsList))
                     {
                         x = 3;
                         z = 3;
                     }
+                    //Correcting Algae Bed (Temperate) from 2x1 to 2x12 (Anno 2205, 30-06-2022)
+                    if (building.Header == "(A6) Anno 2205" && (building.Identifier == "production agriculture earth facility module 05 tier 01"))
+                    {
+                        x = 2;
+                        z = 12;
+                    }
+                    //Correcting Water Coastal Farm buildings, from 2x6 to 3x6 as in game measurements (Anno 2205, 01-07-2022)
+                    if (building.Header == "(A6) Anno 2205" && building.Identifier.IsMatch(Anno2205_CoastalFarmBuildingsList))
+                    {
+                        x = 3;
+                        z = 6;
+                    }
+                    //Correcting Mining Building Measurements, to set all Mining buildings the same size 4x8 (Anno 2205, 01-07-2022)
+                    if (building.Header == "(A6) Anno 2205" && building.Group == "Mining")
+                    {
+                        x = 4;
+                        z = 8;
+                    }
+
+
+                    if (x > 0)
+                    {
+                        //Console.WriteLine("{0}", Path.GetFileNameWithoutExtension(variationFilename));
+                        building.BuildBlocker[X] = variationFilenameWithoutExtension != ORNAMENTAL_POST_09 ? variationFilenameWithoutExtension != WATER_MILL_ECOS ? x : 3 : 7;
+                    }
                     else
                     {
-                        return false;
+                        building.BuildBlocker[X] = 1;
                     }
-                }
-                if (building.Identifier != "production heavy arctic facility module 04 tier 01")
-                {
-                    x = Math.Abs(Convert.ToInt32(node[X].InnerText) / 2048);
-                    z = Math.Abs(Convert.ToInt32(node[Z].InnerText) / 2048);
-                }
 
-                //if both values are zero, then skip building
-                if (x < 1 && z < 1)
-                {
-                    Console.WriteLine("-'X' and 'Z' are both 0 - Building will skipped!");
-                    return false;
+                    building.BuildBlocker[Z] = z > 0 ? variationFilenameWithoutExtension is not WATER_MILL_ECOS and not ORNAMENTAL_POST_09 ? z : 7 : 1;
                 }
-                //correcting measurement of anno 2205 building: Cybernetics Factory (file say 6x7, in game it is 6x8) (10-01-2021)
-                if (variationFilenameWithoutExtension == "production_biotech_moon_facility_02")
-                {
-                    x = 6;
-                    z = 8;
-                }
-                //correcting Measurement of anno 1404 building: Coal Mine (on assets 2x3, as all others are 4x3 i set it equal as that (18-06-2022)
-                if (building.Header == "(A4) Anno 1404" && building.Identifier == "CoalMine")
-                {
-                    x = 4;
-                    z = 3;
-                }
-                //correcting Underwater Warehouse (GUID 10035) from 2x6 to 3x6 (anno 2070, 28-06-2022)
-                if (building.Header == "(A5) Anno 2070" && building.Identifier == "warehouse")
-                {
-                    x = 3;
-                    z = 6;
-                }
-                //correcting Center Statistics (Tycoons) from 3x4 to 6x6 (anno 2070, 29-06-2022)
-                if (building.Header == "(A5) Anno 2070" && building.Identifier == "statistic_center_tycoons")
-                {
-                    x = 6;
-                    z = 6;
-                }
-                //Correcting some Water Farm Fields from 2x? to 3x3 (Anno 2205, 30-06-2022)
-                if (building.Header == "(A6) Anno 2205" && building.Identifier.IsMatch(Anno2205_CoastalFarmFieldsList))
-                {
-                    x = 3;
-                    z = 3;
-                }
-                //Correcting Algae Bed (Temperate) from 2x1 to 2x12 (Anno 2205, 30-06-2022)
-                if (building.Header == "(A6) Anno 2205" && (building.Identifier == "production agriculture earth facility module 05 tier 01"))
-                {
-                    x = 2;
-                    z = 12;
-                }
-                //Correcting Water Coastal Farm buildings, from 2x6 to 3x6 as in game measurements (Anno 2205, 01-07-2022)
-                if (building.Header == "(A6) Anno 2205" && building.Identifier.IsMatch(Anno2205_CoastalFarmBuildingsList))
-                {
-                    x = 3;
-                    z = 6;
-                }
-                //Correcting Mining Building Measurements, to set all Mining buildings the same size 4x8 (Anno 2205, 01-07-2022)
-                if (building.Header == "(A6) Anno 2205" && building.Group == "Mining")
-                {
-                    x = 4;
-                    z = 8;
-                }
-
-
-                if (x > 0)
-                {
-                    //Console.WriteLine("{0}", Path.GetFileNameWithoutExtension(variationFilename));
-                    building.BuildBlocker[X] = variationFilenameWithoutExtension != ORNAMENTAL_POST_09 ? variationFilenameWithoutExtension != WATER_MILL_ECOS ? x : 3 : 7;
-                }
-                else
-                {
-                    building.BuildBlocker[X] = 1;
-                }
-
-                building.BuildBlocker[Z] = z > 0 ? variationFilenameWithoutExtension is not WATER_MILL_ECOS and not ORNAMENTAL_POST_09 ? z : 7 : 1;
             }
             catch (NullReferenceException)
             {

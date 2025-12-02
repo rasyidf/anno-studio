@@ -100,4 +100,7 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="echo create directory for game_icons &quot;$(TargetDir)Assets\game_icons&quot;&#xD;&#xA;if not exist &quot;$(TargetDir)Assets\game_icons&quot; md &quot;$(TargetDir)Assets\game_icons&quot;&#xD;&#xA;&#xD;&#xA;rem ROBOCOPY exits with &quot;success codes&quot; which are under 8. See: http://support.microsoft.com/kb/954404&#xD;&#xA;rem This means that:&#xD;&#xA;&#xD;&#xA;rem robocopy exit code 0 = no files copied&#xD;&#xA;rem robocopy exit code 1 = files copied&#xD;&#xA;rem When the result is 1, this becomes an error exit code in visual studio.&#xD;&#xA;&#xD;&#xA;echo copy game icons from &quot;$(ProjectDir)Assets\game_icons&quot; to &quot;$(TargetDir)Assets\game_icons&quot;&#xD;&#xA;ROBOCOPY &quot;$(ProjectDir)Assets\game_icons&quot; &quot;$(TargetDir)Assets\game_icons&quot; *.* /E /NFL /NDL /NJH /NJS /nc /ns /np&#xD;&#xA;&#xD;&#xA;if %2525ERRORLEVEL%2525 GEQ 8 goto failed&#xD;&#xA;&#xD;&#xA;rem end of batch&#xD;&#xA;goto success&#xD;&#xA;&#xD;&#xA;:failed&#xD;&#xA;exit -1&#xD;&#xA;&#xD;&#xA;:success&#xD;&#xA;exit 0" />
   </Target>
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);WPF0001</NoWarn>
+  </PropertyGroup>
 </Project>

@@ -39,14 +39,30 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" MinWidth="180" />
                 <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" Text="Theme:" />
+            <ComboBox
+                Grid.Column="1"
+                Width="140" 
+                Margin="10,0,0,0"
+                VerticalAlignment="Bottom"
+                ItemsSource="{Binding ThemeOptions}"
+                SelectedItem="{Binding SelectedTheme}">
+            </ComboBox>
+        </Grid>
+
+        <Grid Margin="20,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" MinWidth="180" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" Text="{l:Localize GeneralPreferencesGridLinesColor, StringFormat='\{0\}:', Mode=OneWay}" />
             <ComboBox
                 Grid.Column="1"
-                Width="140"
-                Height="22"
+                Width="140" 
                 Margin="10,0,0,0"
                 VerticalAlignment="Bottom"
                 IsEnabled="True"
@@ -92,8 +108,7 @@
             <TextBlock Grid.Column="0" Text="{l:Localize GeneralPreferencesObjectBorderLinesColor, StringFormat='\{0\}:', Mode=OneWay}" />
             <ComboBox
                 Grid.Column="1"
-                Width="140"
-                Height="22"
+                Width="140" 
                 Margin="10,0,0,0"
                 VerticalAlignment="Bottom"
                 IsEnabled="True"

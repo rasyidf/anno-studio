@@ -2,13 +2,12 @@
     x:Class="AnnoDesigner.Views.MainMenuControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:l="clr-namespace:AnnoDesigner.Localization"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    xmlns:viewModel="clr-namespace:AnnoDesigner.ViewModels"
-    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}">
-
+ 
     <UserControl.Resources>
         <Style x:Key="RecentFileItemStyle" TargetType="MenuItem">
             <Setter Property="Header" Value="{Binding Path, Mode=OneTime}" />
@@ -24,7 +23,7 @@
             <Setter Property="CommandParameter" Value="{Binding}" />
             <Setter Property="Icon">
                 <Setter.Value>
-                    <Image Height="22" Source="{Binding FlagPath}" />
+                    <ui:ImageIcon Height="22" Source="{Binding FlagPath}" />
                 </Setter.Value>
             </Setter>
         </Style>

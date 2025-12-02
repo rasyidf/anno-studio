@@ -1,20 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
+using System.Linq; 
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
-using System.Windows.Media;
-using AnnoDesigner.Controls.Canvas;
+using System.Windows.Media; 
 using AnnoDesigner.Core.DataStructures;
 using AnnoDesigner.Core.Extensions;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Extensions;
 using AnnoDesigner.Helper;
-using AnnoDesigner.Models;
-using AnnoDesigner.Models.Interface;
-using Octokit;
+using AnnoDesigner.Models; 
 
 namespace AnnoDesigner.Controls.Canvas.Services
 {
@@ -28,22 +24,21 @@ namespace AnnoDesigner.Controls.Canvas.Services
         private DrawingGroup _drawingGroupSelectedObjectsInfluence = new DrawingGroup();
         private DrawingGroup _drawingGroupInfluence = new DrawingGroup();
 
-        internal Rect _lastViewPortAbsolute = default;
-        internal List<LayoutObject> _lastObjectsToDraw = [];
-        internal List<LayoutObject> _lastBorderlessObjectsToDraw = [];
-        internal List<LayoutObject> _lastBorderedObjectsToDraw = [];
-        internal QuadTree<LayoutObject> _lastPlacedObjects = null;
+        private Rect _lastViewPortAbsolute = default;
+        private List<LayoutObject> _lastObjectsToDraw = [];
+        private List<LayoutObject> _lastBorderlessObjectsToDraw = [];
+        private List<LayoutObject> _lastBorderedObjectsToDraw = [];
+        private QuadTree<LayoutObject> _lastPlacedObjects = null;
 
+ 
 
-        internal bool _needsRefreshAfterSettingsChanged;
-
-        internal int _lastGridSize = -1;
-        internal double _lastGridWidth = -1;
-        internal double _lastGridHeight = -1;
-        internal DrawingGroup _drawingGroupObjectSelection = new DrawingGroup();
-        internal ICollection<LayoutObject> _lastSelectedObjects = new List<LayoutObject>();
-        internal int _lastObjectSelectionGridSize = -1;
-        internal Rect _lastSelectionRect = Rect.Empty;
+        private int _lastGridSize = -1;
+        private double _lastGridWidth = -1;
+        private double _lastGridHeight = -1;
+        private DrawingGroup _drawingGroupObjectSelection = new DrawingGroup();
+        private ICollection<LayoutObject> _lastSelectedObjects = new List<LayoutObject>();
+        private int _lastObjectSelectionGridSize = -1;
+        private Rect _lastSelectionRect = Rect.Empty;
 
         public CanvasRenderer(AnnoCanvas2 canvas)
         {
@@ -62,7 +57,7 @@ namespace AnnoDesigner.Controls.Canvas.Services
         /// the renderer implementation.
         /// </summary>
         /// <param name="drawingContext">context used for rendering</param>
-        internal void RenderCore(DrawingContext drawingContext)
+        private void RenderCore(DrawingContext drawingContext)
         {
             var width = _canvas.RenderSize.Width;
             var height = _canvas.RenderSize.Height;
@@ -108,7 +103,7 @@ namespace AnnoDesigner.Controls.Canvas.Services
             drawingContext.DrawRectangle(Brushes.Transparent, null, new Rect(0, 0, width, height));
 
             // delegate grid drawing & caching to renderer
-            DrawGrid(drawingContext, width, height, _canvas._viewport.HorizontalAlignmentValue, _canvas._viewport.VerticalAlignmentValue, _canvas._gridSize, _canvas._isRenderingForced || _needsRefreshAfterSettingsChanged, _canvas._gridLinePen, _canvas._guidelineSet);
+            DrawGrid(drawingContext, width, height, _canvas._viewport.HorizontalAlignmentValue, _canvas._viewport.VerticalAlignmentValue, _canvas._gridSize, _canvas._isRenderingForced, _canvas._gridLinePen, _canvas._guidelineSet);
 
             //Push the transform after rendering everything that should not be translated.
             drawingContext.PushTransform(_canvas._viewportTransform);
@@ -873,20 +868,17 @@ namespace AnnoDesigner.Controls.Canvas.Services
                         continue;
                     }
 
-                    if ((center - coordinateHelper.GetCenterPoint(adjacentObject.GridRect)).LengthSquared <= radiusSquared)
+                    if ((center - coordinateHelper.GetCenterPoint(adjacentObject.GridRect)).LengthSquared <= radiusSquared && regexPanorama.TryMatch(adjacentObject.Identifier, out var match2))
                     {
-                        if (regexPanorama.TryMatch(adjacentObject.Identifier, out var match2))
+                        var tier2 = int.Parse(match2.Groups["tier"].Value);
+                        var level2 = int.Parse(match2.Groups["level"].Value);
+                        if (tier != tier2)
                         {
-                            var tier2 = int.Parse(match2.Groups["tier"].Value);
-                            var level2 = int.Parse(match2.Groups["level"].Value);
-                            if (tier != tier2)
-                            {
-                                panorama += level >= level2 ? 1 : -1;
-                            }
-                            else
-                            {
-                                panorama += level > level2 ? 1 : -1;
-                            }
+                            panorama += level >= level2 ? 1 : -1;
+                        }
+                        else
+                        {
+                            panorama += level > level2 ? 1 : -1;
                         }
                     }
                 }
@@ -1067,26 +1059,23 @@ namespace AnnoDesigner.Controls.Canvas.Services
             }
 
             // draw selection rect coords last so they draw over the top of everything else
-            if (isSelectionRectMode)
+            if (isSelectionRectMode && debugShowSelectionRectCoordinates)
             {
-                if (debugShowSelectionRectCoordinates)
+                var rect = coordinateHelper.ScreenToGrid(selectionRect, gridSize);
+                var top = rect.Top;
+                var left = rect.Left;
+                var h = rect.Height;
+                var w = rect.Width;
+                var text = new FormattedText($"{left:F2}, {top:F2}, {w:F2}, {h:F2}", Thread.CurrentThread.CurrentCulture, FlowDirection.LeftToRight,
+                    typeface, 12, debugBrushLight,
+                    null, TextFormattingMode.Display, pixelsPerDip)
                 {
-                    var rect = coordinateHelper.ScreenToGrid(selectionRect, gridSize);
-                    var top = rect.Top;
-                    var left = rect.Left;
-                    var h = rect.Height;
-                    var w = rect.Width;
-                    var text = new FormattedText($"{left:F2}, {top:F2}, {w:F2}, {h:F2}", Thread.CurrentThread.CurrentCulture, FlowDirection.LeftToRight,
-                       typeface, 12, debugBrushLight,
-                       null, TextFormattingMode.Display, pixelsPerDip)
-                    {
-                        TextAlignment = TextAlignment.Left
-                    };
-                    var location = selectionRect.BottomRight;
-                    location.X -= text.Width;
-                    location.Y -= text.Height;
-                    drawingContext.DrawText(text, location);
-                }
+                    TextAlignment = TextAlignment.Left
+                };
+                var location = selectionRect.BottomRight;
+                location.X -= text.Width;
+                location.Y -= text.Height;
+                drawingContext.DrawText(text, location);
             }
         }
 

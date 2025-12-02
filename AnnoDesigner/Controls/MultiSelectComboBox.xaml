@@ -18,7 +18,7 @@
             BorderThickness="0">
 
         <ComboBox.ItemTemplate>
-            <DataTemplate>
+            <DataTemplate  >
                 <StackPanel Orientation="Horizontal">
                     <CheckBox IsChecked="{Binding IsSelected}" Content="{Binding Name}" Focusable="False" Margin="3,0"/>
                 </StackPanel>

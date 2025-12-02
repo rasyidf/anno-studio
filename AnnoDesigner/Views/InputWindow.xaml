@@ -21,38 +21,48 @@
     WindowStartupLocation="CenterScreen"
     WindowStyle="SingleBorderWindow"
     mc:Ignorable="d">
-    <DockPanel Margin="5,5,5,5" LastChildFill="True">
+    <DockPanel Margin="0"
+               LastChildFill="True">
         <TextBlock
             x:Name="message"
-            Margin="5,0,0,0"
+            Margin="6"
             HorizontalAlignment="Stretch"
             DockPanel.Dock="Top"
-            Text="The message" />
+            Text="The message"/>
+
         <ui:Card
-            Height="64"
-            Padding="2"
             HorizontalAlignment="Stretch"
+            VerticalAlignment="Bottom"
+            Padding="6"
             DockPanel.Dock="Bottom">
 
-            <Grid HorizontalAlignment="Right" VerticalAlignment="Stretch">
+            <Grid HorizontalAlignment="Right"
+                  VerticalAlignment="Stretch"  >
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="8"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Button
+                <ui:Button
+                    Appearance="Primary"
                     x:Name="OkButton"
                     Grid.Column="0"
-                    Padding="8"
+                    MinWidth="100" MinHeight="32"
+                    Padding="2, 2, 2,8"
+                    d:Content="OK"
                     Click="OkButton_Click"
-                    Content="{l:Localize OK}" />
+                    Content="{l:Localize OK}"/>
                 <Button
                     x:Name="CancelButton"
-                    Grid.Column="1"
-                    Padding="8"
+                    Grid.Column="2"
+                    Padding="2"
+                    MinWidth="100" MinHeight="32"
+                    d:Content="Cancel"
                     Click="CancelButton_Click"
-                    Content="{l:Localize Cancel}" />
+                    Content="{l:Localize Cancel, FallbackValue=OK }"/>
             </Grid>
         </ui:Card>
+
         <TextBox
             x:Name="input"
             MaxHeight="250"
@@ -63,7 +73,6 @@
             FontSize="14"
             MinLines="3"
             TextWrapping="Wrap"
-            VerticalScrollBarVisibility="Auto" />
-
+            VerticalScrollBarVisibility="Auto"/>
     </DockPanel>
 </Window>

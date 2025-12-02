@@ -53,5 +53,6 @@ namespace AnnoDesigner.Core.Models
         bool ShowScrollbars { get; set; }
         bool IncludeRoadsInStatisticCalculation { get; set; }
         bool RenderVersionOnExportedImageValue { get; set; }
+        string ThemePreference { get; set; }
     }
 }
