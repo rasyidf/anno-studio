@@ -166,10 +166,10 @@ namespace AnnoDesigner.ViewModels
 
             var calculatedStatistics = await calculateStatisticsTask;
 
-            UsedArea = string.Format("{0}x{1}", calculatedStatistics.UsedAreaWidth, calculatedStatistics.UsedAreaHeight);
+            UsedArea = $"{calculatedStatistics.UsedAreaWidth}x{calculatedStatistics.UsedAreaHeight}";
             UsedTiles = calculatedStatistics.UsedTiles;
             MinTiles = calculatedStatistics.MinTiles;
-            Efficiency = string.Format("{0}%", calculatedStatistics.Efficiency);
+            Efficiency = $"{calculatedStatistics.Efficiency}%";
         }
 
         private ObservableCollection<StatisticsBuilding> GetStatisticBuildings(IEnumerable<IGrouping<string, LayoutObject>> groupedBuildingsByIdentifier, BuildingPresets buildingPresets)

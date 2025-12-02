@@ -1,4 +1,4 @@
-﻿<Window
+﻿<ui:FluentWindow
     x:Class="AnnoDesigner.LicensesWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10,6 +10,7 @@
     xmlns:local="clr-namespace:AnnoDesigner"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:AnnoDesigner.ViewModels"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="{l:Localize Licenses}"
     FontFamily="Segoe UI"
     Width="600"
@@ -30,6 +31,8 @@
         IsTabStop="False"
         VerticalScrollBarVisibility="Auto">
         <Grid Grid.IsSharedSizeScope="True">
+            <ui:TitleBar Title="{Binding Title, RelativeSource={RelativeSource AncestorType={x:Type ui:FluentWindow}}}" CanMaximize="False" ShowMinimize="False" ShowMaximize="False">
+            </ui:TitleBar>
             <ItemsControl Background="{x:Null}" ItemsSource="{Binding Licenses}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -142,4 +145,4 @@
             </ItemsControl>
         </Grid>
     </ScrollViewer>
-</Window>
+</ui:FluentWindow>

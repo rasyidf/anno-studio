@@ -99,7 +99,7 @@
         <!--  Footer spanning all columns  -->
         <Border
             Grid.Row="2"
-            Grid.ColumnSpan="3"
+            Grid.ColumnSpan="3" Grid.Column="0"
             Padding="10"
             BorderThickness="1,0,0,0">
             <Grid>

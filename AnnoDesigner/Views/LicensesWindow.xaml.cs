@@ -6,7 +6,7 @@ namespace AnnoDesigner
     /// <summary>
     /// Interaction logic for LicensesWindow.xaml
     /// </summary>
-    public partial class LicensesWindow : Window
+    public partial class LicensesWindow  
     {
         public LicensesWindow()
         {

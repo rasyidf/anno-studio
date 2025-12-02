@@ -1,11 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Configuration;
-using System.Linq;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Threading;
 using AnnoDesigner.CommandLine;
 using AnnoDesigner.CommandLine.Arguments;
 using AnnoDesigner.Core.Layout;
@@ -14,20 +11,24 @@ using AnnoDesigner.Extensions;
 using AnnoDesigner.ViewModels;
 using NLog;
 using Wpf.Ui.Appearance;
-using Wpf.Ui.Controls;
-namespace AnnoDesigner
+
+namespace AnnoDesigner.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : FluentWindow, ICloseable
+    public partial class MainWindow : ICloseable
     {
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private static MainViewModel _mainViewModel;
         private readonly IAppSettings _appSettings;
 
-        public new MainViewModel DataContext { get => base.DataContext as MainViewModel; set => base.DataContext = value; }
+        public new MainViewModel DataContext
+        {
+            get => base.DataContext as MainViewModel;
+            set => base.DataContext = value;
+        }
 
         #region Initialization
 
@@ -44,11 +45,11 @@ namespace AnnoDesigner
             _mainViewModel = DataContext;
             _mainViewModel.AnnoCanvas = annoCanvas;
             _mainViewModel.AnnoCanvas.RegisterHotkeys(_mainViewModel.HotkeyCommandManager);
-              
+
             App.DpiScale = VisualTreeHelper.GetDpi(this);
 
             DpiChanged += MainWindow_DpiChanged;
-             
+
             _mainViewModel.LoadSettings();
 
             _mainViewModel.LoadAvailableIcons();
@@ -85,22 +86,37 @@ namespace AnnoDesigner
                 using var _ = _mainViewModel.OpenFile(startupArgs.FilePath);
             }
             // export layout to image
-            else if (App.StartupArguments is ExportArgs exportArgs && !string.IsNullOrEmpty(exportArgs.LayoutFilePath) && !string.IsNullOrEmpty(exportArgs.ExportedImageFilePath))
+            else if (App.StartupArguments is ExportArgs exportArgs &&
+                     !string.IsNullOrEmpty(exportArgs.LayoutFilePath) &&
+                     !string.IsNullOrEmpty(exportArgs.ExportedImageFilePath))
             {
                 var layout = new LayoutLoader().LoadLayout(exportArgs.LayoutFilePath);
-                _mainViewModel.PrepareCanvasForRender(layout.Objects, [], Math.Max(exportArgs.Border, 0), new Models.CanvasRenderSetting()
-                {
-                    GridSize = exportArgs.GridSize,
-                    RenderGrid = exportArgs.RenderGrid ?? (!exportArgs.UseUserSettings || _appSettings.ShowGrid),
-                    RenderIcon = exportArgs.RenderIcon ?? (!exportArgs.UseUserSettings || _appSettings.ShowIcons),
-                    RenderLabel = exportArgs.RenderLabel ?? (!exportArgs.UseUserSettings || _appSettings.ShowLabels),
-                    RenderStatistics = exportArgs.RenderStatistics ?? (!exportArgs.UseUserSettings || _appSettings.StatsShowStats),
-                    RenderVersion = exportArgs.RenderVersion ?? true,
-                    RenderHarborBlockedArea = exportArgs.RenderHarborBlockedArea ?? (exportArgs.UseUserSettings && _appSettings.ShowHarborBlockedArea),
-                    RenderInfluences = exportArgs.RenderInfluences ?? (exportArgs.UseUserSettings && _appSettings.ShowInfluences),
-                    RenderPanorama = exportArgs.RenderPanorama ?? (exportArgs.UseUserSettings && _appSettings.ShowPanorama),
-                    RenderTrueInfluenceRange = exportArgs.RenderTrueInfluenceRange ?? (exportArgs.UseUserSettings && _appSettings.ShowTrueInfluenceRange)
-                }).RenderToFile(exportArgs.ExportedImageFilePath);
+                _mainViewModel.PrepareCanvasForRender(layout.Objects, [], Math.Max(exportArgs.Border, 0),
+                    new Models.CanvasRenderSetting()
+                    {
+                        GridSize = exportArgs.GridSize,
+                        RenderGrid =
+                            exportArgs.RenderGrid ?? (!exportArgs.UseUserSettings || _appSettings.ShowGrid),
+                        RenderIcon =
+                            exportArgs.RenderIcon ?? (!exportArgs.UseUserSettings || _appSettings.ShowIcons),
+                        RenderLabel =
+                            exportArgs.RenderLabel ?? (!exportArgs.UseUserSettings || _appSettings.ShowLabels),
+                        RenderStatistics =
+                            exportArgs.RenderStatistics ??
+                            (!exportArgs.UseUserSettings || _appSettings.StatsShowStats),
+                        RenderVersion = exportArgs.RenderVersion ?? true,
+                        RenderHarborBlockedArea =
+                            exportArgs.RenderHarborBlockedArea ??
+                            (exportArgs.UseUserSettings && _appSettings.ShowHarborBlockedArea),
+                        RenderInfluences =
+                            exportArgs.RenderInfluences ??
+                            (exportArgs.UseUserSettings && _appSettings.ShowInfluences),
+                        RenderPanorama =
+                            exportArgs.RenderPanorama ?? (exportArgs.UseUserSettings && _appSettings.ShowPanorama),
+                        RenderTrueInfluenceRange =
+                            exportArgs.RenderTrueInfluenceRange ??
+                            (exportArgs.UseUserSettings && _appSettings.ShowTrueInfluenceRange)
+                    }).RenderToFile(exportArgs.ExportedImageFilePath);
 
                 ConsoleManager.Show();
                 Console.WriteLine($"Export completed: \"{exportArgs.LayoutFilePath}\"");
@@ -109,7 +125,7 @@ namespace AnnoDesigner
                 Close();
             }
         }
-         
+
         #endregion
 
         #region UI events
@@ -118,13 +134,12 @@ namespace AnnoDesigner
         {
             App.DpiScale = e.NewDpi;
         }
-  
 
         #endregion
 
-        private async void WindowClosing(object sender, CancelEventArgs e)
+        private void WindowClosing(object sender, CancelEventArgs e)
         {
-            if (!await annoCanvas.CheckUnsavedChanges())
+            if (!annoCanvas.CheckUnsavedChanges().ConfigureAwait(false).GetAwaiter().GetResult())
             {
                 e.Cancel = true;
                 return;
@@ -140,8 +155,9 @@ namespace AnnoDesigner
             _mainViewModel.SaveSettings();
 
 #if DEBUG
-            var userConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath;
-            logger.Trace($"saving settings: \"{userConfig}\"");
+            var userConfig = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal)
+                .FilePath;
+            Logger.Trace($"saving settings: \"{userConfig}\"");
 #endif
         }
     }

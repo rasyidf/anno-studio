@@ -26,8 +26,7 @@ using AnnoDesigner.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using NLog.Targets;
-using AnnoDesigner.Services;
-using Wpf.Ui.Appearance;
+using AnnoDesigner.Views;
 
 namespace AnnoDesigner
 {

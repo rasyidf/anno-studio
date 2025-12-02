@@ -7,11 +7,12 @@
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}">
- 
+
     <UserControl.Resources>
         <Style x:Key="RecentFileItemStyle" TargetType="MenuItem">
             <Setter Property="Header" Value="{Binding Path, Mode=OneTime}" />
-            <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.OpenRecentFileCommand}" />
+            <Setter Property="Command"
+                    Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.OpenRecentFileCommand}" />
             <Setter Property="CommandParameter" Value="{Binding}" />
         </Style>
 
@@ -19,7 +20,8 @@
             <Setter Property="Header" Value="{Binding Name}" />
             <Setter Property="IsCheckable" Value="True" />
             <Setter Property="IsChecked" Value="{Binding IsSelected, Mode=TwoWay}" />
-            <Setter Property="Command" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.LanguageSelectedCommand}" />
+            <Setter Property="Command"
+                    Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.LanguageSelectedCommand}" />
             <Setter Property="CommandParameter" Value="{Binding}" />
             <Setter Property="Icon">
                 <Setter.Value>
@@ -436,7 +438,35 @@
                 <ui:MenuItem.Icon>
                     <ui:SymbolIcon Symbol="ZoomIn24" />
                 </ui:MenuItem.Icon>
-                <ui:MenuItem Command="{Binding CanvasResetZoomCommand}" Header="{l:Localize ResetZoomView}" />
+                <ui:MenuItem Command="{Binding CanvasZoomInCommand}" Header="{l:Localize ZoomIn}"
+                             InputGestureText="Ctrl++">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="ZoomIn24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <ui:MenuItem Command="{Binding CanvasZoomOutCommand}" Header="{l:Localize ZoomOut}"
+                             InputGestureText="Ctrl+-">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="ZoomOut24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <ui:MenuItem Command="{Binding CanvasResetZoomCommand}" Header="{l:Localize ResetZoomView}">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="ArrowReset24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <ui:MenuItem Command="{Binding CanvasZoomFitCommand}" Header="{l:Localize FitToScreen}"
+                             InputGestureText="Ctrl+0">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="ZoomFit24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <ui:MenuItem Command="{Binding CanvasZoomToSelectionCommand}" Header="{l:Localize ZoomToSelection}"
+                             InputGestureText="Ctrl+Shift+0">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="Target24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
             </ui:MenuItem>
 
             <Separator />
@@ -504,7 +534,8 @@
 
             <Separator />
 
-            <ui:MenuItem Command="{Binding ShowPreferencesWindowCommand}" Header="{l:Localize Preferences, StringFormat='\{0\}...'}">
+            <ui:MenuItem Command="{Binding ShowPreferencesWindowCommand}"
+                         Header="{l:Localize Preferences, StringFormat='\{0\}...'}">
                 <ui:MenuItem.Icon>
                     <ui:SymbolIcon Symbol="Settings24" />
                 </ui:MenuItem.Icon>

@@ -5,7 +5,7 @@ namespace AnnoDesigner
     /// <summary>
     /// Interaction logic for UpdateWindow.xaml
     /// </summary>
-    public partial class UpdateWindow : Window
+    public partial class UpdateWindow  
     {
         public UpdateWindow()
         {

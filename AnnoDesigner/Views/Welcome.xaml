@@ -1,4 +1,4 @@
-﻿<Window
+﻿<ui:FluentWindow
     x:Class="AnnoDesigner.Welcome"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -31,6 +31,8 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
+        <ui:TitleBar Title="{Binding Title, RelativeSource={RelativeSource AncestorType={x:Type ui:FluentWindow}}}" CanMaximize="False" ShowMinimize="False" ShowMaximize="False" Grid.ColumnSpan="1">
+        </ui:TitleBar>
         <TextBlock
             Width="433"
             Margin="79,10,0,0"
@@ -99,4 +101,4 @@
             RenderTransformOrigin="0.416,0.462"
             TextWrapping="Wrap" />
     </Grid>
-</Window>
+</ui:FluentWindow>

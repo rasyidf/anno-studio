@@ -6,7 +6,7 @@ namespace AnnoDesigner
     /// <summary>
     /// Interaction logic for About.xaml
     /// </summary>
-    public partial class About : Window, ICloseable
+    public partial class About : ICloseable
     {
         public About()
         {

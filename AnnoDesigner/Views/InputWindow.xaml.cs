@@ -6,7 +6,7 @@ namespace AnnoDesigner
     /// <summary>
     /// Interaction logic for InputWindow.xaml
     /// </summary>
-    public partial class InputWindow : Window
+    public partial class InputWindow
     {
         public InputWindow()
         {

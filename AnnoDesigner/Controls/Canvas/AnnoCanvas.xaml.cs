@@ -605,6 +605,11 @@ namespace AnnoDesigner.Controls.Canvas
             _localizationHelper = localizationHelperToUse ?? Localization.Localization.Instance;
             _layoutLoader = new LayoutLoader();
             UndoManager = undoManager ?? new UndoManager();
+            // Ensure command state updates when the undo manager reports changes
+            if (UndoManager is System.ComponentModel.INotifyPropertyChanged notify)
+            {
+                notify.PropertyChanged += (s, e) => CommandManager.InvalidateRequerySuggested();
+            }
             IClipboard clipboard = new WindowsClipboard();
             ClipboardService = clipboardService ?? new ClipboardService(_layoutLoader, clipboard);
 
@@ -1729,6 +1734,66 @@ namespace AnnoDesigner.Controls.Canvas
             foreach (var action in CommandExecuteMappings)
             {
                 CommandManager.RegisterClassCommandBinding(typeof(AnnoCanvas2), new CommandBinding(action.Key, ExecuteCommand));
+            }
+
+            // register Undo/Redo command bindings so ApplicationCommands.Undo and .Redo work with AnnoCanvas2
+            CommandManager.RegisterClassCommandBinding(typeof(AnnoCanvas2), new CommandBinding(ApplicationCommands.Undo, ExecuteUndoCommand, CanExecuteUndoCommand));
+            CommandManager.RegisterClassCommandBinding(typeof(AnnoCanvas2), new CommandBinding(ApplicationCommands.Redo, ExecuteRedoCommand, CanExecuteRedoCommand));
+        }
+
+        private static void ExecuteUndoCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (sender is AnnoCanvas2 canvas)
+            {
+                canvas.ExecuteUndo(null);
+                e.Handled = true;
+            }
+        }
+
+        private static void CanExecuteUndoCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (sender is AnnoCanvas2 canvas && canvas.UndoManager != null)
+            {
+                if (canvas.UndoManager is AnnoDesigner.Services.Undo.UndoManager um)
+                {
+                    e.CanExecute = um.UndoStack.Count > 0;
+                }
+                else
+                {
+                    e.CanExecute = false;
+                }
+            }
+            else
+            {
+                e.CanExecute = false;
+            }
+        }
+
+        private static void ExecuteRedoCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (sender is AnnoCanvas2 canvas)
+            {
+                canvas.ExecuteRedo(null);
+                e.Handled = true;
+            }
+        }
+
+        private static void CanExecuteRedoCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (sender is AnnoCanvas2 canvas && canvas.UndoManager != null)
+            {
+                if (canvas.UndoManager is AnnoDesigner.Services.Undo.UndoManager um)
+                {
+                    e.CanExecute = um.RedoStack.Count > 0;
+                }
+                else
+                {
+                    e.CanExecute = false;
+                }
+            }
+            else
+            {
+                e.CanExecute = false;
             }
         }
 

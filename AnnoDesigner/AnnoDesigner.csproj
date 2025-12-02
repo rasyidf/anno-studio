@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AvalonDock.Themes.WPFUI" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
     <PackageReference Include="Extended.Wpf.Toolkit" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" />

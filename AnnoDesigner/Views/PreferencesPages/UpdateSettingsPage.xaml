@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:AnnoDesigner.ViewModels"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-    d:Background="White"
+    
     d:DataContext="{d:DesignInstance Type=viewModels:UpdateSettingsViewModel,
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="545.861"

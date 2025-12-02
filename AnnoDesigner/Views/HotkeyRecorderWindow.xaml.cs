@@ -9,16 +9,13 @@ namespace AnnoDesigner
     /// <summary>
     /// Interaction logic for KeyRecorderWindow.xaml
     /// </summary>
-    public partial class HotkeyRecorderWindow : Window, ICloseable
+    public partial class HotkeyRecorderWindow : ICloseable
     {
         public HotkeyRecorderWindow()
         {
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
             InitializeComponent();
-            ViewModel = new HotkeyRecorderViewModel
-            {
-                ActionRecorder = ActionRecorder
-            };
+            ViewModel = new HotkeyRecorderViewModel { ActionRecorder = ActionRecorder };
             DataContext = ViewModel;
             _ = ActionRecorder.Focus();
             Closing += HotkeyRecorderWindow_Closing;
@@ -33,7 +30,8 @@ namespace AnnoDesigner
             }
         }
 
-        public (Key key, ModifierKeys modifiers, ExtendedMouseAction action, ActionRecorder.ActionType result, bool userCancelled) RecordNewAction()
+        public (Key key, ModifierKeys modifiers, ExtendedMouseAction action, ActionRecorder.ActionType result, bool
+            userCancelled) RecordNewAction()
         {
             ViewModel.Reset();
             _ = ShowDialog();

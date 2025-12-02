@@ -10,6 +10,7 @@ namespace AnnoDesigner.ViewModels
     /// </summary>
     public class LicensesViewModel : Notify
     {
+        
         private ObservableCollection<LicenseInfo> _Licenses;
         public ObservableCollection<LicenseInfo> Licenses
         {
