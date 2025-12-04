@@ -148,5 +148,12 @@ namespace AnnoDesigner.Models
         private readonly ExtendedMouseAction defaultMouseAction = default;
         private readonly ModifierKeys defaultModifiers = default;
         private readonly GestureType defaultType = default;
+
+        private string _editButtonText;
+        public string EditButtonText
+        {
+            get => _editButtonText ?? "Edit";
+            set => UpdateProperty(ref _editButtonText, value);
+        }
     }
 }

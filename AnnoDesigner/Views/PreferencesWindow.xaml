@@ -9,16 +9,16 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:viewModel="clr-namespace:AnnoDesigner.ViewModels"
-    FontFamily="Segoe UI"
     Name="Preferences"
     Title="{l:Localize Preferences}"
-    Width="800"
-    Height="450"
+    Width="930"
+    Height="650"
     d:Background="White"
     d:DataContext="{d:DesignInstance Type=viewModel:PreferencesViewModel,
                                      IsDesignTimeCreatable=True}"
     d:Foreground="Black"
     ExtendsContentIntoTitleBar="True"
+    FontFamily="Segoe UI"
     WindowBackdropType="Mica"
     WindowStyle="ToolWindow"
     mc:Ignorable="d">
@@ -58,7 +58,7 @@
                         <Style x:Key="MenuItemStyle" TargetType="{x:Type ListViewItem}">
                             <Setter Property="FontSize" Value="16" />
                             <Setter Property="Padding" Value="8" />
-                            <Setter Property="Margin" Value="4,2" />    
+                            <Setter Property="Margin" Value="4,2" />
                         </Style>
                     </StackPanel.Resources>
                     <ListView
@@ -87,6 +87,7 @@
         <ui:Card
             Grid.Row="1"
             Grid.Column="2"
+            Padding="0"
             VerticalAlignment="Stretch"
             VerticalContentAlignment="Top">
 
@@ -99,7 +100,8 @@
         <!--  Footer spanning all columns  -->
         <Border
             Grid.Row="2"
-            Grid.ColumnSpan="3" Grid.Column="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
             Padding="10"
             BorderThickness="1,0,0,0">
             <Grid>

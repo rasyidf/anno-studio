@@ -138,7 +138,7 @@ namespace AnnoDesigner.ViewModels
                 {
                     if (await _messageBoxService.ShowQuestion(Application.Current.MainWindow,
                         _localizationHelper.GetLocalization("UpdateAvailablePresetMessage"),
-                        _localizationHelper.GetLocalization("UpdateAvailableHeader")))
+                        _localizationHelper.GetLocalization("UpdateAvailableHeader")).ConfigureAwait(false))
                     {
                         await DownloadPresetsAsync().ConfigureAwait(true);
                     }

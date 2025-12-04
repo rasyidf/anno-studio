@@ -7,9 +7,9 @@
     xmlns:l="clr-namespace:AnnoDesigner.Localization"
     xmlns:local="clr-namespace:AnnoDesigner.PreferencesPages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:viewModels="clr-namespace:AnnoDesigner.ViewModels"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-    
     d:DataContext="{d:DesignInstance Type=viewModels:UpdateSettingsViewModel,
                                      IsDesignTimeCreatable=False}"
     d:DesignHeight="545.861"
@@ -23,160 +23,159 @@
             TrueValue="Visible" />
     </Page.Resources>
     <xctk:BusyIndicator BusyContent="{Binding BusyContent}" IsBusy="{Binding IsBusy}">
-        <StackPanel Margin="10,5,0,0" Orientation="Vertical">
 
-            <!--#region Current Version-->
+        <StackPanel Orientation="Vertical">
 
-            <TextBlock
-                Margin="0,10,0,10"
-                FontSize="14"
-                Text="{l:Localize UpdatePreferencesVersionInformation}" />
+            <!--  Top: Version summary with action  -->
+            <ui:CardExpander ContentPadding="0" IsExpanded="True">
+                <ui:CardExpander.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-            <StackPanel Margin="20,0,0,10" Grid.IsSharedSizeScope="True">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="200" SharedSizeGroup="LocalizationColumn" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                            <ui:SymbolIcon
+                                Width="36"
+                                Height="36"
+                                VerticalAlignment="Top"
+                                Symbol="ArrowSync20" />
+                            <StackPanel Margin="8,0,0,0">
+                                <TextBlock
+                                    FontSize="14"
+                                    FontWeight="SemiBold"
+                                    Text="{Binding VersionValue}" />
+                                <TextBlock FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}">
+                                    <Run Text="{l:Localize UpdatePreferencesLastChecked, Mode=OneWay}" />
+                                    <!--  If you have a last-checked property, bind it here  -->
+                                    <Run Text=" " />
+                                    <Hyperlink Command="{Binding OpenReleasesCommand}">{l:Localize UpdatePreferencesReleaseNotes}</Hyperlink>
+                                </TextBlock>
+                            </StackPanel>
+                        </StackPanel>
 
-                    <TextBlock Grid.Column="0" Text="{l:Localize Version, StringFormat='\{0\}:', Mode=OneWay}" />
-                    <TextBlock Grid.Column="1" Text="{Binding VersionValue}" />
-                </Grid>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition SharedSizeGroup="LocalizationColumn" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+                        <StackPanel
+                            Grid.Column="1"
+                            Margin="0,0,8,0"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                            <Button Command="{Binding CheckForUpdatesCommand}" Content="{l:Localize CheckForUpdates}" />
+                            <Button
+                                Margin="10,0"
+                                Command="{Binding DownloadPresetsCommand}"
+                                Content="{l:Localize UpdatePreferencesDownloadPresetsAndRestart}"
+                                Visibility="{Binding IsPresetUpdateAvailable, Converter={StaticResource converterBoolToVisibilityCollapsed}}" />
+                        </StackPanel>
+                    </Grid>
+                </ui:CardExpander.Header>
+                <StackPanel>
+                    <ui:CardControl Padding="12">
+                        <ui:CardControl.Header>
+                            <CheckBox Content="{l:Localize EnableAutomaticUpdateCheck}" IsChecked="{Binding AutomaticUpdateCheck}" />
+                        </ui:CardControl.Header>
+                    </ui:CardControl>
+                    <ui:CardControl Padding="12">
+                        <ui:CardControl.Header>
+                            <CheckBox Content="{l:Localize UpdatePreferencesCheckPreRelease}" IsChecked="{Binding UpdateSupportsPrerelease}" />
+                        </ui:CardControl.Header>
+                    </ui:CardControl>
+                    <ui:CardControl Padding="12">
+                        <ui:CardControl.Header>
+                            <CheckBox Content="{l:Localize ShowMultipleInstanceWarning}" IsChecked="{Binding ShowMultipleInstanceWarning}" />
+                        </ui:CardControl.Header>
+                    </ui:CardControl>
+                </StackPanel>
+            </ui:CardExpander>
 
-                    <TextBlock Grid.Column="0" Text="{l:Localize PresetsVersion, StringFormat='\{0\}:', Mode=OneWay}" />
-                    <TextBlock Grid.Column="1" Text="{Binding PresetsVersionValue}" />
-                </Grid>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition SharedSizeGroup="LocalizationColumn" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Column="0" Text="{l:Localize ColorPresetsVersion, StringFormat='\{0\}:', Mode=OneWay}" />
-                    <TextBlock Grid.Column="1" Text="{Binding ColorPresetsVersionValue}" />
-                </Grid>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition SharedSizeGroup="LocalizationColumn" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+            <StackPanel>
 
-                    <TextBlock Grid.Column="0" Text="{l:Localize TreeLocalizationVersion, StringFormat='\{0\}:', Mode=OneWay}" />
-                    <TextBlock Grid.Column="1" Text="{Binding TreeLocalizationVersionValue}" />
-                </Grid>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition SharedSizeGroup="LocalizationColumn" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+                <ui:InfoBar
+                    Title="{l:Localize UpdatePreferencesNoUpdates}"
+                    Margin="0,6,0,0"
+                    IsOpen="{Binding IsAppUpToDate}"
+                    Severity="Success" />
 
-                    <TextBlock Grid.Column="0" Text="{l:Localize FileVersion, StringFormat='\{0\}:', Mode=OneWay}" />
-                    <TextBlock Grid.Column="1" Text="{Binding FileVersionValue}" />
-                </Grid>
+                <ui:InfoBar
+                    Title="{l:Localize UpdatePreferencesErrorCheckingUpdates}"
+                    Margin="0,6,0,0"
+                    IsOpen="{Binding IsUpdateError}"
+                    Severity="Error">
+                    <TextBlock Text="{l:Localize UpdatePreferencesMoreInfoInLog}" TextWrapping="Wrap" />
+                </ui:InfoBar>
+
+                <ui:InfoBar
+                    Title="{l:Localize UpdatePreferencesNewAppUpdateAvailable}"
+                    Margin="0,6,0,0"
+                    IsOpen="{Binding IsUpdateAvailable}"
+                    Severity="Warning">
+                    <TextBlock>
+                        <Hyperlink Command="{Binding OpenReleasesCommand}">https://github.com/AnnoDesigner/anno-designer/releases</Hyperlink>
+                    </TextBlock>
+                </ui:InfoBar>
+
+                <ui:InfoBar
+                    Title="{l:Localize UpdatePreferencesNewPresetsUpdateAvailable}"
+                    Margin="0,6,0,0"
+                    IsOpen="{Binding IsPresetUpdateAvailable}"
+                    Severity="Warning" />
             </StackPanel>
+            <!--  Detailed version info moved to bottom  -->
+            <ui:CardExpander Margin="0,10,0,0" IsExpanded="True">
+                <ui:CardExpander.Header>
+                    <TextBlock Text="{l:Localize UpdatePreferencesVersionInformation}" />
+                </ui:CardExpander.Header>
+                <StackPanel Margin="10,6,0,0" Grid.IsSharedSizeScope="True">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" SharedSizeGroup="LocalizationColumn" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-            <!--#endregion-->
+                        <TextBlock Grid.Column="0" Text="{l:Localize Version, StringFormat='\{0\}:', Mode=OneWay}" />
+                        <TextBlock Grid.Column="1" Text="{Binding VersionValue}" />
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="LocalizationColumn" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-            <!--#region Settings-->
+                        <TextBlock Grid.Column="0" Text="{l:Localize PresetsVersion, StringFormat='\{0\}:', Mode=OneWay}" />
+                        <TextBlock Grid.Column="1" Text="{Binding PresetsVersionValue}" />
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="LocalizationColumn" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-            <TextBlock
-                Margin="0,10,0,10"
-                FontSize="14"
-                Text="{l:Localize UpdatePreferencesSettings}" />
+                        <TextBlock Grid.Column="0" Text="{l:Localize ColorPresetsVersion, StringFormat='\{0\}:', Mode=OneWay}" />
+                        <TextBlock Grid.Column="1" Text="{Binding ColorPresetsVersionValue}" />
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="LocalizationColumn" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-            <StackPanel Margin="20,0,0,10">
-                <CheckBox
-                    Margin="0,0,0,10"
-                    Content="{l:Localize EnableAutomaticUpdateCheck}"
-                    IsChecked="{Binding AutomaticUpdateCheck}" />
-                <CheckBox
-                    Margin="0,0,0,10"
-                    Content="{l:Localize UpdatePreferencesCheckPreRelease}"
-                    IsChecked="{Binding UpdateSupportsPrerelease}" />
-                <CheckBox Content="{l:Localize ShowMultipleInstanceWarning}" IsChecked="{Binding ShowMultipleInstanceWarning}" />
-            </StackPanel>
+                        <TextBlock Grid.Column="0" Text="{l:Localize TreeLocalizationVersion, StringFormat='\{0\}:', Mode=OneWay}" />
+                        <TextBlock Grid.Column="1" Text="{Binding TreeLocalizationVersionValue}" />
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition SharedSizeGroup="LocalizationColumn" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-            <!--#endregion-->
-
-            <!--#region Updates-->
-
-            <TextBlock
-                Margin="0,10,0,10"
-                FontSize="14"
-                Text="{l:Localize UpdatePreferencesUpdates}" />
-
-            <StackPanel Margin="20,0,0,0" Orientation="Horizontal">
-
-                <Button
-                    Margin="0,0,10,0"
-                    Padding="5,2"
-                    Command="{Binding CheckForUpdatesCommand}"
-                    Content="{l:Localize CheckForUpdates}" />
-                <Button
-                    Margin="0,0,10,0"
-                    Padding="5,2"
-                    Command="{Binding DownloadPresetsCommand}"
-                    Content="{l:Localize UpdatePreferencesDownloadPresetsAndRestart}"
-                    Visibility="{Binding IsPresetUpdateAvailable, Converter={StaticResource converterBoolToVisibilityCollapsed}}" />
-            </StackPanel>
-
-            <TextBlock
-                Margin="20,5,0,0"
-                FontWeight="Bold"
-                Text="{l:Localize UpdatePreferencesNewAppUpdateAvailable}"
-                TextWrapping="Wrap"
-                Visibility="{Binding IsUpdateAvailable, Converter={StaticResource converterBoolToVisibilityCollapsed}}" />
-            <TextBlock Margin="20,5,0,0" Visibility="{Binding IsUpdateAvailable, Converter={StaticResource converterBoolToVisibilityCollapsed}}">
-                <Hyperlink Command="{Binding OpenReleasesCommand}">https://github.com/AnnoDesigner/anno-designer/releases</Hyperlink>
-            </TextBlock>
-            <Grid Margin="20,0,0,0" Visibility="{Binding IsUpdateAvailable, Converter={StaticResource converterBoolToVisibilityCollapsed}}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <TextBlock Grid.Column="0" Text="{l:Localize Version, StringFormat='\{0\}:', Mode=OneWay}" />
-                <TextBlock
-                    Grid.Column="1"
-                    Margin="10,0,0,0"
-                    Text="{Binding UpdatedVersionValue}" />
-            </Grid>
-
-            <TextBlock
-                Margin="20,5,0,0"
-                FontWeight="Bold"
-                Foreground="Green"
-                Text="{l:Localize UpdatePreferencesNoUpdates}"
-                TextWrapping="Wrap"
-                Visibility="{Binding IsAppUpToDate, Converter={StaticResource converterBoolToVisibilityCollapsed}}" />
-
-            <TextBlock
-                Margin="20,5,0,0"
-                TextWrapping="Wrap"
-                Visibility="{Binding IsUpdateError, Converter={StaticResource converterBoolToVisibilityCollapsed}}">
-                <Run
-                    FontWeight="Bold"
-                    Foreground="Red"
-                    Text="{l:Localize UpdatePreferencesErrorCheckingUpdates,
-                                      Mode=OneWay}" />
-                <LineBreak />
-                <Run Text="{l:Localize UpdatePreferencesMoreInfoInLog, Mode=OneWay}" />
-            </TextBlock>
-
-            <TextBlock
-                Margin="20,5,0,0"
-                FontWeight="Bold"
-                Text="{l:Localize UpdatePreferencesNewPresetsUpdateAvailable}"
-                TextWrapping="Wrap"
-                Visibility="{Binding IsPresetUpdateAvailable, Converter={StaticResource converterBoolToVisibilityCollapsed}}" />
-
-            <!--#endregion-->
+                        <TextBlock Grid.Column="0" Text="{l:Localize FileVersion, StringFormat='\{0\}:', Mode=OneWay}" />
+                        <TextBlock Grid.Column="1" Text="{Binding FileVersionValue}" />
+                    </Grid>
+                </StackPanel>
+            </ui:CardExpander>
 
         </StackPanel>
+
     </xctk:BusyIndicator>
 </Page>

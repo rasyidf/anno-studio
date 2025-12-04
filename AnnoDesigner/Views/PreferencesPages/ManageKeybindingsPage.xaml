@@ -50,37 +50,28 @@
         <Style x:Key="HotkeyKey" TargetType="{x:Type Label}">
             <Setter Property="Height" Value="40" />
             <Setter Property="MinWidth" Value="30" />
-            <Setter Property="Padding" Value="10,0" />
-            <Setter Property="BorderBrush" Value="#111" />
+            <Setter Property="Padding" Value="10,4" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Background" Value="#444" />
             <Setter Property="FontSize" Value="25" />
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="Margin" Value="3,0" />
-            <Setter Property="FontFamily" Value="Calibri" />
-            <Setter Property="Foreground" Value="#EEE" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Label}">
-                        <Grid>
-                            <Border
-                                Margin="{TemplateBinding Margin}"
-                                Padding="{TemplateBinding Padding}"
-                                Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="10,10,10,10"
-                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
-                                <ContentPresenter
-                                    Margin="0"
-                                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                                    VerticalAlignment="{TemplateBinding VerticalAlignment}"
-                                    Content="{TemplateBinding Content}" />
-                            </Border>
-                        </Grid>
+                        <ui:Card
+                            Margin="{TemplateBinding Margin}"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                            <ContentPresenter
+                                Margin="0"
+                                HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                Content="{TemplateBinding Content}" />
+
+                        </ui:Card>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -93,75 +84,82 @@
         <sys:Int32 x:Key="1">1</sys:Int32>
         <sys:Int32 x:Key="2">2</sys:Int32>
         <DataTemplate x:Key="KeyBinding">
-            <Grid MinHeight="60">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="HotkeyDescriptionSizeGroupCol0" />
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="HotkeyKeySizeGroupCol1" />
-                    <ColumnDefinition Width="*" SharedSizeGroup="HotkeyEditButtonSizeGroupCol2" />
-                </Grid.ColumnDefinitions>
-                <TextBlock
-                    Grid.Column="0"
-                    Style="{StaticResource HotkeyDescription}"
-                    Text="{Binding Description}" />
-                <StackPanel
-                    Grid.Column="1"
-                    Margin="3,5,3,5"
-                    VerticalAlignment="Center"
-                    Orientation="Horizontal">
-                    <Label
-                        Content="{Binding Path=Binding.Gesture.ModifierKeys}"
-                        Style="{StaticResource HotkeyKey}"
-                        Visibility="{Binding Path=Binding.Gesture.ModifierKeys, Converter={StaticResource ModifierKeysToVisibilityConverter}}" />
-                    <TextBlock Style="{StaticResource HotkeyDelimiter}" Visibility="{Binding Path=Binding.Gesture.ModifierKeys, Converter={StaticResource ModifierKeysToVisibilityConverter}}" />
-                    <Label Content="{Binding Path=Binding.Gesture.Key, Converter={StaticResource KeyToDisplayStringConverter}}" Style="{StaticResource HotkeyKey}" />
-                </StackPanel>
-                <Button
-                    Grid.Column="2"
-                    Command="{Binding ElementName=ManageKeybindingsRoot, Path=DataContext.EditCommand}"
-                    CommandParameter="{Binding}"
-                    Content="{Binding ElementName=ManageKeybindingsRoot, Path=DataContext.EditButtonText}"
-                    Style="{StaticResource HotkeyEditButton}" />
-            </Grid>
+            <ui:CardControl Padding="8">
+                <ui:CardControl.Header>
+
+                    <TextBlock
+                        Grid.Column="0"
+                        Style="{StaticResource HotkeyDescription}"
+                        Text="{Binding Description}" />
+                </ui:CardControl.Header>
+                <Grid MinHeight="60">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="HotkeyKeySizeGroupCol1" />
+                        <ColumnDefinition Width="*" SharedSizeGroup="HotkeyEditButtonSizeGroupCol2" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel
+                        Grid.Column="0"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+                        <Label
+                            Content="{Binding Path=Binding.Gesture.ModifierKeys}"
+                            Style="{StaticResource HotkeyKey}"
+                            Visibility="{Binding Path=Binding.Gesture.ModifierKeys, Converter={StaticResource ModifierKeysToVisibilityConverter}}" />
+                        <TextBlock Style="{StaticResource HotkeyDelimiter}" Visibility="{Binding Path=Binding.Gesture.ModifierKeys, Converter={StaticResource ModifierKeysToVisibilityConverter}}" />
+                        <Label Content="{Binding Path=Binding.Gesture.Key, Converter={StaticResource KeyToDisplayStringConverter}}" Style="{StaticResource HotkeyKey}" />
+                    </StackPanel>
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding ElementName=ManageKeybindingsRoot, Path=DataContext.EditCommand}"
+                        CommandParameter="{Binding}"
+                        Content="{Binding EditButtonText}"
+                        Style="{StaticResource HotkeyEditButton}" />
+                </Grid>
+            </ui:CardControl>
         </DataTemplate>
         <DataTemplate x:Key="MouseBinding">
-            <Grid MinHeight="60">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="HotkeyDescriptionSizeGroupCol0" />
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="HotkeyKeySizeGroupCol1" />
-                    <ColumnDefinition Width="*" SharedSizeGroup="HotkeyEditButtonSizeGroupCol2" />
-                </Grid.ColumnDefinitions>
-                <TextBlock
-                    Grid.Column="0"
-                    Style="{StaticResource HotkeyDescription}"
-                    Text="{Binding Description}" />
-                <StackPanel
-                    Grid.Column="1"
-                    Margin="3,5,3,5"
-                    VerticalAlignment="Center"
-                    Orientation="Horizontal">
+            <ui:CardControl Padding="8">
+                <ui:CardControl.Header>
 
-                    <Label
-                        Content="{Binding Path=Binding.Gesture.ModifierKeys}"
-                        Style="{StaticResource HotkeyKey}"
-                        Visibility="{Binding Path=Binding.Gesture.ModifierKeys, Converter={StaticResource ModifierKeysToVisibilityConverter}}" />
-                    <TextBlock Style="{StaticResource HotkeyDelimiter}" Visibility="{Binding Path=Binding.Gesture.ModifierKeys, Converter={StaticResource ModifierKeysToVisibilityConverter}}" />
-                    <Grid>
-                        <!--  multiplication unicode symbol  -->
-                        <!--  Content="×2"  -->
+                    <TextBlock
+                        Grid.Column="0"
+                        Style="{StaticResource HotkeyDescription}"
+                        Text="{Binding Description}" />
+                </ui:CardControl.Header>
+                <Grid MinHeight="60">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="HotkeyKeySizeGroupCol1" />
+                        <ColumnDefinition Width="*" SharedSizeGroup="HotkeyEditButtonSizeGroupCol2" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel
+                        Grid.Column="0"
+                        Margin="3,5,3,5"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+
                         <Label
-                            Margin="-10,-13,0,0"
-                            Content="&#x00D7;2"
-                            Visibility="{Binding Path=Binding.Gesture.MouseAction, Converter={StaticResource ExtendedMouseActionToVisibilityConverter}}" />
-                        <Image Source="{Binding Path=Binding.Gesture.MouseAction, Converter={StaticResource ExtendedMouseActionToImageSourceConverter}}" Style="{StaticResource HotkeyImage}" />
-                    </Grid>
-                </StackPanel>
-                <Button
-                    Grid.Column="2"
-                    Command="{Binding ElementName=ManageKeybindingsRoot, Path=DataContext.EditCommand}"
-                    CommandParameter="{Binding}"
-                    Content="{Binding ElementName=ManageKeybindingsRoot, Path=DataContext.EditButtonText}"
-                    Style="{StaticResource HotkeyEditButton}" />
-            </Grid>
+                            Content="{Binding Path=Binding.Gesture.ModifierKeys}"
+                            Style="{StaticResource HotkeyKey}"
+                            Visibility="{Binding Path=Binding.Gesture.ModifierKeys, Converter={StaticResource ModifierKeysToVisibilityConverter}}" />
+                        <TextBlock Style="{StaticResource HotkeyDelimiter}" Visibility="{Binding Path=Binding.Gesture.ModifierKeys, Converter={StaticResource ModifierKeysToVisibilityConverter}}" />
+                        <Grid>
+                            <!--  multiplication unicode symbol  -->
+                            <!--  Content="×2"  -->
+                            <Label
+                                Margin="-10,-13,0,0"
+                                Content="&#x00D7;2"
+                                Visibility="{Binding Path=Binding.Gesture.MouseAction, Converter={StaticResource ExtendedMouseActionToVisibilityConverter}}" />
+                            <Image Source="{Binding Path=Binding.Gesture.MouseAction, Converter={StaticResource ExtendedMouseActionToImageSourceConverter}}" Style="{StaticResource HotkeyImage}" />
+                        </Grid>
+                    </StackPanel>
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding ElementName=ManageKeybindingsRoot, Path=DataContext.EditCommand}"
+                        CommandParameter="{Binding}"
+                        Content="{Binding EditButtonText}"
+                        Style="{StaticResource HotkeyEditButton}" />
+                </Grid>
+            </ui:CardControl>
         </DataTemplate>
     </Page.Resources>
     <Grid>
@@ -169,24 +167,55 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" Grid.IsSharedSizeScope="True">
-            <ItemsControl
-                Name="HotkeyActions"
-                HorizontalAlignment="Stretch"
-                ItemTemplateSelector="{StaticResource dataTemplateSelector}"
-                ItemsSource="{Binding HotkeyCommandManager.ObservableCollection}" />
-        </Grid>
-        <StackPanel
-            Grid.Row="1"
-            Margin="10"
-            VerticalAlignment="Center"
-            FlowDirection="RightToLeft"
-            Orientation="Horizontal">
-            <Button
-                Padding="10"
-                Command="{Binding ResetHotkeysCommand}"
-                Content="{l:Localize ResetAll}" />
-        </StackPanel>
+        <ui:CardExpander
+            Grid.Row="0"
+            Icon="{ui:SymbolIcon Keyboard20}"
+            IsExpanded="True">
+            <ui:CardExpander.Header>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock
+                            Grid.Row="0"
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Text="{l:Localize ManageKeybindings}" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Margin="0,2,0,0"
+                            FontSize="12"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Text="{l:Localize ManageKeybindingsDescription}"
+                            TextWrapping="Wrap" />
+                    </Grid>
+
+                    <Button
+                        Grid.Column="1"
+                        Margin="0,0,8,0"
+                        Padding="8,4"
+                        VerticalAlignment="Center"
+                        Command="{Binding ResetHotkeysCommand}"
+                        Content="{l:Localize ResetAll}" />
+                </Grid>
+            </ui:CardExpander.Header>
+            <ui:CardExpander.Content>
+                <Grid Grid.IsSharedSizeScope="True">
+                    <ItemsControl
+                        Name="HotkeyActions"
+                        HorizontalAlignment="Stretch"
+                        ItemTemplateSelector="{StaticResource dataTemplateSelector}"
+                        ItemsSource="{Binding HotkeyCommandManager.ObservableCollection}" />
+                </Grid>
+            </ui:CardExpander.Content>
+        </ui:CardExpander>
 
     </Grid>
 </Page>
