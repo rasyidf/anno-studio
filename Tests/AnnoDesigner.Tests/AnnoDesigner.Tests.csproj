@@ -4,13 +4,15 @@
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWPF>true</UseWPF>
+    <!-- Ensure package assemblies are copied to test output so testhost can find them -->
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
   </PropertyGroup> 
   <ItemGroup>
     <PackageReference Include="AvalonDock.Themes.WPFUI" />
     <PackageReference Include="Moq" />
     <PackageReference Include="System.IO.Abstractions.TestingHelpers" />
-    <PackageReference Include="WPF-UI" />
+    <PackageReference Include="WPF-UI" /> 
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.analyzers" />
     <PackageReference Include="xunit.runner.console">

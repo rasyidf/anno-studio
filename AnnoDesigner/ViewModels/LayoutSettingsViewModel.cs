@@ -1,10 +1,13 @@
 ﻿using System;
 using AnnoDesigner.Core.Models;
+using System.Collections.Generic;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AnnoDesigner.ViewModels
 {
-    public class LayoutSettingsViewModel : Notify
+    public partial class LayoutSettingsViewModel : ObservableObject, INotifyPropertyChangedWithValues<object>
     {
+        public event EventHandler<PropertyChangedWithValuesEventArgs<object>> PropertyChangedWithValues;
         public LayoutSettingsViewModel()
         {
             _layoutVersion = new Version(1, 0, 0, 0);
@@ -14,7 +17,7 @@ namespace AnnoDesigner.ViewModels
 
         public Version LayoutVersion
         {
-            get { return _layoutVersion; }
+            get => _layoutVersion;
             set
             {
                 if (value is null)
@@ -22,8 +25,16 @@ namespace AnnoDesigner.ViewModels
                     return;
                 }
 
-                _ = UpdateProperty(ref _layoutVersion, value);
-                OnPropertyChanged(nameof(LayoutVersionDisplayValue));
+                    if (!EqualityComparer<Version>.Default.Equals(_layoutVersion, value))
+                    {
+                        // raise the old/new event first to preserve previous Notify behavior
+                        PropertyChangedWithValues?.Invoke(this, new PropertyChangedWithValuesEventArgs<object>(nameof(LayoutVersion), _layoutVersion, value));
+
+                        if (SetProperty(ref _layoutVersion, value))
+                        {
+                            OnPropertyChanged(nameof(LayoutVersionDisplayValue));
+                        }
+                    }
             }
         }
 

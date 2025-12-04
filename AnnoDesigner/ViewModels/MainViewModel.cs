@@ -260,12 +260,17 @@ namespace AnnoDesigner.ViewModels
 
         private void PresetsTreeSearchViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (string.Equals(e.PropertyName, nameof(PresetsTreeSearchViewModel.SearchText),
+            System.Diagnostics.Debug.WriteLine($"DEBUG: PresetsTreeSearchViewModel PropertyChanged: {e.PropertyName}");
+            System.Console.WriteLine($"DEBUG: PresetsTreeSearchViewModel PropertyChanged: {e.PropertyName}");
+            
+            if (string.Equals(e.PropertyName, nameof(PresetsTreeSearchViewModel.DebouncedSearchText),
                     StringComparison.OrdinalIgnoreCase))
             {
-                PresetsTreeViewModel.FilterText = PresetsTreeSearchViewModel.SearchText;
+                System.Diagnostics.Debug.WriteLine($"DEBUG: Setting FilterText to: '{PresetsTreeSearchViewModel.DebouncedSearchText}'");
+                System.Console.WriteLine($"DEBUG: Setting FilterText to: '{PresetsTreeSearchViewModel.DebouncedSearchText}'");
+                PresetsTreeViewModel.FilterText = PresetsTreeSearchViewModel.DebouncedSearchText;
 
-                if (!IsLanguageChange && string.IsNullOrWhiteSpace(PresetsTreeSearchViewModel.SearchText))
+                if (!IsLanguageChange && string.IsNullOrWhiteSpace(PresetsTreeSearchViewModel.DebouncedSearchText))
                 {
                     PresetsTreeViewModel.SetCondensedTreeState(_treeViewState, AnnoCanvas.BuildingPresets.Version);
                 }

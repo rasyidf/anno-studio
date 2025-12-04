@@ -25,6 +25,26 @@ namespace AnnoDesigner.Tests
 
         #endregion
 
+        #region Debounced search tests
+
+        [Fact]
+        public async System.Threading.Tasks.Task SearchText_UpdatesDebouncedSearchTextAfterDelay()
+        {
+            // Arrange
+            var viewModel = new PresetsTreeSearchViewModel();
+
+            // Act
+            viewModel.SearchText = "delayed";
+
+            // Wait for debounce period in view model (+ margin)
+            await System.Threading.Tasks.Task.Delay(400);
+
+            // Assert
+            Assert.Equal("delayed", viewModel.DebouncedSearchText);
+        }
+
+        #endregion
+
         #region GotFocusCommand tests
 
         [Fact]

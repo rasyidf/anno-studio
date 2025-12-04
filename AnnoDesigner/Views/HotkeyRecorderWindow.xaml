@@ -1,34 +1,66 @@
-﻿<ui:FluentWindow x:Class="AnnoDesigner.HotkeyRecorderWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:l="clr-namespace:AnnoDesigner.Localization"
-        xmlns:viewModels="clr-namespace:AnnoDesigner.ViewModels" 
-        xmlns:controls="clr-namespace:AnnoDesigner.Core.Controls;assembly=AnnoDesigner.Core"
-        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-        mc:Ignorable="d"
-        FontFamily="Segoe UI"
-        Title="{l:Localize RecordANewAction}" 
-        Height="175" 
-        Width="670"
-        d:DataContext="{d:DesignInstance Type=viewModels:HotkeyRecorderViewModel, IsDesignTimeCreatable=True}"
-        WindowStartupLocation="CenterOwner">
-    <Grid Margin="5" >
+﻿<ui:FluentWindow
+    x:Class="AnnoDesigner.HotkeyRecorderWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:AnnoDesigner.Core.Controls;assembly=AnnoDesigner.Core"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:l="clr-namespace:AnnoDesigner.Localization"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:viewModels="clr-namespace:AnnoDesigner.ViewModels"
+    Title="{l:Localize RecordANewAction}"
+    Width="415"
+    Height="250"
+    d:DataContext="{d:DesignInstance Type=viewModels:HotkeyRecorderViewModel,
+                                     IsDesignTimeCreatable=True}"
+    FontFamily="Segoe UI"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+    <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="2*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <ui:TitleBar Title="{l:Localize RecordANewAction}"  CanMaximize="False" ShowMinimize="False" ShowMaximize="False" Grid.ColumnSpan="2">
-            
-        </ui:TitleBar>
-        <controls:ActionRecorder Name="ActionRecorder" IsDisplayFrozen="False" Grid.ColumnSpan="2" Grid.Row="1" Grid.Column="0" Key="{Binding Key}" Modifiers="{Binding Modifiers}" MouseAction="{Binding MouseAction}" ResultType="{Binding Result}" />
-        <Button Grid.Row="2" Grid.Column="0" Content="{l:Localize Save}" Command="{Binding SaveCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Margin="5" />
-        <Button Grid.Row="2" Grid.Column="1" Content="{l:Localize Cancel}" Command="{Binding CancelCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Margin="5" />
+        <ui:TitleBar
+            Title="{l:Localize RecordANewAction}"
+            VerticalAlignment="Center"
+            CanMaximize="False"
+            ShowMaximize="False"
+            ShowMinimize="False"
+            d:LayoutOverrides="TopPosition, BottomPosition" />
+        <controls:ActionRecorder
+            Key="{Binding Key}"
+            Name="ActionRecorder"
+            Grid.Row="1"
+            Grid.Column="0"
+            IsDisplayFrozen="False"
+            Modifiers="{Binding Modifiers}"
+            MouseAction="{Binding MouseAction}"
+            ResultType="{Binding Result}" />
+        <StackPanel
+            Grid.Row="2"
+            Margin="0,0,15,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            Orientation="Horizontal"
+            d:LayoutOverrides="Height">
+            <ui:Button
+                Margin="0,0,8,0"
+                Appearance="Primary"
+                Command="{Binding SaveCommand}"
+                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                Content="{l:Localize Save}"
+                IsDefault="True" />
+            <ui:Button
+                VerticalAlignment="Top"
+                Command="{Binding CancelCommand}"
+                CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                Content="{l:Localize Cancel}"
+                d:LayoutOverrides="Height" />
+        </StackPanel>
     </Grid>
 </ui:FluentWindow>

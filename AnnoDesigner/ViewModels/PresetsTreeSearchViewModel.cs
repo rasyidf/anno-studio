@@ -1,34 +1,97 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Windows.Controls;
 using System.Windows.Input;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
 using AnnoDesigner.Models.Interface;
 using static AnnoDesigner.Core.CoreConstants;
+using System.Diagnostics;
 
 namespace AnnoDesigner.ViewModels
 {
-    public class PresetsTreeSearchViewModel : Notify
+    public partial class PresetsTreeSearchViewModel : ObservableObject
     {
-        private string _searchText;
+        [ObservableProperty]
+        private string _searchText = string.Empty;
+
+        [ObservableProperty]
         private bool _hasFocus;
-        private ObservableCollection<GameVersionFilter> _gameVersionFilters;
+
+        [ObservableProperty]
+        private ObservableCollection<GameVersionFilter> _gameVersionFilters = new();
+
+        // internal flag used when updating the GameVersionFilters programmatically
         private bool _isUpdatingGameVersionFilter;
 
         public PresetsTreeSearchViewModel()
         {
-            ClearSearchTextCommand = new RelayCommand(ClearSearchText);
-            GotFocusCommand = new RelayCommand(GotFocus);
-            LostFocusCommand = new RelayCommand(LostFocus);
-
-            ClearGameVersionFilterCommand = new RelayCommand(ClearGameVersionFilter);
             HasFocus = false;
-            SearchText = string.Empty;
-            GameVersionFilters = [];
+            // GameVersionFilters already initialised by the generated backing-field
             SuggestionsList = new ObservableCollection<string>();
             InitGameVersionFilters();
+        }
+
+        // Debounced output value - exposed so other parts of the app (MainViewModel) can act
+        // on a stabilized search string instead of every keystroke
+        private string _debouncedSearchText = string.Empty;
+        public string DebouncedSearchText
+        {
+            get => _debouncedSearchText;
+            private set
+            {
+                if (_debouncedSearchText != value)
+                {
+                    _debouncedSearchText = value;
+                    OnPropertyChanged(nameof(DebouncedSearchText));
+                }
+            }
+        }
+
+        // Debounce implementation
+        private System.Threading.CancellationTokenSource? _debounceCts;
+        private const int DefaultDebounceDelayMs = 300; // Adjust as needed
+
+        partial void OnSearchTextChanged(string value)
+        {
+            // Logging for diagnostics
+            System.Diagnostics.Debug.WriteLine($"DEBUG: SearchText changed to: '{value}'");
+            System.Console.WriteLine($"DEBUG: SearchText changed to: '{value}'");
+
+            // Kick off debounce processing (non-blocking)
+            _ = DebounceUpdateAsync(value);
+        }
+
+        private async System.Threading.Tasks.Task DebounceUpdateAsync(string value)
+        {
+            try
+            {
+                _debounceCts?.Cancel();
+                _debounceCts?.Dispose();
+                _debounceCts = new System.Threading.CancellationTokenSource();
+
+                var ct = _debounceCts.Token;
+
+                // Wait for the debounce interval - will be cancelled if new input arrives
+                await System.Threading.Tasks.Task.Delay(DefaultDebounceDelayMs, ct).ConfigureAwait(false);
+
+                // Apply the debounced value on the UI thread context
+                // Use OnPropertyChanged from this object to notify bindings
+                DebouncedSearchText = value;
+            }
+            catch (System.OperationCanceledException)
+            {
+                // expected when new input arrives
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Debounce error: {ex.Message}");
+            }
         }
 
         private void InitGameVersionFilters()
@@ -45,12 +108,12 @@ namespace AnnoDesigner.ViewModels
 
                 var newFilter = new GameVersionFilter
                 {
-                    Name = curGameVersion.ToString().Replace("Anno", "Anno "),
+                    Name = curGameVersion.ToString().Replace("Anno", "Anno ", StringComparison.Ordinal),
                     Type = curGameVersion,
                     Order = ++order
                 };
 
-                // 🔑 SUBSCRIBE TO THE NEW EVENT HERE
+                // Subscribe to the change event so we can notify bindings for the derived SelectedGameVersionFilters property
                 newFilter.FilterStateChanged += OnFilterItemStateChanged;
 
                 GameVersionFilters.Add(newFilter);
@@ -65,42 +128,36 @@ namespace AnnoDesigner.ViewModels
             }
         }
 
-        private void OnFilterItemStateChanged(object sender, EventArgs e)
+        private void OnFilterItemStateChanged(object? sender, EventArgs e)
         {
             if (_isUpdatingGameVersionFilter)
             {
                 return;
             }
 
-            // 🔑 THIS IS THE KEY FIX: Notify the binding system that the derived property has changed.
+            // Notify the binding system that the derived property has changed.
             OnPropertyChanged(nameof(SelectedGameVersionFilters));
         }
 
-        public string SearchText
-        {
-            get { return _searchText; }
-            set { _ = UpdateProperty(ref _searchText, value); }
-        }
+        // SearchText backing field is generated by [ObservableProperty] above
 
-        public bool HasFocus
-        {
-            get { return _hasFocus; }
-            set { _ = UpdateProperty(ref _hasFocus, value); }
-        }
+        // HasFocus backing field is generated by [ObservableProperty] above
 
-        public ObservableCollection<GameVersionFilter> GameVersionFilters
-        {
-            get { return _gameVersionFilters; }
-            set { _ = UpdateProperty(ref _gameVersionFilters, value); }
-        }
+        // GameVersionFilters backing field is generated by [ObservableProperty] above
 
-        public ObservableCollection<GameVersionFilter> SelectedGameVersionFilters
-        {
-            get { return new ObservableCollection<GameVersionFilter>(GameVersionFilters.Where(x => x.IsSelected)); }
-        }
+        public ObservableCollection<GameVersionFilter> SelectedGameVersionFilters => new ObservableCollection<GameVersionFilter>(GameVersionFilters.Where(x => x.IsSelected));
 
         public GameVersion SelectedGameVersions
         {
+            get
+            {
+                var result = GameVersion.Unknown;
+                foreach (var filter in GameVersionFilters.Where(x => x.IsSelected))
+                {
+                    result |= filter.Type;
+                }
+                return result;
+            }
             set
             {
                 try
@@ -123,10 +180,9 @@ namespace AnnoDesigner.ViewModels
 
         #region commands
 
-        public ICommand ClearSearchTextCommand { get; private set; }
-
         //TODO: refactor to use interface ICanUpdateLayout -> currently TextBox does not implement it (create own control?)
-        private void ClearSearchText(object param)
+        [RelayCommand]
+        private void ClearSearchText(object? param)
         {
             SearchText = string.Empty;
 
@@ -136,21 +192,20 @@ namespace AnnoDesigner.ViewModels
             }
             else if (param is TextBox textBox)
             {
-                //Debug.WriteLine($"+ IsFocused: {textBox.IsFocused} | IsKeyboardFocused: {textBox.IsKeyboardFocused} | IsKeyboardFocusWithin: {textBox.IsKeyboardFocusWithin} | CaretIndex: {textBox.CaretIndex}");
+                Debug.WriteLine($"+ IsFocused: {textBox.IsFocused} | IsKeyboardFocused: {textBox.IsKeyboardFocused} | IsKeyboardFocusWithin: {textBox.IsKeyboardFocusWithin} | CaretIndex: {textBox.CaretIndex}");
 
-                //SearchText = string.Empty;
+                SearchText = string.Empty;
 
-                //Debug.WriteLine($"++ IsFocused: {textBox.IsFocused} | IsKeyboardFocused: {textBox.IsKeyboardFocused} | IsKeyboardFocusWithin: {textBox.IsKeyboardFocusWithin} | CaretIndex: {textBox.CaretIndex}");
+                Debug.WriteLine($"++ IsFocused: {textBox.IsFocused} | IsKeyboardFocused: {textBox.IsKeyboardFocused} | IsKeyboardFocusWithin: {textBox.IsKeyboardFocusWithin} | CaretIndex: {textBox.CaretIndex}");
 
                 _ = textBox.Focus();
                 textBox.UpdateLayout();
 
-                //Debug.WriteLine($"+++ IsFocused: {textBox.IsFocused} | IsKeyboardFocused: {textBox.IsKeyboardFocused} | IsKeyboardFocusWithin: {textBox.IsKeyboardFocusWithin} | CaretIndex: {textBox.CaretIndex}");
+                Debug.WriteLine($"+++ IsFocused: {textBox.IsFocused} | IsKeyboardFocused: {textBox.IsKeyboardFocused} | IsKeyboardFocusWithin: {textBox.IsKeyboardFocusWithin} | CaretIndex: {textBox.CaretIndex}");
             }
         }
-        public ICommand ClearGameVersionFilterCommand { get; private set; }
-
-        private void ClearGameVersionFilter(object param)
+        [RelayCommand]
+        private void ClearGameVersionFilter(object? param)
         {
             try
             {
@@ -170,35 +225,22 @@ namespace AnnoDesigner.ViewModels
             }
         }
 
-        public ICommand GotFocusCommand { get; private set; }
-
-        private void GotFocus(object param)
+        [RelayCommand]
+        private void GotFocus(object? param)
         {
             HasFocus = true;
         }
-
-        public ICommand LostFocusCommand { get; private set; }
-
-        private void LostFocus(object param)
+        [RelayCommand]
+        private void LostFocus(object? param)
         {
             HasFocus = false;
         }
 
-        public ICommand GameVersionFilterChangedCommand { get; private set; }
 
         #endregion
 
-        private ObservableCollection<string> _suggestionsList;
+        [ObservableProperty]
+        private ObservableCollection<string> _suggestionsList = new();
 
-        public ObservableCollection<string> SuggestionsList
-        {
-            get { return _suggestionsList; }
-            set { _ = UpdateProperty(ref _suggestionsList, value); }
-        }
-
-        public static explicit operator PresetsTreeSearchViewModel(MainViewModel v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

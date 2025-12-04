@@ -197,7 +197,7 @@ namespace AnnoDesigner.Tests
         #region SearchText tests
 
         [Fact]
-        public void PresetsTreeSearchViewModelPropertyChanged_SearchTextChanged_ShouldSetFilterTextOnPresetsTreeViewModel()
+        public async System.Threading.Tasks.Task PresetsTreeSearchViewModelPropertyChanged_SearchTextChanged_ShouldSetFilterTextOnPresetsTreeViewModel()
         {
             // Arrange
             var viewModel = GetViewModel();
@@ -207,6 +207,9 @@ namespace AnnoDesigner.Tests
 
             // Act
             viewModel.PresetsTreeSearchViewModel.SearchText = textToSet;
+
+            // Wait longer than the debounce interval to allow DebouncedSearchText to propagate
+            await System.Threading.Tasks.Task.Delay(400);
 
             // Assert
             Assert.Equal(textToSet, viewModel.PresetsTreeViewModel.FilterText);

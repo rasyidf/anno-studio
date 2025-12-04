@@ -2,21 +2,17 @@
 using System.Collections.ObjectModel;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AnnoDesigner.ViewModels
 {
     /// <summary>
     /// Provides license information for third party assets and NuGet packages used in the project.
     /// </summary>
-    public class LicensesViewModel : Notify
+    public partial class LicensesViewModel : ObservableObject
     {
-        
-        private ObservableCollection<LicenseInfo> _Licenses;
-        public ObservableCollection<LicenseInfo> Licenses
-        {
-            get => _Licenses;
-            set => UpdateProperty(ref _Licenses, value);
-        }
+        [ObservableProperty]
+        private ObservableCollection<LicenseInfo> licenses;
 
         private const string APACHE_2 = "Apache-2.0 License";
         private const string MS_PL = "Microsoft Public License (Ms-PL)";

@@ -2,52 +2,40 @@
 using System.Windows.Input;
 using AnnoDesigner.Core.Controls;
 using AnnoDesigner.Core.Models;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace AnnoDesigner.ViewModels
 {
-    public class HotkeyRecorderViewModel : Notify
+    public partial class HotkeyRecorderViewModel : ObservableObject
     {
         public HotkeyRecorderViewModel()
         {
-            SaveCommand = new RelayCommand<Window>(ExecuteSave);
-            CancelCommand = new RelayCommand<Window>(ExecuteCancel);
         }
 
+        [ObservableProperty]
         private ActionRecorder.ActionType _result;
+
+        [ObservableProperty]
         private Key _key;
+
+        [ObservableProperty]
         private ExtendedMouseAction _mouseAction;
+
+        [ObservableProperty]
         private ModifierKeys _modifiers;
 
-        public ActionRecorder.ActionType Result
-        {
-            get => _result;
-            set => UpdateProperty(ref _result, value);
-        }
-        public Key Key
-        {
-            get => _key;
-            set => UpdateProperty(ref _key, value);
-        }
-        public ExtendedMouseAction MouseAction
-        {
-            get => _mouseAction;
-            set => UpdateProperty(ref _mouseAction, value);
-        }
-        public ModifierKeys Modifiers
-        {
-            get => _modifiers;
-            set => UpdateProperty(ref _modifiers, value);
-        }
+        // Result, Key, MouseAction and Modifiers are generated via [ObservableProperty]
 
-        public ICommand CancelCommand { get; private set; }
-        private void ExecuteCancel(Window w)
+        [RelayCommand]
+        private void Cancel(Window w)
         {
             w.DialogResult = false;
             w.Close();
         }
 
-        public ICommand SaveCommand { get; private set; }
-        private void ExecuteSave(Window w)
+        [RelayCommand]
+        private void Save(Window w)
         {
             w.DialogResult = true;
             w.Close();

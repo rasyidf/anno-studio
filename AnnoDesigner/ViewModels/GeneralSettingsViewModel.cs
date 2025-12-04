@@ -8,10 +8,12 @@ using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models;
 using AnnoDesigner.Models.Interface;
 using NLog;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace AnnoDesigner.ViewModels
 {
-    public class GeneralSettingsViewModel : Notify
+    public partial class GeneralSettingsViewModel : ObservableObject
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -19,24 +21,59 @@ namespace AnnoDesigner.ViewModels
         private readonly ICommons _commons;
         private readonly IRecentFilesHelper _recentFilesHelper;
 
-        private bool _hideInfluenceOnSelection;
-        private bool _useZoomToPoint;
-        private UserDefinedColor _selectedGridLineColor;
-        private UserDefinedColor _selectedObjectBorderLineColor;
-        private ObservableCollection<UserDefinedColor> _gridLineColors;
-        private ObservableCollection<UserDefinedColor> _objectBorderLineColors;
-        private bool _isGridLineColorPickerVisible;
-        private bool _isObjectBorderLineColorPickerVisible;
-        private Color? _selectedCustomGridLineColor;
-        private Color? _selectedCustomObjectBorderLineColor;
-        private double _zoomSensitivityPercentage;
-        private bool _invertPanningDirection;
-        private bool _showScrollbars;
-        private bool _invertScrollingDirection;
-        private bool _includeRoadsInStatisticCalculation;
-        private int _maxRecentFiles;
-        private System.Collections.ObjectModel.ObservableCollection<AnnoDesigner.Services.ThemePreference> _themeOptions;
-        private AnnoDesigner.Services.ThemePreference _selectedTheme;
+        [ObservableProperty]
+        private bool hideInfluenceOnSelection;
+
+        [ObservableProperty]
+        private bool useZoomToPoint;
+
+        [ObservableProperty]
+        private UserDefinedColor selectedGridLineColor;
+
+        [ObservableProperty]
+        private UserDefinedColor selectedObjectBorderLineColor;
+
+        [ObservableProperty]
+        private ObservableCollection<UserDefinedColor> gridLineColors;
+
+        [ObservableProperty]
+        private ObservableCollection<UserDefinedColor> objectBorderLineColors;
+
+        [ObservableProperty]
+        private bool isGridLineColorPickerVisible;
+
+        [ObservableProperty]
+        private bool isObjectBorderLineColorPickerVisible;
+
+        [ObservableProperty]
+        private Color? selectedCustomGridLineColor;
+
+        [ObservableProperty]
+        private Color? selectedCustomObjectBorderLineColor;
+
+        [ObservableProperty]
+        private double zoomSensitivityPercentage;
+
+        [ObservableProperty]
+        private bool invertPanningDirection;
+
+        [ObservableProperty]
+        private bool showScrollbars;
+
+        [ObservableProperty]
+        private bool invertScrollingDirection;
+
+        [ObservableProperty]
+        private bool includeRoadsInStatisticCalculation;
+
+        [ObservableProperty]
+        private int maxRecentFiles;
+
+        [ObservableProperty]
+        private ObservableCollection<Services.ThemePreference> themeOptions;
+
+        [ObservableProperty]
+        private Services.ThemePreference selectedTheme;
 
         public GeneralSettingsViewModel(IAppSettings appSettingsToUse, ICommons commonsToUse, IRecentFilesHelper recentFilesHelperToUse)
         {
@@ -54,9 +91,9 @@ namespace AnnoDesigner.ViewModels
             MaxRecentFiles = _appSettings.MaxRecentFiles;
 
             // Theme options
-            ThemeOptions = new System.Collections.ObjectModel.ObservableCollection<AnnoDesigner.Services.ThemePreference>(
-                Enum.GetValues<AnnoDesigner.Services.ThemePreference>());
-            if (Enum.TryParse<AnnoDesigner.Services.ThemePreference>(_appSettings.ThemePreference, true, out var parsedTheme))
+            ThemeOptions = new ObservableCollection<Services.ThemePreference>(
+                Enum.GetValues<Services.ThemePreference>());
+            if (Enum.TryParse<Services.ThemePreference>(_appSettings.ThemePreference, true, out var parsedTheme))
             {
                 SelectedTheme = parsedTheme;
             }
@@ -65,11 +102,21 @@ namespace AnnoDesigner.ViewModels
                 SelectedTheme = AnnoDesigner.Services.ThemePreference.System;
             }
 
-            ResetZoomSensitivityCommand = new RelayCommand(ExecuteResetZoomSensitivity, CanExecuteResetZoomSensitivity);
-            ResetMaxRecentFilesCommand = new RelayCommand(ExecuteResetMaxRecentFiles, CanExecuteResetMaxRecentFiles);
-            ClearRecentFilesCommand = new RelayCommand(ExecuteClearRecentFiles, CanExecuteClearRecentFiles);
+            // Command generation via [RelayCommand] is used for the reset/clear actions.
+            // Subscribe so generated command's CanExecute can be refreshed when recent files change.
+            _recentFilesHelper.Updated += (_, __) =>
+            {
+                if (ClearRecentFilesCommand is IRelayCommand c)
+                {
+                    c.NotifyCanExecuteChanged();
+                }
+                if (ResetMaxRecentFilesCommand is IRelayCommand m)
+                {
+                    m.NotifyCanExecuteChanged();
+                }
+            };
 
-            GridLineColors = [];
+            GridLineColors = new ObservableCollection<UserDefinedColor>();
             RefreshGridLineColors();
             var savedGridLineColor = SerializationHelper.LoadFromJsonString<UserDefinedColor>(_appSettings.ColorGridLines);
             if (savedGridLineColor is null)
@@ -83,7 +130,7 @@ namespace AnnoDesigner.ViewModels
                 SelectedCustomGridLineColor = savedGridLineColor.Color;
             }
 
-            ObjectBorderLineColors = [];
+            ObjectBorderLineColors = new ObservableCollection<UserDefinedColor>();
             RefreshObjectBorderLineColors();
             var savedObjectBorderLineColor = SerializationHelper.LoadFromJsonString<UserDefinedColor>(_appSettings.ColorObjectBorderLines);
             if (savedObjectBorderLineColor is null)
@@ -98,24 +145,7 @@ namespace AnnoDesigner.ViewModels
             }
         }
 
-        public System.Collections.ObjectModel.ObservableCollection<AnnoDesigner.Services.ThemePreference> ThemeOptions
-        {
-            get => _themeOptions;
-            set => _ = UpdateProperty(ref _themeOptions, value);
-        }
-
-        public AnnoDesigner.Services.ThemePreference SelectedTheme
-        {
-            get => _selectedTheme;
-            set
-            {
-                if (UpdateProperty(ref _selectedTheme, value))
-                {
-                    _appSettings.ThemePreference = value.ToString();
-                    _appSettings.Save();
-                }
-            }
-        }
+        // ThemeOptions and SelectedTheme are generated by [ObservableProperty].
 
         private void Commons_SelectedLanguageChanged(object sender, EventArgs e)
         {
@@ -143,49 +173,8 @@ namespace AnnoDesigner.ViewModels
             }
         }
 
-        public ObservableCollection<UserDefinedColor> GridLineColors
-        {
-            get { return _gridLineColors; }
-            set { _ = UpdateProperty(ref _gridLineColors, value); }
-        }
-
-        public UserDefinedColor SelectedGridLineColor
-        {
-            get { return _selectedGridLineColor; }
-            set
-            {
-                if (UpdateProperty(ref _selectedGridLineColor, value))
-                {
-                    if (value != null)
-                    {
-                        UpdateGridLineColorVisibility();
-                        SaveSelectedGridLineColor();
-                    }
-                }
-            }
-        }
-
-        public Color? SelectedCustomGridLineColor
-        {
-            get { return _selectedCustomGridLineColor; }
-            set
-            {
-                if (UpdateProperty(ref _selectedCustomGridLineColor, value))
-                {
-                    if (value != null)
-                    {
-                        SelectedGridLineColor.Color = value.Value;
-                        SaveSelectedGridLineColor();
-                    }
-                }
-            }
-        }
-
-        public bool IsGridLineColorPickerVisible
-        {
-            get { return _isGridLineColorPickerVisible; }
-            set { _ = UpdateProperty(ref _isGridLineColorPickerVisible, value); }
-        }
+        // GridLineColors / SelectedGridLineColor / SelectedCustomGridLineColor / IsGridLineColorPickerVisible
+        // are generated by [ObservableProperty]. Use the generated change partial methods below to attach behavior.
 
         private void UpdateGridLineColorVisibility()
         {
@@ -239,49 +228,8 @@ namespace AnnoDesigner.ViewModels
             }
         }
 
-        public ObservableCollection<UserDefinedColor> ObjectBorderLineColors
-        {
-            get { return _objectBorderLineColors; }
-            set { _ = UpdateProperty(ref _objectBorderLineColors, value); }
-        }
-
-        public UserDefinedColor SelectedObjectBorderLineColor
-        {
-            get { return _selectedObjectBorderLineColor; }
-            set
-            {
-                if (UpdateProperty(ref _selectedObjectBorderLineColor, value))
-                {
-                    if (value != null)
-                    {
-                        UpdateObjectBorderLineVisibility();
-                        SaveSelectedObjectBorderLine();
-                    }
-                }
-            }
-        }
-
-        public Color? SelectedCustomObjectBorderLineColor
-        {
-            get { return _selectedCustomObjectBorderLineColor; }
-            set
-            {
-                if (UpdateProperty(ref _selectedCustomObjectBorderLineColor, value))
-                {
-                    if (value != null)
-                    {
-                        SelectedObjectBorderLineColor.Color = value.Value;
-                        SaveSelectedObjectBorderLine();
-                    }
-                }
-            }
-        }
-
-        public bool IsObjectBorderLineColorPickerVisible
-        {
-            get { return _isObjectBorderLineColorPickerVisible; }
-            set { _ = UpdateProperty(ref _isObjectBorderLineColorPickerVisible, value); }
-        }
+        // ObjectBorderLineColors / SelectedObjectBorderLineColor / SelectedCustomObjectBorderLineColor / IsObjectBorderLineColorPickerVisible
+        // are generated by [ObservableProperty]. Use the generated change partial methods below to attach behavior.
 
         private void UpdateObjectBorderLineVisibility()
         {
@@ -321,147 +269,127 @@ namespace AnnoDesigner.ViewModels
         }
 
         #endregion
+ 
 
-        public bool HideInfluenceOnSelection
-        {
-            get { return _hideInfluenceOnSelection; }
-            set
-            {
-                if (UpdateProperty(ref _hideInfluenceOnSelection, value))
-                {
-                    _appSettings.HideInfluenceOnSelection = value;
-                    _appSettings.Save();
-                }
-            }
-        }
-
-        public double ZoomSensitivityPercentage
-        {
-            get => _zoomSensitivityPercentage;
-            set
-            {
-                if (UpdateProperty(ref _zoomSensitivityPercentage, value))
-                {
-                    _appSettings.ZoomSensitivityPercentage = value;
-                    _appSettings.Save();
-                }
-            }
-        }
-
-        public bool UseZoomToPoint
-        {
-            get { return _useZoomToPoint; }
-            set
-            {
-                if (UpdateProperty(ref _useZoomToPoint, value))
-                {
-                    _appSettings.UseZoomToPoint = value;
-                    _appSettings.Save();
-                }
-            }
-        }
-
-        public bool InvertScrollingDirection
-        {
-            get { return _invertScrollingDirection; }
-            set
-            {
-                if (UpdateProperty(ref _invertScrollingDirection, value))
-                {
-                    _appSettings.InvertScrollingDirection = value;
-                    _appSettings.Save();
-                }
-            }
-        }
-
-        public bool InvertPanningDirection
-        {
-            get { return _invertPanningDirection; }
-            set
-            {
-                if (UpdateProperty(ref _invertPanningDirection, value))
-                {
-                    _appSettings.InvertPanningDirection = value;
-                    _appSettings.Save();
-                }
-            }
-        }
-
-        public bool ShowScrollbars
-        {
-            get { return _showScrollbars; }
-            set
-            {
-                if (UpdateProperty(ref _showScrollbars, value))
-                {
-                    _appSettings.ShowScrollbars = value;
-                    _appSettings.Save();
-                }
-            }
-        }
-
-        public bool IncludeRoadsInStatisticCalculation
-        {
-            get { return _includeRoadsInStatisticCalculation; }
-            set
-            {
-                if (UpdateProperty(ref _includeRoadsInStatisticCalculation, value))
-                {
-                    _appSettings.IncludeRoadsInStatisticCalculation = value;
-                    _appSettings.Save();
-                }
-            }
-        }
-
-        public int MaxRecentFiles
-        {
-            get { return _maxRecentFiles; }
-            set
-            {
-                if (UpdateProperty(ref _maxRecentFiles, value))
-                {
-                    _appSettings.MaxRecentFiles = value;
-                    _appSettings.Save();
-
-                    _recentFilesHelper.MaximumItemCount = value;
-                }
-            }
-        }
-
-        public ICommand ResetZoomSensitivityCommand { get; private set; }
-
-        private void ExecuteResetZoomSensitivity(object param)
+        [RelayCommand(CanExecute = nameof(CanResetZoomSensitivity))]
+        private void ResetZoomSensitivity()
         {
             ZoomSensitivityPercentage = Constants.ZoomSensitivityPercentageDefault;
         }
 
-        private bool CanExecuteResetZoomSensitivity(object param)
-        {
-            return ZoomSensitivityPercentage != Constants.ZoomSensitivityPercentageDefault;
-        }
+        private bool CanResetZoomSensitivity() => ZoomSensitivityPercentage != Constants.ZoomSensitivityPercentageDefault;
 
-        public ICommand ResetMaxRecentFilesCommand { get; private set; }
-
-        private void ExecuteResetMaxRecentFiles(object param)
+        [RelayCommand(CanExecute = nameof(CanResetMaxRecentFiles))]
+        private void ResetMaxRecentFiles()
         {
             MaxRecentFiles = Constants.MaxRecentFiles;
         }
 
-        private bool CanExecuteResetMaxRecentFiles(object param)
-        {
-            return MaxRecentFiles != Constants.MaxRecentFiles;
-        }
+        private bool CanResetMaxRecentFiles() => MaxRecentFiles != Constants.MaxRecentFiles;
 
-        public ICommand ClearRecentFilesCommand { get; private set; }
-
-        private void ExecuteClearRecentFiles(object param)
+        [RelayCommand(CanExecute = nameof(CanClearRecentFiles))]
+        private void ClearRecentFiles()
         {
             _recentFilesHelper.ClearRecentFiles();
         }
 
-        private bool CanExecuteClearRecentFiles(object param)
+        private bool CanClearRecentFiles() => _recentFilesHelper.RecentFiles.Count > 0;
+
+        // Partial change handlers to preserve original side effects of property setters
+        partial void OnSelectedThemeChanged(Services.ThemePreference value)
         {
-            return _recentFilesHelper.RecentFiles.Count > 0;
+            _appSettings.ThemePreference = value.ToString();
+            _appSettings.Save();
+        }
+
+        partial void OnSelectedGridLineColorChanged(UserDefinedColor value)
+        {
+            if (value != null)
+            {
+                UpdateGridLineColorVisibility();
+                SaveSelectedGridLineColor();
+            }
+        }
+
+        partial void OnSelectedCustomGridLineColorChanged(Color? value)
+        {
+            if (value != null && SelectedGridLineColor != null)
+            {
+                SelectedGridLineColor.Color = value.Value;
+                SaveSelectedGridLineColor();
+            }
+        }
+
+        partial void OnSelectedObjectBorderLineColorChanged(UserDefinedColor value)
+        {
+            if (value != null)
+            {
+                UpdateObjectBorderLineVisibility();
+                SaveSelectedObjectBorderLine();
+            }
+        }
+
+        partial void OnSelectedCustomObjectBorderLineColorChanged(Color? value)
+        {
+            if (value != null && SelectedObjectBorderLineColor != null)
+            {
+                SelectedObjectBorderLineColor.Color = value.Value;
+                SaveSelectedObjectBorderLine();
+            }
+        }
+
+        partial void OnHideInfluenceOnSelectionChanged(bool value)
+        {
+            _appSettings.HideInfluenceOnSelection = value;
+            _appSettings.Save();
+        }
+
+        partial void OnZoomSensitivityPercentageChanged(double value)
+        {
+            _appSettings.ZoomSensitivityPercentage = value;
+            _appSettings.Save();
+
+            if (ResetZoomSensitivityCommand is IRelayCommand cmd) cmd.NotifyCanExecuteChanged();
+        }
+
+        partial void OnUseZoomToPointChanged(bool value)
+        {
+            _appSettings.UseZoomToPoint = value;
+            _appSettings.Save();
+        }
+
+        partial void OnInvertScrollingDirectionChanged(bool value)
+        {
+            _appSettings.InvertScrollingDirection = value;
+            _appSettings.Save();
+        }
+
+        partial void OnInvertPanningDirectionChanged(bool value)
+        {
+            _appSettings.InvertPanningDirection = value;
+            _appSettings.Save();
+        }
+
+        partial void OnShowScrollbarsChanged(bool value)
+        {
+            _appSettings.ShowScrollbars = value;
+            _appSettings.Save();
+        }
+
+        partial void OnIncludeRoadsInStatisticCalculationChanged(bool value)
+        {
+            _appSettings.IncludeRoadsInStatisticCalculation = value;
+            _appSettings.Save();
+        }
+
+        partial void OnMaxRecentFilesChanged(int value)
+        {
+            _appSettings.MaxRecentFiles = value;
+            _appSettings.Save();
+
+            _recentFilesHelper.MaximumItemCount = value;
+
+            if (ResetMaxRecentFilesCommand is IRelayCommand cmd) cmd.NotifyCanExecuteChanged();
         }
     }
 }

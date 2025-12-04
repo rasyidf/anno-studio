@@ -6,7 +6,7 @@ namespace AnnoDesigner.Models
     {
         private string _headerKeyForTranslation;
         private string _name;
-        private Notify _viewModel;
+        private object _viewModel;
 
         public string HeaderKeyForTranslation
         {
@@ -20,7 +20,7 @@ namespace AnnoDesigner.Models
             set { _ = UpdateProperty(ref _name, value); }
         }
 
-        public Notify ViewModel
+        public object ViewModel
         {
             get { return _viewModel; }
             set { _ = UpdateProperty(ref _viewModel, value); }

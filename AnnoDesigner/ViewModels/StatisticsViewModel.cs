@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using AnnoDesigner.Core.Layout.Helper;
 using AnnoDesigner.Core.Models;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using AnnoDesigner.Core.Presets.Models;
 using AnnoDesigner.Extensions;
 using AnnoDesigner.Models;
@@ -13,19 +15,37 @@ using AnnoDesigner.Models.Interface;
 
 namespace AnnoDesigner.ViewModels
 {
-    public class StatisticsViewModel : Notify
+    public partial class StatisticsViewModel : ObservableObject
     {
-        private bool _isVisible;
-        private string _usedArea;
-        private double _usedTiles;
-        private double _minTiles;
-        private string _efficiency;
-        private bool _areStatisticsAvailable;
-        private bool _showBuildingList;
-        private bool _showStatisticsBuildingCount;
+        [ObservableProperty]
+        private bool isVisible;
+
+        [ObservableProperty]
+        private string usedArea;
+
+        [ObservableProperty]
+        private double usedTiles;
+
+        [ObservableProperty]
+        private double minTiles;
+
+        [ObservableProperty]
+        private string efficiency;
+
+        [ObservableProperty]
+        private bool areStatisticsAvailable;
+
+        [ObservableProperty]
+        private bool showBuildingList;
+
+        [ObservableProperty]
+        private bool showStatisticsBuildingCount;
         //private bool _showSelectedBuildingList;
-        private ObservableCollection<StatisticsBuilding> _buildings;
-        private ObservableCollection<StatisticsBuilding> _selectedBuildings;
+        [ObservableProperty]
+        private ObservableCollection<StatisticsBuilding> buildings = new ObservableCollection<StatisticsBuilding>();
+
+        [ObservableProperty]
+        private ObservableCollection<StatisticsBuilding> selectedBuildings = new ObservableCollection<StatisticsBuilding>();
         private readonly StatisticsCalculationHelper _statisticsCalculationHelper;
         private readonly ConcurrentDictionary<string, BuildingInfo> _cachedPresetsBuilding;
         private readonly ILocalizationHelper _localizationHelper;
@@ -45,84 +65,20 @@ namespace AnnoDesigner.ViewModels
             AreStatisticsAvailable = true;
 
             ShowBuildingList = true;
-            Buildings = [];
-            SelectedBuildings = [];
+            Buildings = new ObservableCollection<StatisticsBuilding>();
+            SelectedBuildings = new ObservableCollection<StatisticsBuilding>();
             _statisticsCalculationHelper = new StatisticsCalculationHelper();
             _cachedPresetsBuilding = new ConcurrentDictionary<string, BuildingInfo>(Environment.ProcessorCount, 50);
         }
 
-        public bool IsVisible
-        {
-            get { return _isVisible; }
-            set { _ = UpdateProperty(ref _isVisible, value); }
-        }
 
-        public string UsedArea
-        {
-            get { return _usedArea; }
-            set { _ = UpdateProperty(ref _usedArea, value); }
-        }
-
-        public double UsedTiles
-        {
-            get { return _usedTiles; }
-            set { _ = UpdateProperty(ref _usedTiles, value); }
-        }
-
-        public double MinTiles
-        {
-            get { return _minTiles; }
-            set { _ = UpdateProperty(ref _minTiles, value); }
-        }
-
-        public string Efficiency
-        {
-            get { return _efficiency; }
-            set { _ = UpdateProperty(ref _efficiency, value); }
-        }
-
-        public bool AreStatisticsAvailable
-        {
-            get { return _areStatisticsAvailable; }
-            set { _ = UpdateProperty(ref _areStatisticsAvailable, value); }
-        }
-
-        public bool ShowBuildingList
-        {
-            get { return _showBuildingList; }
-            set
-            {
-                _ = UpdateProperty(ref _showBuildingList, value);
-                OnPropertyChanged(nameof(ShowSelectedBuildingList));
-            }
-        }
-
-        public bool ShowStatisticsBuildingCount
-        {
-            get { return _showStatisticsBuildingCount; }
-            set { _ = UpdateProperty(ref _showStatisticsBuildingCount, value); }
-        }
 
         public bool ShowSelectedBuildingList
         {
             get { return ShowBuildingList && SelectedBuildings.Any(); }
         }
 
-        public ObservableCollection<StatisticsBuilding> Buildings
-        {
-            get { return _buildings; }
-            set { _ = UpdateProperty(ref _buildings, value); }
-        }
 
-        public ObservableCollection<StatisticsBuilding> SelectedBuildings
-        {
-            get { return _selectedBuildings; }
-            set
-            {
-                _ = UpdateProperty(ref _selectedBuildings, value);
-                OnPropertyChanged(nameof(ShowSelectedBuildingList));
-            }
-        }
 
         public void ToggleBuildingList(bool showBuildingList, IList<LayoutObject> placedObjects, ICollection<LayoutObject> selectedObjects, BuildingPresets buildingPresets)
         {
@@ -176,7 +132,7 @@ namespace AnnoDesigner.ViewModels
         {
             if (groupedBuildingsByIdentifier is null || !groupedBuildingsByIdentifier.Any())
             {
-                return [];
+                return new ObservableCollection<StatisticsBuilding>();
             }
 
             var tempList = new List<StatisticsBuilding>();
@@ -230,6 +186,17 @@ namespace AnnoDesigner.ViewModels
             }
 
             return new ObservableCollection<StatisticsBuilding>(tempList.OrderByDescending(x => x.Count).ThenBy(x => x.Name, StringComparer.OrdinalIgnoreCase));
+        }
+
+        // Generated partial change handlers from [ObservableProperty]
+        partial void OnShowBuildingListChanged(bool value)
+        {
+            OnPropertyChanged(nameof(ShowSelectedBuildingList));
+        }
+
+        partial void OnSelectedBuildingsChanged(ObservableCollection<StatisticsBuilding> value)
+        {
+            OnPropertyChanged(nameof(ShowSelectedBuildingList));
         }
     }
 }

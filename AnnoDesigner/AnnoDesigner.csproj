@@ -5,7 +5,7 @@
     <TargetFramework>net10.0-windows8.0</TargetFramework>
     <OutputType>WinExe</OutputType>
     <UseWPF>true</UseWPF>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateAssemblyInfo>True</GenerateAssemblyInfo>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
@@ -16,6 +16,11 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Update="Views\About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>
@@ -98,10 +103,19 @@
     <PackageReference Include="NLog" />
     <PackageReference Include="WPF-UI" /> 
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="echo create directory for game_icons &quot;$(TargetDir)Assets\game_icons&quot;&#xD;&#xA;if not exist &quot;$(TargetDir)Assets\game_icons&quot; md &quot;$(TargetDir)Assets\game_icons&quot;&#xD;&#xA;&#xD;&#xA;rem ROBOCOPY exits with &quot;success codes&quot; which are under 8. See: http://support.microsoft.com/kb/954404&#xD;&#xA;rem This means that:&#xD;&#xA;&#xD;&#xA;rem robocopy exit code 0 = no files copied&#xD;&#xA;rem robocopy exit code 1 = files copied&#xD;&#xA;rem When the result is 1, this becomes an error exit code in visual studio.&#xD;&#xA;&#xD;&#xA;echo copy game icons from &quot;$(ProjectDir)Assets\game_icons&quot; to &quot;$(TargetDir)Assets\game_icons&quot;&#xD;&#xA;ROBOCOPY &quot;$(ProjectDir)Assets\game_icons&quot; &quot;$(TargetDir)Assets\game_icons&quot; *.* /E /NFL /NDL /NJH /NJS /nc /ns /np&#xD;&#xA;&#xD;&#xA;if %2525ERRORLEVEL%2525 GEQ 8 goto failed&#xD;&#xA;&#xD;&#xA;rem end of batch&#xD;&#xA;goto success&#xD;&#xA;&#xD;&#xA;:failed&#xD;&#xA;exit -1&#xD;&#xA;&#xD;&#xA;:success&#xD;&#xA;exit 0" />
+    <Exec Command="echo create directory for game_icons &quot;$(TargetDir)Assets\game_icons&quot;&#xD;&#xA;if not exist &quot;$(TargetDir)Assets\game_icons&quot; md &quot;$(TargetDir)Assets\game_icons&quot;&#xD;&#xA;&#xD;&#xA;rem ROBOCOPY exits with &quot;success codes&quot; which are under 8. See: http://support.microsoft.com/kb/954404&#xD;&#xA;rem This means that:&#xD;&#xA;&#xD;&#xA;rem robocopy exit code 0 = no files copied&#xD;&#xA;rem robocopy exit code 1 = files copied&#xD;&#xA;rem When the result is 1, this becomes an error exit code in visual studio.&#xD;&#xA;&#xD;&#xA;echo copy game icons from &quot;$(ProjectDir)Assets\game_icons&quot; to &quot;$(TargetDir)Assets\game_icons&quot;&#xD;&#xA;rem Use /XO to exclude files where the source is older (so we only copy when source is newer),&#xD;&#xA;rem and /FFT to use FAT file time granularity which helps avoid small timestamp differences on some volumes.&#xD;&#xA;ROBOCOPY &quot;$(ProjectDir)Assets\game_icons&quot; &quot;$(TargetDir)Assets\game_icons&quot; *.* /E /XO /FFT /NFL /NDL /NJH /NJS /nc /ns /np&#xD;&#xA;&#xD;&#xA;if %2525ERRORLEVEL%2525 GEQ 8 goto failed&#xD;&#xA;&#xD;&#xA;rem end of batch&#xD;&#xA;goto success&#xD;&#xA;&#xD;&#xA;:failed&#xD;&#xA;exit -1&#xD;&#xA;&#xD;&#xA;:success&#xD;&#xA;exit 0" />
   </Target>
   <PropertyGroup>
     <NoWarn>$(NoWarn);WPF0001</NoWarn>
+    <Nullable>warnings</Nullable>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <AnalysisLevel>latest-all</AnalysisLevel>
   </PropertyGroup>
 </Project>
