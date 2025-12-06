@@ -139,7 +139,7 @@
                                 Focusable="False"
                                 HorizontalScrollBarVisibility="{Binding ShowScrollbars}"
                                 VerticalScrollBarVisibility="{Binding ShowScrollbars}">
-                                <cv2:AnnoCanvas2 x:Name="annoCanvas"/>
+                                <cv2:AnnoCanvas x:Name="annoCanvas"/>
                             </ScrollViewer>
                         </LayoutDocument>
                     </LayoutDocumentPane>

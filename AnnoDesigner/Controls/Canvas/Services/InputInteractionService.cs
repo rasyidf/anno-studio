@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using AnnoDesigner.Core;
 using AnnoDesigner.Core.DataStructures;
 using AnnoDesigner.Core.Models;
@@ -247,6 +248,143 @@ namespace AnnoDesigner.Controls.Canvas.Services
             registerUndo = true;
             reindex = true;
             clearSelection = isRightButton || selectedObjects.Count == 1;
+        }
+
+        public MouseEnterDecision HandleMouseEnter()
+        {
+            return new MouseEnterDecision(MouseEnterAction.SetMouseWithinControl);
+        }
+
+        public MouseLeaveDecision HandleMouseLeave(MouseMode currentMode)
+        {
+            // Always clear mouse within control, selection rect, and reindex moved objects
+            return new MouseLeaveDecision(new[]
+            {
+                MouseLeaveAction.ClearMouseWithinControl,
+                MouseLeaveAction.ClearSelectionRect,
+                MouseLeaveAction.ReindexMovedObjects
+            });
+        }
+
+        public MouseMoveDecision HandleMouseMove(Point mousePosition, Point mouseDragStart, MouseMode currentMode, MouseButtonState leftButtonState, int currentObjectsCount, bool isControlPressed, bool isShiftPressed)
+        {
+            // Check if user begins to drag (movement threshold)
+            var hasMoved = Math.Abs(mouseDragStart.X - mousePosition.X) >= 1 || Math.Abs(mouseDragStart.Y - mousePosition.Y) >= 1;
+
+            if (hasMoved)
+            {
+                switch (currentMode)
+                {
+                    case MouseMode.SelectionRectStart:
+                        return new MouseMoveDecision(MouseMoveAction.TransitionToSelectionRect);
+                    case MouseMode.DragSelectionStart:
+                        return new MouseMoveDecision(MouseMoveAction.TransitionToDragSelection);
+                    case MouseMode.DragSingleStart:
+                        return new MouseMoveDecision(MouseMoveAction.TransitionToDragSingleObject);
+                    case MouseMode.DragAllStart:
+                        return new MouseMoveDecision(MouseMoveAction.TransitionToDragAll);
+                }
+            }
+
+            // Handle active dragging modes
+            if (currentMode == MouseMode.DragAll)
+            {
+                return new MouseMoveDecision(MouseMoveAction.DragAllViewport);
+            }
+            else if (leftButtonState == MouseButtonState.Pressed)
+            {
+                if (currentObjectsCount != 0)
+                {
+                    return new MouseMoveDecision(MouseMoveAction.PlaceObjectsContinuous);
+                }
+                else
+                {
+                    switch (currentMode)
+                    {
+                        case MouseMode.SelectionRect:
+                            return new MouseMoveDecision(MouseMoveAction.UpdateSelectionRect);
+                        case MouseMode.DragSelection:
+                            return new MouseMoveDecision(MouseMoveAction.DragSelectedObjects);
+                    }
+                }
+            }
+
+            return new MouseMoveDecision(MouseMoveAction.None);
+        }
+
+        public MouseUpDecision HandleMouseUp(MouseButton changedButton, MouseButtonState leftButtonState, MouseButtonState rightButtonState, MouseMode currentMode, int currentObjectsCount, Point mousePosition, bool isControlPressed, bool isShiftPressed, Func<Point, LayoutObject> getObjectAt, Func<LayoutObject, bool> selectedContains)
+        {
+            // Handle DragAll mode
+            if (currentMode == MouseMode.DragAll)
+            {
+                if (leftButtonState == MouseButtonState.Released && rightButtonState == MouseButtonState.Released)
+                {
+                    return new MouseUpDecision(new[] { MouseUpAction.EndDragAll });
+                }
+                return new MouseUpDecision(new[] { MouseUpAction.None });
+            }
+
+            // Handle left button release
+            if (changedButton == MouseButton.Left && currentObjectsCount == 0)
+            {
+                switch (currentMode)
+                {
+                    case MouseMode.SelectSameIdentifier:
+                        return new MouseUpDecision(new[] { MouseUpAction.TransitionToStandard });
+
+                    case MouseMode.SelectionRect:
+                        return new MouseUpDecision(new[] { MouseUpAction.EndSelectionRect });
+
+                    case MouseMode.DragSelection:
+                        return new MouseUpDecision(new[] { MouseUpAction.EndDragSelection }, false); // false = not right button
+
+                    default:
+                        // Standard click - toggle object selection
+                        var obj = getObjectAt(mousePosition);
+                        if (obj != null)
+                        {
+                            return new MouseUpDecision(new[] { MouseUpAction.ToggleObjectSelection }, obj);
+                        }
+                        else if (!(isControlPressed || isShiftPressed))
+                        {
+                            return new MouseUpDecision(new[] { MouseUpAction.ClearSelection, MouseUpAction.TransitionToStandard });
+                        }
+                        return new MouseUpDecision(new[] { MouseUpAction.TransitionToStandard });
+                }
+            }
+            else if (changedButton == MouseButton.Left && currentObjectsCount != 0)
+            {
+                return new MouseUpDecision(new[] { MouseUpAction.TransitionToPlaceObjects });
+            }
+            else if (changedButton == MouseButton.Right)
+            {
+                switch (currentMode)
+                {
+                    case MouseMode.PlaceObjects:
+                    case MouseMode.DeleteObject:
+                    case MouseMode.Standard:
+                        if (currentObjectsCount != 0)
+                        {
+                            return new MouseUpDecision(new[] { MouseUpAction.CancelPlacement });
+                        }
+                        return new MouseUpDecision(new[] { MouseUpAction.TransitionToStandard });
+
+                    case MouseMode.DragSelection:
+                        return new MouseUpDecision(new[] { MouseUpAction.EndDragSelection, MouseUpAction.CancelPlacement }, true); // true = right button
+
+                    case MouseMode.SelectSameIdentifier:
+                        return new MouseUpDecision(new[] { MouseUpAction.TransitionToStandard });
+                }
+            }
+
+            return new MouseUpDecision(new[] { MouseUpAction.None });
+        }
+
+        public KeyDownDecision HandleKeyDown()
+        {
+            // Keyboard handling is delegated to HotkeyCommandManager
+            // This service just signals that it was handled
+            return new KeyDownDecision(KeyDownAction.Handled);
         }
 
         private static bool ObjectIntersectionExists(LayoutObject a, LayoutObject b)

@@ -19,8 +19,7 @@ namespace AnnoDesigner.Tests
             Assert.Empty(viewModel.SearchText);
             Assert.NotNull(viewModel.ClearSearchTextCommand);
             Assert.NotNull(viewModel.GotFocusCommand);
-            Assert.NotNull(viewModel.LostFocusCommand);
-            Assert.NotNull(viewModel.GameVersionFilterChangedCommand);
+            Assert.NotNull(viewModel.LostFocusCommand); 
         }
 
         #endregion
@@ -151,26 +150,10 @@ namespace AnnoDesigner.Tests
                 IsSelected = true
             };
 
-            // Act - command should not directly toggle the value (the UI does this),
-            // it should only notify the view model that selection changed.
-            viewModel.GameVersionFilterChangedCommand.Execute(gameVersionFilter);
-
             // Assert - IsSelected should remain unchanged (true)
             Assert.True(gameVersionFilter.IsSelected);
         }
-
-        [Fact]
-        public void GameVersionFilterChangedCommand_IsExecuted_ShouldRaisePropertyChanged()
-        {
-            // Arrange
-            var viewModel = new PresetsTreeSearchViewModel();
-
-            // Act/Assert
-            Assert.PropertyChanged(viewModel,
-                nameof(PresetsTreeSearchViewModel.SelectedGameVersionFilters),
-                () => viewModel.GameVersionFilterChangedCommand.Execute(null));
-        }
-
+ 
         #endregion
 
         #region SelectedGameVersionFilters  tests

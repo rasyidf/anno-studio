@@ -29,7 +29,7 @@ namespace AnnoDesigner.Controls.Canvas.Services
                 var save = await _messageBoxService.ShowQuestion(null,
                     _localizationHelper.GetLocalization("SaveUnsavedChanges"),
                     _localizationHelper.GetLocalization("UnsavedChangedBeforeCrash")
-                );
+                ).ConfigureAwait(false);
 
                 if (save)
                 {

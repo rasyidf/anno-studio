@@ -1,0 +1,7 @@
+<UserControl x:Class="AnnoDesigner.Controls.PropertyGridHeader"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border Background="Transparent" Padding="6,4">
+        <TextBlock FontSize="13" FontWeight="SemiBold" Text="{Binding Header}" />
+    </Border>
+</UserControl>

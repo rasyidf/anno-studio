@@ -16,7 +16,7 @@ namespace AnnoDesigner.Controls.Canvas.Services
 {
     internal class CanvasRenderer : ICanvasRenderer
     {
-        private readonly AnnoCanvas2 _canvas;
+        private readonly AnnoCanvas _canvas;
 
         private DrawingGroup _drawingGroupPanoramaText = new DrawingGroup();
         private DrawingGroup _drawingGroupGridLines = new DrawingGroup();
@@ -24,13 +24,13 @@ namespace AnnoDesigner.Controls.Canvas.Services
         private DrawingGroup _drawingGroupSelectedObjectsInfluence = new DrawingGroup();
         private DrawingGroup _drawingGroupInfluence = new DrawingGroup();
 
-        private Rect _lastViewPortAbsolute = default;
+        private Rect _lastViewPortAbsolute;
         private List<LayoutObject> _lastObjectsToDraw = [];
         private List<LayoutObject> _lastBorderlessObjectsToDraw = [];
         private List<LayoutObject> _lastBorderedObjectsToDraw = [];
-        private QuadTree<LayoutObject> _lastPlacedObjects = null;
+        private QuadTree<LayoutObject> _lastPlacedObjects;
 
- 
+
 
         private int _lastGridSize = -1;
         private double _lastGridWidth = -1;
@@ -40,7 +40,7 @@ namespace AnnoDesigner.Controls.Canvas.Services
         private int _lastObjectSelectionGridSize = -1;
         private Rect _lastSelectionRect = Rect.Empty;
 
-        public CanvasRenderer(AnnoCanvas2 canvas)
+        public CanvasRenderer(AnnoCanvas canvas)
         {
             _canvas = canvas;
         }
@@ -158,7 +158,7 @@ namespace AnnoDesigner.Controls.Canvas.Services
             {
                 DrawPanoramaText(drawingContext, objectsToDraw,
                  forceRedraw: _canvas._isRenderingForced || objectsChanged,
-                 AnnoCanvas2.IDENTIFIER_SKYSCRAPER, _canvas._regex_panorama, _canvas.TYPEFACE, _canvas.FontSize, App.DpiScale.PixelsPerDip, _canvas._guidelineSet, _canvas._coordinateHelper);
+                 AnnoCanvas.IDENTIFIER_SKYSCRAPER, _canvas._regex_panorama, _canvas.TYPEFACE, _canvas.FontSize, App.DpiScale.PixelsPerDip, _canvas._guidelineSet, _canvas._coordinateHelper);
 
             }
 

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Input;
 using AnnoDesigner.Core.DataStructures;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Models.Interface;
@@ -23,5 +24,16 @@ namespace AnnoDesigner.Controls.Canvas.Services
         void HandleDragSelection(Point mousePosition, ref Point mouseDragStart, int gridSize, ref List<(AnnoDesigner.Models.LayoutObject Item, Rect OldGridRect)> oldObjectPositions, ref Rect collisionRect, HashSet<AnnoDesigner.Models.LayoutObject> selectedObjects, QuadTree<AnnoDesigner.Models.LayoutObject> placedObjects, ICoordinateHelper coordinateHelper, out bool invalidateScroll, out bool statisticsUpdated, out bool forceRendering);
 
         void HandleMouseUpDragSelection(List<(AnnoDesigner.Models.LayoutObject Item, Rect OldGridRect)> oldObjectPositions, HashSet<AnnoDesigner.Models.LayoutObject> selectedObjects, bool isRightButton, out bool registerUndo, out bool reindex, out bool clearSelection);
+
+        // New handlers for remaining mouse events
+        MouseEnterDecision HandleMouseEnter();
+        
+        MouseLeaveDecision HandleMouseLeave(MouseMode currentMode);
+        
+        MouseMoveDecision HandleMouseMove(Point mousePosition, Point mouseDragStart, MouseMode currentMode, MouseButtonState leftButtonState, int currentObjectsCount, bool isControlPressed, bool isShiftPressed);
+        
+        MouseUpDecision HandleMouseUp(MouseButton changedButton, MouseButtonState leftButtonState, MouseButtonState rightButtonState, MouseMode currentMode, int currentObjectsCount, Point mousePosition, bool isControlPressed, bool isShiftPressed, System.Func<Point, AnnoDesigner.Models.LayoutObject> getObjectAt, System.Func<AnnoDesigner.Models.LayoutObject, bool> selectedContains);
+        
+        KeyDownDecision HandleKeyDown();
     }
 }

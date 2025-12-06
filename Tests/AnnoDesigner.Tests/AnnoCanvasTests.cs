@@ -62,7 +62,7 @@ namespace AnnoDesigner.Tests
 
         private IAnnoCanvas GetCanvas()
         {
-            return new AnnoCanvas2(new BuildingPresets(),
+            return new AnnoCanvas(new BuildingPresets(),
                 new System.Collections.Generic.Dictionary<string, AnnoDesigner.Core.Models.IconImage>(),
                 _appSettings,
                 _coordinateHelper,

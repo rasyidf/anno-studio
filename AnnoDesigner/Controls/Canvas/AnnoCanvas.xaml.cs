@@ -39,7 +39,7 @@ namespace AnnoDesigner.Controls.Canvas
     /// <summary>
     /// Interaction logic for AnnoCanvas.xaml
     /// </summary>
-    public partial class AnnoCanvas2 : UserControl, IAnnoCanvas, IHotkeySource, IScrollInfo
+    public partial class AnnoCanvas : UserControl, IAnnoCanvas, IHotkeySource, IScrollInfo
     {
         internal static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -68,6 +68,8 @@ namespace AnnoDesigner.Controls.Canvas
         #region Properties
 
         public IUndoManager UndoManager { get; internal set; }
+
+        internal ICommandHistoryService CommandHistory { get; private set; }
 
         public IClipboardService ClipboardService { get; set; }
 
@@ -550,15 +552,16 @@ namespace AnnoDesigner.Controls.Canvas
         internal readonly bool _debugShowMouseGridCoordinates = true;
         internal readonly bool _debugShowObjectCount = true;
         #endregion
+      
         #region Constructor
         /// <summary>
         /// Constructor
         /// </summary>
-        public AnnoCanvas2() : this(null, null)
+        public AnnoCanvas() : this(null, null)
         {
         }
 
-        public AnnoCanvas2(BuildingPresets presetsToUse,
+        public AnnoCanvas(BuildingPresets presetsToUse,
             Dictionary<string, IconImage> iconsToUse,
             IAppSettings appSettingsToUse = null,
             ICoordinateHelper coordinateHelperToUse = null,
@@ -605,6 +608,8 @@ namespace AnnoDesigner.Controls.Canvas
             _localizationHelper = localizationHelperToUse ?? Localization.Localization.Instance;
             _layoutLoader = new LayoutLoader();
             UndoManager = undoManager ?? new UndoManager();
+            // command history will delegate to the undo manager when available
+            CommandHistory = new CommandHistoryService(UndoManager);
             // Ensure command state updates when the undo manager reports changes
             if (UndoManager is System.ComponentModel.INotifyPropertyChanged notify)
             {
@@ -658,6 +663,7 @@ namespace AnnoDesigner.Controls.Canvas
             //Commands
             RotateCommand = new RelayCommand(ExecuteRotate);
             rotateAllCommand = new RelayCommand(ExecuteRotateAll);
+            cutCommand = new RelayCommand(ExecuteCut);
             copyCommand = new RelayCommand(ExecuteCopy);
             pasteCommand = new RelayCommand(ExecutePaste);
             deleteCommand = new RelayCommand(ExecuteDelete);
@@ -680,6 +686,9 @@ namespace AnnoDesigner.Controls.Canvas
 
             var rotateAllBinding = new InputBinding(rotateAllCommand, new PolyGesture(Key.R, ModifierKeys.Shift));
             rotateAllHotkey = new Hotkey(ROTATE_ALL_LOCALIZATION_KEY, rotateAllBinding, ROTATE_ALL_LOCALIZATION_KEY);
+
+            var cutBinding = new InputBinding(cutCommand, new PolyGesture(Key.X, ModifierKeys.Control));
+            cutHotkey = new Hotkey("Cut", cutBinding, "Cut");
 
             var copyBinding = new InputBinding(copyCommand, new PolyGesture(Key.C, ModifierKeys.Control));
             copyHotkey = new Hotkey(COPY_LOCALIZATION_KEY, copyBinding, COPY_LOCALIZATION_KEY);
@@ -927,19 +936,33 @@ namespace AnnoDesigner.Controls.Canvas
 
         protected override void OnMouseEnter(MouseEventArgs e)
         {
-            _mouseWithinControl = true;
+            var decision = _inputInteractionService.HandleMouseEnter();
+            if (decision.Action == MouseEnterAction.SetMouseWithinControl)
+            {
+                _mouseWithinControl = true;
+            }
         }
 
         protected override void OnMouseLeave(MouseEventArgs e)
         {
-            _mouseWithinControl = false;
-
-            //clear selection rectangle
-            CurrentMode = MouseMode.Standard;
-            _selectionRect = Rect.Empty;
-
-            //update object positions if dragging
-            ReindexMovedObjects();
+            var decision = _inputInteractionService.HandleMouseLeave(CurrentMode);
+            
+            foreach (var action in decision.Actions)
+            {
+                switch (action)
+                {
+                    case MouseLeaveAction.ClearMouseWithinControl:
+                        _mouseWithinControl = false;
+                        break;
+                    case MouseLeaveAction.ClearSelectionRect:
+                        CurrentMode = MouseMode.Standard;
+                        _selectionRect = Rect.Empty;
+                        break;
+                    case MouseLeaveAction.ReindexMovedObjects:
+                        ReindexMovedObjects();
+                        break;
+                }
+            }
 
             InvalidateVisual();
         }
@@ -1035,7 +1058,7 @@ namespace AnnoDesigner.Controls.Canvas
             InvalidateVisual();
         }
 
-        internal List<LayoutObject> _unselectedObjects = null;
+        internal List<LayoutObject> _unselectedObjects;
 
         /// <summary>
         /// Here be dragons.
@@ -1044,145 +1067,137 @@ namespace AnnoDesigner.Controls.Canvas
         {
             HandleMouse(e);
 
-            // check if user begins to drag
-            if (Math.Abs(_mouseDragStart.X - _mousePosition.X) >= 1 || Math.Abs(_mouseDragStart.Y - _mousePosition.Y) >= 1)
+            var decision = _inputInteractionService.HandleMouseMove(
+                _mousePosition,
+                _mouseDragStart,
+                CurrentMode,
+                e.LeftButton,
+                CurrentObjects.Count,
+                IsControlPressed(),
+                IsShiftPressed());
+
+            switch (decision.Action)
             {
-                switch (CurrentMode)
-                {
-                    case MouseMode.SelectionRectStart:
-                        CurrentMode = MouseMode.SelectionRect;
-                        _selectionRect = new Rect();
-                        break;
-                    case MouseMode.DragSelectionStart:
-                        CurrentMode = MouseMode.DragSelection;
-                        break;
-                    case MouseMode.DragSingleStart:
-                        SelectedObjects.Clear();
-                        var obj = GetObjectAt(_mouseDragStart);
-                        _selectionService.AddSelectedObject(obj, ShouldAffectObjectsWithIdentifier());
-                        RecalculateSelectionContainsNotIgnoredObject();
-                        //after adding the object, compute the collision rect
-                        _collisionRect = obj.GridRect;
-                        CurrentMode = MouseMode.DragSelection;
-                        break;
-                    case MouseMode.DragAllStart:
-                        CurrentMode = MouseMode.DragAll;
-                        break;
-                }
-            }
+                case MouseMoveAction.TransitionToSelectionRect:
+                    CurrentMode = MouseMode.SelectionRect;
+                    _selectionRect = new Rect();
+                    break;
 
-            if (CurrentMode == MouseMode.DragAll)
-            {
-                // move all selected objects
-                var dx = (int)_coordinateHelper.ScreenToGrid(_mousePosition.X - _mouseDragStart.X, GridSize);
-                var dy = (int)_coordinateHelper.ScreenToGrid(_mousePosition.Y - _mouseDragStart.Y, GridSize);
+                case MouseMoveAction.TransitionToDragSelection:
+                    CurrentMode = MouseMode.DragSelection;
+                    break;
 
-                //shift the viewport;
-                if (_appSettings.InvertPanningDirection)
-                {
-                    _viewport.Left -= dx;
-                    _viewport.Top -= dy;
-                }
-                else
-                {
-                    _viewport.Left += dx;
-                    _viewport.Top += dy;
-                }
+                case MouseMoveAction.TransitionToDragSingleObject:
+                    SelectedObjects.Clear();
+                    var obj = GetObjectAt(_mouseDragStart);
+                    _selectionService.AddSelectedObject(obj, ShouldAffectObjectsWithIdentifier());
+                    RecalculateSelectionContainsNotIgnoredObject();
+                    _collisionRect = obj.GridRect;
+                    CurrentMode = MouseMode.DragSelection;
+                    break;
 
-                // adjust the drag start to compensate the amount we already moved
-                _mouseDragStart.X += _coordinateHelper.GridToScreen(dx, GridSize);
-                _mouseDragStart.Y += _coordinateHelper.GridToScreen(dy, GridSize);
+                case MouseMoveAction.TransitionToDragAll:
+                    CurrentMode = MouseMode.DragAll;
+                    break;
 
-                //invalidate scroll info on next render;
-                InvalidateScroll();
-            }
-            else if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                if (CurrentObjects.Count != 0)
-                {
-                    CurrentMode = MouseMode.PlaceObjects;
-                    // place new object
-                    _ = TryPlaceCurrentObjects(isContinuousDrawing: true);
-                }
-                else
-                {
-                    // selection of multiple objects
-                    switch (CurrentMode)
+                case MouseMoveAction.DragAllViewport:
                     {
-                        case MouseMode.SelectionRect:
-                            {
-                                if (IsControlPressed() || IsShiftPressed())
-                                {
-                                    // remove previously selected by the selection rect
-                                    if (ShouldAffectObjectsWithIdentifier())
-                                    {
-                                        _selectionService.RemoveSelectedObjects(
-                                            [.. SelectedObjects.Where(_ => _.CalculateScreenRect(GridSize).IntersectsWith(_selectionRect))],
-                                            true
-                                        );
-                                    }
-                                    else
-                                    {
-                                        _selectionService.RemoveSelectedObjects(x => x.CalculateScreenRect(GridSize).IntersectsWith(_selectionRect));
-                                    }
-                                }
-                                else
-                                {
-                                    SelectedObjects.Clear();
-                                }
+                        var dx = (int)_coordinateHelper.ScreenToGrid(_mousePosition.X - _mouseDragStart.X, GridSize);
+                        var dy = (int)_coordinateHelper.ScreenToGrid(_mousePosition.Y - _mouseDragStart.Y, GridSize);
 
-                                // adjust rect
-                                _selectionRect = new Rect(_mouseDragStart, _mousePosition);
-                                // select intersecting objects
-                                var selectionRectGrid = _coordinateHelper.ScreenToGrid(_selectionRect, GridSize);
-                                selectionRectGrid = _viewport.OriginToViewport(selectionRectGrid);
-                                _selectionService.AddSelectedObjects(PlacedObjects.GetItemsIntersecting(selectionRectGrid),
-                                                   ShouldAffectObjectsWithIdentifier());
-                                RecalculateSelectionContainsNotIgnoredObject();
+                        if (_appSettings.InvertPanningDirection)
+                        {
+                            _viewport.Left -= dx;
+                            _viewport.Top -= dy;
+                        }
+                        else
+                        {
+                            _viewport.Left += dx;
+                            _viewport.Top += dy;
+                        }
 
-                                StatisticsUpdated?.Invoke(this, UpdateStatisticsEventArgs.All);
-                                break;
-                            }
-                        case MouseMode.DragSelection:
-                            {
-                                _inputInteractionService.HandleDragSelection(
-                                    _mousePosition,
-                                    ref _mouseDragStart,
-                                    GridSize,
-                                    ref _oldObjectPositions,
-                                    ref _collisionRect,
-                                    SelectedObjects,
-                                    PlacedObjects,
-                                    _coordinateHelper,
-                                    out var invalidateScroll,
-                                    out var statisticsUpdated,
-                                    out var forceRendering);
+                        _mouseDragStart.X += _coordinateHelper.GridToScreen(dx, GridSize);
+                        _mouseDragStart.Y += _coordinateHelper.GridToScreen(dy, GridSize);
 
-                                if (statisticsUpdated)
-                                {
-                                    StatisticsUpdated?.Invoke(this, new UpdateStatisticsEventArgs(UpdateMode.NoBuildingList));
-                                }
-
-                                if (invalidateScroll)
-                                {
-                                    var oldLayoutBounds = _layoutBounds;
-                                    InvalidateBounds();
-                                    if (oldLayoutBounds != _layoutBounds)
-                                    {
-                                        InvalidateScroll();
-                                    }
-                                }
-
-                                if (forceRendering)
-                                {
-                                    ForceRendering();
-                                    return;
-                                }
-
-                                break;
-                            }
+                        InvalidateScroll();
+                        break;
                     }
-                }
+
+                case MouseMoveAction.PlaceObjectsContinuous:
+                    CurrentMode = MouseMode.PlaceObjects;
+                    _ = TryPlaceCurrentObjects(isContinuousDrawing: true);
+                    break;
+
+                case MouseMoveAction.UpdateSelectionRect:
+                    {
+                        if (IsControlPressed() || IsShiftPressed())
+                        {
+                            if (ShouldAffectObjectsWithIdentifier())
+                            {
+                                _selectionService.RemoveSelectedObjects(
+                                    [.. SelectedObjects.Where(_ => _.CalculateScreenRect(GridSize).IntersectsWith(_selectionRect))],
+                                    true
+                                );
+                            }
+                            else
+                            {
+                                _selectionService.RemoveSelectedObjects(x => x.CalculateScreenRect(GridSize).IntersectsWith(_selectionRect));
+                            }
+                        }
+                        else
+                        {
+                            SelectedObjects.Clear();
+                        }
+
+                        _selectionRect = new Rect(_mouseDragStart, _mousePosition);
+                        var selectionRectGrid = _coordinateHelper.ScreenToGrid(_selectionRect, GridSize);
+                        selectionRectGrid = _viewport.OriginToViewport(selectionRectGrid);
+                        _selectionService.AddSelectedObjects(PlacedObjects.GetItemsIntersecting(selectionRectGrid),
+                                           ShouldAffectObjectsWithIdentifier());
+                        RecalculateSelectionContainsNotIgnoredObject();
+
+                        StatisticsUpdated?.Invoke(this, UpdateStatisticsEventArgs.All);
+                        break;
+                    }
+
+                case MouseMoveAction.DragSelectedObjects:
+                    {
+                        _inputInteractionService.HandleDragSelection(
+                            _mousePosition,
+                            ref _mouseDragStart,
+                            GridSize,
+                            ref _oldObjectPositions,
+                            ref _collisionRect,
+                            SelectedObjects,
+                            PlacedObjects,
+                            _coordinateHelper,
+                            out var invalidateScroll,
+                            out var statisticsUpdated,
+                            out var forceRendering);
+
+                        if (statisticsUpdated)
+                        {
+                            StatisticsUpdated?.Invoke(this, new UpdateStatisticsEventArgs(UpdateMode.NoBuildingList));
+                        }
+
+                        if (invalidateScroll)
+                        {
+                            var oldLayoutBounds = _layoutBounds;
+                            InvalidateBounds();
+                            if (oldLayoutBounds != _layoutBounds)
+                            {
+                                InvalidateScroll();
+                            }
+                        }
+
+                        if (forceRendering)
+                        {
+                            ForceRendering();
+                            return;
+                        }
+
+                        break;
+                    }
             }
 
             InvalidateVisual();
@@ -1195,32 +1210,31 @@ namespace AnnoDesigner.Controls.Canvas
         {
             HandleMouse(e);
 
-            if (CurrentMode == MouseMode.DragAll)
-            {
-                if (e.LeftButton == MouseButtonState.Released && e.RightButton == MouseButtonState.Released)
-                {
-                    CurrentMode = MouseMode.Standard;
-                }
+            var decision = _inputInteractionService.HandleMouseUp(
+                e.ChangedButton,
+                e.LeftButton,
+                e.RightButton,
+                CurrentMode,
+                CurrentObjects.Count,
+                _mousePosition,
+                IsControlPressed(),
+                IsShiftPressed(),
+                GetObjectAt,
+                SelectedObjects.Contains);
 
-                return;
-            }
-
-            if (e.ChangedButton == MouseButton.Left && CurrentObjects.Count == 0)
+            foreach (var action in decision.Actions)
             {
-                switch (CurrentMode)
+                switch (action)
                 {
-                    default:
+                    case MouseUpAction.EndDragAll:
+                        CurrentMode = MouseMode.Standard;
+                        return;
+
+                    case MouseUpAction.ToggleObjectSelection:
                         {
-                            // clear selection if no key is pressed
-                            if (!(IsControlPressed() || IsShiftPressed()))
-                            {
-                                SelectedObjects.Clear();
-                            }
-
-                            var obj = GetObjectAt(_mousePosition);
+                            var obj = decision.Data as LayoutObject;
                             if (obj != null)
                             {
-                                // user clicked an object: select or deselect it
                                 if (SelectedObjects.Contains(obj))
                                 {
                                     _selectionService.RemoveSelectedObject(obj);
@@ -1231,77 +1245,45 @@ namespace AnnoDesigner.Controls.Canvas
                                 }
                                 RecalculateSelectionContainsNotIgnoredObject();
                             }
-
                             _collisionRect = ComputeBoundingRect(SelectedObjects);
+                            _selectionRect = Rect.Empty;
                             StatisticsUpdated?.Invoke(this, UpdateStatisticsEventArgs.All);
-                            // return to standard mode, i.e. clear any drag-start modes
-                            CurrentMode = MouseMode.Standard;
                             if (selectionContainsNotIgnoredObject)
                             {
                                 _selectionService.RemoveSelectedObjects(Extensions.IEnumerableExtensions.IsIgnoredObject);
                             }
                             break;
                         }
-                    case MouseMode.SelectSameIdentifier:
+
+                    case MouseUpAction.ClearSelection:
+                        if (!(IsControlPressed() || IsShiftPressed()))
                         {
-                            CurrentMode = MouseMode.Standard;
-                            break;
+                            SelectedObjects.Clear();
                         }
-                    case MouseMode.SelectionRect:
                         _collisionRect = ComputeBoundingRect(SelectedObjects);
-                        // cancel dragging of selection rect
-                        CurrentMode = MouseMode.Standard;
+                        StatisticsUpdated?.Invoke(this, UpdateStatisticsEventArgs.All);
+                        break;
+
+                    case MouseUpAction.EndSelectionRect:
+                        _collisionRect = ComputeBoundingRect(SelectedObjects);
+                        _selectionRect = Rect.Empty;
                         if (selectionContainsNotIgnoredObject)
                         {
                             _selectionService.RemoveSelectedObjects(Extensions.IEnumerableExtensions.IsIgnoredObject);
                         }
                         break;
-                    case MouseMode.DragSelection:
-                        _inputInteractionService.HandleMouseUpDragSelection(_oldObjectPositions, SelectedObjects, false, out var registerUndo, out var reindex, out var clearSelection);
-                        if (registerUndo)
-                        {
-                            UndoManager.RegisterOperation(new MoveObjectsOperation<LayoutObject>()
-                            {
-                                ObjectPropertyValues = _oldObjectPositions.Select(pair => (pair.Item, pair.OldGridRect, pair.Item.Bounds)).ToList(),
-                                QuadTree = PlacedObjects
-                            });
-                        }
-                        if (reindex)
-                        {
-                            ReindexMovedObjects();
-                        }
-                        if (clearSelection)
-                        {
-                            SelectedObjects.Clear();
-                        }
-                        CurrentMode = MouseMode.Standard;
-                        break;
-                }
-            }
-            else if (e.ChangedButton == MouseButton.Left && CurrentObjects.Count != 0)
-            {
-                CurrentMode = MouseMode.PlaceObjects;
-            }
-            else if (e.ChangedButton == MouseButton.Right)
-            {
-                switch (CurrentMode)
-                {
-                    case MouseMode.PlaceObjects:
-                    case MouseMode.DeleteObject:
-                    case MouseMode.Standard:
-                        {
-                            if (CurrentObjects.Count != 0)
-                            {
-                                // cancel placement of object
-                                CurrentObjects.Clear();
-                            }
 
-                            CurrentMode = MouseMode.Standard;
-                            break;
-                        }
-                    case MouseMode.DragSelection:
+                    case MouseUpAction.EndDragSelection:
                         {
-                            _inputInteractionService.HandleMouseUpDragSelection(_oldObjectPositions, SelectedObjects, true, out var registerUndo, out var reindex, out var clearSelection);
+                            var isRightButton = (bool)decision.Data;
+                            _inputInteractionService.HandleMouseUpDragSelection(
+                                _oldObjectPositions,
+                                SelectedObjects,
+                                isRightButton,
+                                out var registerUndo,
+                                out var reindex,
+                                out var clearSelection);
+
                             if (registerUndo)
                             {
                                 UndoManager.RegisterOperation(new MoveObjectsOperation<LayoutObject>()
@@ -1318,52 +1300,20 @@ namespace AnnoDesigner.Controls.Canvas
                             {
                                 SelectedObjects.Clear();
                             }
-                            if (CurrentObjects.Count != 0)
-                            {
-                                // cancel placement of object
-                                CurrentObjects.Clear();
-                            }
-                            CurrentMode = MouseMode.Standard;
                             break;
                         }
-                    case MouseMode.SelectSameIdentifier:
-                        {
-                            CurrentMode = MouseMode.Standard;
-                            break;
-                        }
-                }
-            }
-            else if (e.ChangedButton == MouseButton.Right)
-            {
-                switch (CurrentMode)
-                {
-                    case MouseMode.SelectSameIdentifier:
-                        {
-                            CurrentMode = MouseMode.Standard;
-                            break;
-                        }
-                }
-            }
-            else if (e.ChangedButton == MouseButton.XButton1)
-            {
-                switch (CurrentMode)
-                {
-                    case MouseMode.SelectSameIdentifier:
-                        {
-                            CurrentMode = MouseMode.Standard;
-                            break;
-                        }
-                }
-            }
-            else if (e.ChangedButton == MouseButton.XButton2)
-            {
-                switch (CurrentMode)
-                {
-                    case MouseMode.SelectSameIdentifier:
-                        {
-                            CurrentMode = MouseMode.Standard;
-                            break;
-                        }
+
+                    case MouseUpAction.CancelPlacement:
+                        CurrentObjects.Clear();
+                        break;
+
+                    case MouseUpAction.TransitionToPlaceObjects:
+                        CurrentMode = MouseMode.PlaceObjects;
+                        break;
+
+                    case MouseUpAction.TransitionToStandard:
+                        CurrentMode = MouseMode.Standard;
+                        break;
                 }
             }
 
@@ -1385,11 +1335,12 @@ namespace AnnoDesigner.Controls.Canvas
             //KeyDown, MouseUp, MouseMove, MouseWheel etc.
             HotkeyCommandManager?.HandleCommand(e);
 
-            if (e.Handled)
+            var decision = _inputInteractionService.HandleKeyDown();
+            
+            if (e.Handled && decision.Action == KeyDownAction.Handled)
             {
                 InvalidateVisual();
             }
-
         }
 
         /// <summary>
@@ -1713,16 +1664,16 @@ namespace AnnoDesigner.Controls.Canvas
         /// <summary>
         /// Holds event handlers for command executions.
         /// </summary>
-        internal static readonly Dictionary<ICommand, Action<AnnoCanvas2>> CommandExecuteMappings;
+        internal static readonly Dictionary<ICommand, Action<AnnoCanvas>> CommandExecuteMappings;
 
         public HotkeyCommandManager HotkeyCommandManager { get; set; }
         /// <summary>
         /// Creates event handlers for command executions and registers them at the CommandManager.
         /// </summary>
-        static AnnoCanvas2()
+        static AnnoCanvas()
         {
             // create event handler mapping
-            CommandExecuteMappings = new Dictionary<ICommand, Action<AnnoCanvas2>>
+            CommandExecuteMappings = new Dictionary<ICommand, Action<AnnoCanvas>>
             {
                 { ApplicationCommands.New, async _ => await _.NewFile() },
                 { ApplicationCommands.Open, async _ => await _.OpenFile() },
@@ -1733,17 +1684,17 @@ namespace AnnoDesigner.Controls.Canvas
             // register event handlers for the specified commands
             foreach (var action in CommandExecuteMappings)
             {
-                CommandManager.RegisterClassCommandBinding(typeof(AnnoCanvas2), new CommandBinding(action.Key, ExecuteCommand));
+                CommandManager.RegisterClassCommandBinding(typeof(AnnoCanvas), new CommandBinding(action.Key, ExecuteCommand));
             }
 
             // register Undo/Redo command bindings so ApplicationCommands.Undo and .Redo work with AnnoCanvas2
-            CommandManager.RegisterClassCommandBinding(typeof(AnnoCanvas2), new CommandBinding(ApplicationCommands.Undo, ExecuteUndoCommand, CanExecuteUndoCommand));
-            CommandManager.RegisterClassCommandBinding(typeof(AnnoCanvas2), new CommandBinding(ApplicationCommands.Redo, ExecuteRedoCommand, CanExecuteRedoCommand));
+            CommandManager.RegisterClassCommandBinding(typeof(AnnoCanvas), new CommandBinding(ApplicationCommands.Undo, ExecuteUndoCommand, CanExecuteUndoCommand));
+            CommandManager.RegisterClassCommandBinding(typeof(AnnoCanvas), new CommandBinding(ApplicationCommands.Redo, ExecuteRedoCommand, CanExecuteRedoCommand));
         }
 
         private static void ExecuteUndoCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            if (sender is AnnoCanvas2 canvas)
+            if (sender is AnnoCanvas canvas)
             {
                 canvas.ExecuteUndo(null);
                 e.Handled = true;
@@ -1752,7 +1703,7 @@ namespace AnnoDesigner.Controls.Canvas
 
         private static void CanExecuteUndoCommand(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (sender is AnnoCanvas2 canvas && canvas.UndoManager != null)
+            if (sender is AnnoCanvas canvas && canvas.UndoManager != null)
             {
                 if (canvas.UndoManager is AnnoDesigner.Services.Undo.UndoManager um)
                 {
@@ -1771,7 +1722,7 @@ namespace AnnoDesigner.Controls.Canvas
 
         private static void ExecuteRedoCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            if (sender is AnnoCanvas2 canvas)
+            if (sender is AnnoCanvas canvas)
             {
                 canvas.ExecuteRedo(null);
                 e.Handled = true;
@@ -1780,7 +1731,7 @@ namespace AnnoDesigner.Controls.Canvas
 
         private static void CanExecuteRedoCommand(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (sender is AnnoCanvas2 canvas && canvas.UndoManager != null)
+            if (sender is AnnoCanvas canvas && canvas.UndoManager != null)
             {
                 if (canvas.UndoManager is AnnoDesigner.Services.Undo.UndoManager um)
                 {
@@ -1808,6 +1759,7 @@ namespace AnnoDesigner.Controls.Canvas
             manager.AddHotkey(rotateHotkey1);
             manager.AddHotkey(rotateHotkey2);
             manager.AddHotkey(rotateAllHotkey);
+            manager.AddHotkey(cutHotkey);
             manager.AddHotkey(copyHotkey);
             manager.AddHotkey(pasteHotkey);
             manager.AddHotkey(deleteHotkey);
@@ -1827,7 +1779,7 @@ namespace AnnoDesigner.Controls.Canvas
         /// <param name="e"></param>
         internal static void ExecuteCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            if (sender is AnnoCanvas2 canvas && CommandExecuteMappings.TryGetValue(e.Command, out var value))
+            if (sender is AnnoCanvas canvas && CommandExecuteMappings.TryGetValue(e.Command, out var value))
             {
                 value.Invoke(canvas);
                 e.Handled = true;
@@ -1882,6 +1834,33 @@ namespace AnnoDesigner.Controls.Canvas
                 }
                 Normalize(1);
             });
+        }
+
+        internal Hotkey cutHotkey;
+
+        internal ICommand cutCommand;
+
+        internal void ExecuteCut(object param)
+        {
+            if (SelectedObjects.Count != 0)
+            {
+                ClipboardService.Copy(SelectedObjects.Select(x => x.WrappedAnnoObject));
+
+                UndoManager.RegisterOperation(new RemoveObjectsOperation<LayoutObject>()
+                {
+                    Objects = [.. SelectedObjects],
+                    Collection = PlacedObjects
+                });
+
+                // remove all currently selected objects from the grid and clear selection    
+                foreach (var item in SelectedObjects)
+                {
+                    _ = PlacedObjects.Remove(item);
+                }
+                SelectedObjects.Clear();
+                StatisticsUpdated?.Invoke(this, UpdateStatisticsEventArgs.All);
+                CurrentMode = MouseMode.DeleteObject;
+            }
         }
 
         internal Hotkey copyHotkey;
@@ -1975,7 +1954,15 @@ namespace AnnoDesigner.Controls.Canvas
         internal ICommand undoCommand;
         internal void ExecuteUndo(object param)
         {
-            UndoManager.Undo();
+            if (CommandHistory != null)
+            {
+                CommandHistory.Undo();
+            }
+            else
+            {
+                UndoManager?.Undo();
+            }
+
             ForceRendering();
             StatisticsUpdated?.Invoke(this, UpdateStatisticsEventArgs.All);
         }
@@ -1984,7 +1971,15 @@ namespace AnnoDesigner.Controls.Canvas
         internal ICommand redoCommand;
         internal void ExecuteRedo(object param)
         {
-            UndoManager.Redo();
+            if (CommandHistory != null)
+            {
+                CommandHistory.Redo();
+            }
+            else
+            {
+                UndoManager?.Redo();
+            }
+
             ForceRendering();
             StatisticsUpdated?.Invoke(this, UpdateStatisticsEventArgs.All);
         }
