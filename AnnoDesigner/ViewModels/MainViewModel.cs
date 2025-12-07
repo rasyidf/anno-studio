@@ -1175,8 +1175,8 @@ namespace AnnoDesigner.ViewModels
                     targetGridSize = Constants.GridStepMax;
                 }
 
-                AnnoCanvas.GridSize = targetGridSize;
-                AnnoCanvas.ResetViewport();
+                AnnoCanvas.GridSize = targetGridSize; 
+                AnnoCanvas.CenterViewportOnRect(bounds);
             }
             catch (Exception ex)
             {
@@ -1224,7 +1224,8 @@ namespace AnnoDesigner.ViewModels
                 }
 
                 AnnoCanvas.GridSize = targetGridSize;
-                AnnoCanvas.ResetViewport();
+                // center the viewport on the selected objects
+                AnnoCanvas.CenterViewportOnRect(bounds);
             }
             catch (Exception ex)
             {

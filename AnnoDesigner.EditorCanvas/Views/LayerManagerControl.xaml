@@ -1,0 +1,80 @@
+<UserControl
+    x:Class="AnnoDesigner.Controls.EditorCanvas.Views.LayerManagerControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:core="clr-namespace:AnnoDesigner.Controls.EditorCanvas.Core;assembly=AnnoDesigner.EditorCanvas"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:AnnoDesigner.Controls.EditorCanvas.Views"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="315"
+    d:DesignWidth="280"
+    mc:Ignorable="d">
+    <Border
+        Padding="6"
+        Background="#f8f8f8"
+        BorderBrush="Gray"
+        BorderThickness="1">
+        <DockPanel LastChildFill="True">
+            <TextBlock
+                Margin="0,0,0,6"
+                DockPanel.Dock="Top"
+                FontWeight="Bold"
+                Text="Layer Manager" />
+
+
+            <StackPanel
+                Margin="0,8,0,0"
+                HorizontalAlignment="Center"
+                DockPanel.Dock="Bottom"
+                Orientation="Horizontal">
+                <Button
+                    x:Name="TopBtn"
+                    Width="36"
+                    Margin="4"
+                    Click="TopBtn_Click"
+                    Content="⤒"
+                    ToolTip="Move to top" />
+                <Button
+                    x:Name="UpBtn"
+                    Width="36"
+                    Margin="4"
+                    Click="UpBtn_Click"
+                    Content="↑" />
+                <Button
+                    x:Name="DownBtn"
+                    Width="36"
+                    Margin="4"
+                    Click="DownBtn_Click"
+                    Content="↓" />
+                <Button
+                    x:Name="BottomBtn"
+                    Width="36"
+                    Margin="4"
+                    Click="BottomBtn_Click"
+                    Content="⤓"
+                    ToolTip="Move to bottom" />
+                <Button
+                    x:Name="RefreshBtn"
+                    Margin="4"
+                    Click="RefreshBtn_Click"
+                    Content="Refresh" />
+            </StackPanel>
+            <ListBox x:Name="LayersList" SelectedIndex="0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel>
+                            <CheckBox
+                                Margin="2"
+                                VerticalAlignment="Center"
+                                IsChecked="{Binding Enabled}" />
+                            <TextBlock
+                                Margin="4,0,0,0"
+                                VerticalAlignment="Center"
+                                Text="{Binding Display}" />
+                        </DockPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+    </Border>
+</UserControl>

@@ -1550,6 +1550,56 @@ namespace AnnoDesigner.Controls.Canvas
             _viewport.Left = 0;
         }
 
+        /// <summary>
+        /// Centers the viewport so the given grid <paramref name="gridRect"/> is visible and placed roughly in the middle.
+        /// This respects the scrollable bounds and will clamp the viewport so it doesn't go out of bounds.
+        /// </summary>
+        /// <param name="gridRect">The rectangle in grid coordinates which should be centered in the viewport.</param>
+        public void CenterViewportOnRect(Rect gridRect)
+        {
+            // Make sure scrollable bounds are up-to-date
+            InvalidateBounds();
+            InvalidateScroll();
+
+            // Ensure the viewport size in grid-units is available. If not set yet, compute from control actual size.
+            var viewportWidth = _viewport.Width;
+            var viewportHeight = _viewport.Height;
+            if (viewportWidth <= 0 || viewportHeight <= 0)
+            {
+                // Use screen->grid conversion to estimate viewport size for the current grid size
+                viewportWidth = _coordinateHelper.ScreenToGrid(ActualWidth, _gridSize);
+                viewportHeight = _coordinateHelper.ScreenToGrid(ActualHeight, _gridSize);
+                _viewport.Width = viewportWidth;
+                _viewport.Height = viewportHeight;
+            }
+
+            // If the target rect is smaller than the viewport, center the target in the viewport.
+            var desiredLeft = gridRect.Left + (gridRect.Width - viewportWidth) / 2.0;
+            var desiredTop = gridRect.Top + (gridRect.Height - viewportHeight) / 2.0;
+
+            // Clamp to scrollable area so we don't go outside bounds
+            var minLeft = _scrollableBounds.Left;
+            var maxLeft = _scrollableBounds.Left + _scrollableBounds.Width - viewportWidth;
+            if (maxLeft < minLeft) maxLeft = minLeft;
+
+            var minTop = _scrollableBounds.Top;
+            var maxTop = _scrollableBounds.Top + _scrollableBounds.Height - viewportHeight;
+            if (maxTop < minTop) maxTop = minTop;
+
+            _viewport.Left = Math.Min(Math.Max(desiredLeft, minLeft), maxLeft);
+            _viewport.Top = Math.Min(Math.Max(desiredTop, minTop), maxTop);
+
+            // viewport changed, we should recompute scroll info and render
+            InvalidateScroll();
+            InvalidateVisual();
+        }
+
+        /// <summary>
+        /// Public helpers to read current viewport position (grid units). Useful for tests and view models.
+        /// </summary>
+        public double ViewportLeft => _viewport.Left;
+        public double ViewportTop => _viewport.Top;
+
         #endregion
 
         #region New/Save/Load/Export methods

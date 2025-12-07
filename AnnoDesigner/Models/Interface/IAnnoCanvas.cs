@@ -46,6 +46,7 @@ namespace AnnoDesigner.Models.Interface
         void Normalize();
         void Normalize(int border);
         void ResetViewport();
+        void CenterViewportOnRect(Rect gridRect);
         void RaiseStatisticsUpdated(UpdateStatisticsEventArgs args);
         void RaiseColorsInLayoutUpdated();
         Rect ComputeBoundingRect(IEnumerable<LayoutObject> objects);

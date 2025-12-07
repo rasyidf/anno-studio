@@ -9,6 +9,8 @@
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
   </PropertyGroup> 
   <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    
     <PackageReference Include="AvalonDock.Themes.WPFUI" />
     <PackageReference Include="Moq" />
     <PackageReference Include="System.IO.Abstractions.TestingHelpers" />
@@ -27,6 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\AnnoDesigner.Core\AnnoDesigner.Core.csproj" />
+    <ProjectReference Include="..\..\AnnoDesigner.EditorCanvas\AnnoDesigner.EditorCanvas.csproj" />
     <ProjectReference Include="..\..\AnnoDesigner\AnnoDesigner.csproj" />
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,129 @@
+<Window
+    x:Class="AnnoDesigner.EditorCanvas.Demo.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:AnnoDesigner.Controls.EditorCanvas;assembly=AnnoDesigner.EditorCanvas"
+    xmlns:ecviews="clr-namespace:AnnoDesigner.Controls.EditorCanvas.Views;assembly=AnnoDesigner.EditorCanvas"
+    Title="EditorCanvas Demo"
+    Width="1200"
+    Height="800">
+    <DockPanel>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock x:Name="txtStatusTool" Text="Tool: Selection" />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock x:Name="txtStatusSelection" Text="Selection: 0" />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock x:Name="txtStatusHint" Text="Esc to cancel • Ctrl+D duplicate" />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock x:Name="txtStatusZoom" Text="Zoom: 1.0x" />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock x:Name="txtStatusPan" Text="Pan: (0,0)" />
+            </StatusBarItem>
+        </StatusBar>
+
+        <StackPanel
+            Margin="6"
+            HorizontalAlignment="Left"
+            DockPanel.Dock="Top"
+            Orientation="Horizontal">
+            <Button
+                x:Name="btnAdd"
+                Margin="4"
+                Padding="6"
+                Click="BtnAdd_Click"
+                Content="Add Random" />
+            <Button
+                x:Name="btnRemove"
+                Margin="4"
+                Padding="6"
+                Click="BtnRemove_Click"
+                Content="Remove Selected" />
+            <CheckBox
+                x:Name="chkGrid"
+                Margin="8,4"
+                Checked="ChkGrid_Changed"
+                Content="Show Grid"
+                IsChecked="True"
+                Unchecked="ChkGrid_Changed" />
+            <CheckBox
+                x:Name="chkGuides"
+                Margin="8,4"
+                Checked="ChkGuides_Changed"
+                Content="Show Guides"
+                IsChecked="True"
+                Unchecked="ChkGuides_Changed" />
+            <CheckBox
+                x:Name="chkAutoReturn"
+                Margin="8,4"
+                Checked="ChkAutoReturn_Changed"
+                Content="Auto-return to Selection"
+                IsChecked="True"
+                Unchecked="ChkAutoReturn_Changed" />
+        </StackPanel>
+
+        <StackPanel
+            Width="140"
+            Margin="6"
+            DockPanel.Dock="Left"
+            Orientation="Vertical">
+            <TextBlock
+                Margin="4"
+                FontWeight="Bold"
+                Text="Tools" />
+            <Button
+                Margin="2"
+                Click="OnToolButtonClick"
+                Content="Selection (V)"
+                Tag="Selection" />
+            <Button
+                Margin="2"
+                Click="OnToolButtonClick"
+                Content="Rect Select (R)"
+                Tag="RectSelect" />
+            <Button
+                Margin="2"
+                Click="OnToolButtonClick"
+                Content="Lasso Select (L)"
+                Tag="LassoSelect" />
+            <Separator Margin="4,6" />
+            <Button
+                Margin="2"
+                Click="OnToolButtonClick"
+                Content="Rect Draw (D)"
+                Tag="RectDraw" />
+            <Button
+                Margin="2"
+                Click="OnToolButtonClick"
+                Content="Line Draw (N)"
+                Tag="LineDraw" />
+            <Button
+                Margin="2"
+                Click="OnToolButtonClick"
+                Content="Pencil (P)"
+                Tag="PencilDraw" />
+            <Separator Margin="4,6" />
+            <Button
+                Margin="2"
+                Click="OnToolButtonClick"
+                Content="Transform (M)"
+                Tag="Transform" />
+            <Button
+                Margin="2"
+                Click="OnToolButtonClick"
+                Content="Duplicate (Ctrl+D)"
+                Tag="Duplicate" />
+            <Separator Margin="4,8" />
+            <TextBlock Margin="6,4,6,2" FontWeight="Bold" Text="Layers" />
+            <ecviews:LayerManagerControl x:Name="layerManager" Width="130" Height="220" />
+        </StackPanel>
+
+        <Grid>
+            <controls:EditorCanvas x:Name="editorCanvas" />
+        </Grid>
+    </DockPanel>
+</Window>
