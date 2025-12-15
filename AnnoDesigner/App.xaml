@@ -1,4 +1,4 @@
-﻿<!-- ReSharper disable once ObsoleteElementError -->
+﻿<!--  ReSharper disable once ObsoleteElementError  -->
 <Application
     x:Class="AnnoDesigner.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -11,10 +11,10 @@
 
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" />
                 <ui:ControlsDictionary />
                 <ui:ThemesDictionary Theme="Light" />
-                
-                <!-- <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" /> -->
+
                 <ResourceDictionary Source="/Themes/Compact.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/ColorPicker;component/Styles/DefaultColorPickerStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>

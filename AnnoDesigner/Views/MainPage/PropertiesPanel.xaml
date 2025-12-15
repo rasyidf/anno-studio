@@ -30,18 +30,6 @@
         Margin="2"
         LastChildFill="True">
 
-        <!--  Selection summary (compact header like Figma)  -->
-        <StackPanel Margin="4,0,4,6" DockPanel.Dock="Top">
-            <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Text="{Binding SelectionSummary}" />
-            <TextBlock
-                FontSize="11"
-                Foreground="#FF6B6B6B"
-                Text="{Binding SelectionSubtitle}" />
-            <Separator Margin="0,6,0,6" />
-        </StackPanel>
 
         <!--  Hidden accessible color picker instance for code-behind and programmatic access  -->
         <cp:PortableColorPicker
@@ -50,7 +38,12 @@
             ShowAlpha="False"
             Visibility="Collapsed" />
         <!--  Header / Layout settings  -->
-        <GroupBox Margin="0,0,0,6" DockPanel.Dock="Top">
+        <ui:CardExpander
+            Margin="0,6,0,0"
+            Padding="8"
+            DockPanel.Dock="Top"
+            Header="{l:Localize LayoutSettings}"
+            IsExpanded="True">
             <Grid Margin="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -61,13 +54,6 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    VerticalAlignment="Center"
-                    FontWeight="Bold"
-                    Style="{StaticResource PropertyLabel}"
-                    Text="{l:Localize LayoutSettings}" />
-                <TextBlock
                     Grid.Row="1"
                     Grid.Column="0"
                     VerticalAlignment="Center"
@@ -76,8 +62,7 @@
 
                 <TextBox
                     Grid.Row="1"
-                    Grid.Column="1"
-                    Width="120"
+                    Width="200"
                     Margin="0,0,0,4"
                     HorizontalAlignment="Right"
                     Text="{Binding LayoutSettingsViewModel.LayoutVersionDisplayValue}" />
@@ -87,7 +72,7 @@
                     HorizontalAlignment="Right"
                     Text="" />
             </Grid>
-        </GroupBox>
+        </ui:CardExpander>
 
         <ui:CardExpander
             Margin="0,6,0,0"
