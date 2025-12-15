@@ -27,6 +27,9 @@ using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using NLog.Targets;
 using AnnoDesigner.Views;
+using AnnoDesigner.Services.Undo;
+using AnnoDesigner.Core.Layout.Models;
+using AnnoDesigner.Core.Layout;
 
 namespace AnnoDesigner
 {
@@ -68,8 +71,8 @@ namespace AnnoDesigner
             TaskScheduler.UnobservedTaskException += (s, e) => LogUnhandledException(e.Exception, "TaskScheduler.UnobservedTaskException");
         }
 
-        public static string ExecutablePath => Assembly.GetEntryAssembly().Location;
-        public static string ApplicationPath => Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+        public static string ExecutablePath => Assembly.GetEntryAssembly()?.Location;
+        public static string ApplicationPath => Path.GetDirectoryName(ExecutablePath);
         public static IProgramArgs StartupArguments { get; private set; }
 
         protected override async void OnStartup(StartupEventArgs e)
@@ -226,6 +229,29 @@ namespace AnnoDesigner
                         sp.GetRequiredService<ILocalizationHelper>(),
                         sp.GetService<Controls.Canvas.Services.Contracts.IFileDialogService>()))
                  
+                // core layout loader used by a few services
+                .AddTransient<AnnoDesigner.Core.Layout.Models.ILayoutLoader, AnnoDesigner.Core.Layout.LayoutLoader>()
+
+                // caches/helpers — shared singletons
+                .AddSingleton<ICoordinateHelper, CoordinateHelper>()
+                .AddSingleton<IBrushCache, BrushCache>()
+                .AddSingleton<IPenCache, PenCache>()
+
+                // clipboard service (uses core clipboard impl)
+                .AddSingleton<IClipboardService>(sp => new  ClipboardService(
+                    sp.GetService<AnnoDesigner.Core.Layout.Models.ILayoutLoader>() ?? new AnnoDesigner.Core.Layout.LayoutLoader(),
+                    new WindowsClipboard()))
+
+                // small layout helper used by documents
+                .AddTransient<ILayoutService, LayoutService>()
+
+                // scoped undo manager for per-document undo stacks
+                .AddScoped<IUndoManager, UndoManager>()
+
+                // document & shared resource factories
+                .AddSingleton<ISharedResourceManager, SharedResourceManager>()
+                .AddSingleton<IDocumentServicesFactory, DocumentServicesFactory>()
+
                 .AddTransient<RecentFilesAppSettingsSerializer>()
                  
                 .AddTransient<IRecentFilesHelper>(sp => {
@@ -275,7 +301,7 @@ namespace AnnoDesigner
             Environment.Exit(-1);
         }
 
-        public static void ShowMessageWithUnexpectedError(bool exitProgram = true)
+        public static void ShowMessageWithUnexpectedError(bool exitProgram = false)
         {
             var message = "An unhandled exception occurred.";
 

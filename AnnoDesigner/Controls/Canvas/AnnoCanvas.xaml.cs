@@ -67,7 +67,7 @@ namespace AnnoDesigner.Controls.Canvas
 
         #region Properties
 
-        public IUndoManager UndoManager { get; internal set; }
+        public AnnoDesigner.Services.Undo.IUndoManager UndoManager { get; internal set; }
 
         internal ICommandHistoryService CommandHistory { get; private set; }
 
@@ -607,7 +607,7 @@ namespace AnnoDesigner.Controls.Canvas
             _messageBoxService = messageBoxServiceToUse ?? new MessageBoxService();
             _localizationHelper = localizationHelperToUse ?? Localization.Localization.Instance;
             _layoutLoader = new LayoutLoader();
-            UndoManager = undoManager ?? new UndoManager();
+            UndoManager = undoManager ?? new AnnoDesigner.Services.Undo.UndoManager();
             // command history will delegate to the undo manager when available
             CommandHistory = new CommandHistoryService(UndoManager);
             // Ensure command state updates when the undo manager reports changes
@@ -912,7 +912,8 @@ namespace AnnoDesigner.Controls.Canvas
             //make sure the scrollable area encompasses the current viewport plus the bounding rect of the current layout
             var r = _viewport.Absolute;
             r.Union(_layoutBounds);
-            _scrollableBounds = r;
+            // Keep existing scrollable bounds if it already contains a larger area; otherwise expand to include the new area.
+            _scrollableBounds = Rect.Union(_scrollableBounds, r);
 
             //update scroll viewer on next render
             _invalidateScrollInfo = true;

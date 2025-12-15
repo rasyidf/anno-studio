@@ -11,6 +11,7 @@ using AnnoDesigner.Extensions;
 using AnnoDesigner.ViewModels;
 using NLog;
 using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
 
 namespace AnnoDesigner.Views
 {
@@ -139,7 +140,8 @@ namespace AnnoDesigner.Views
 
         private void WindowClosing(object sender, CancelEventArgs e)
         {
-            if (!annoCanvas.CheckUnsavedChanges().ConfigureAwait(false).GetAwaiter().GetResult())
+            var ok = _mainViewModel?.AnnoCanvas?.CheckUnsavedChanges().ConfigureAwait(false).GetAwaiter().GetResult() ?? true;
+            if (!ok)
             {
                 e.Cancel = true;
                 return;
@@ -159,6 +161,11 @@ namespace AnnoDesigner.Views
                 .FilePath;
             Logger.Trace($"saving settings: \"{userConfig}\"");
 #endif
+        }
+
+        public void Close()
+        {
+            throw new NotImplementedException();
         }
     }
 }

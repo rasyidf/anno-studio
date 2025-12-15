@@ -304,7 +304,9 @@ namespace AnnoDesigner.Controls.Canvas.Services
 
         public void DrawGrid(DrawingContext drawingContext, double width, double height, double horizontalAlignmentValue, double verticalAlignmentValue, int gridSize, bool forceRedraw, System.Windows.Media.Pen gridLinePen, GuidelineSet guidelineSet)
         {
-            if (!_canvas.RenderGrid)
+            // If we have a canvas instance, honor its RenderGrid setting. For tests the canvas may be null, in which case
+            // we allow drawing to proceed so unit tests can exercise grid drawing without a full control instance.
+            if (_canvas != null && !_canvas.RenderGrid)
             {
                 return;
             }

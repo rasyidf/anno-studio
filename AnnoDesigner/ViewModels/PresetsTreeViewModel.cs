@@ -107,7 +107,7 @@ namespace AnnoDesigner.ViewModels
         #region commands
 
         [RelayCommand]
-        private void DoubleClick(GenericTreeItem param)
+        private void DoubleClick(object param)
         {
             var selectedItem = param as GenericTreeItem;
             if (selectedItem?.AnnoObject != null)
@@ -131,7 +131,7 @@ namespace AnnoDesigner.ViewModels
         //}
 
         [RelayCommand]
-        private void ReturnKeyPressed(GenericTreeItem param)
+        private void ReturnKeyPressed(object param)
         {
             var selectedItem = param as GenericTreeItem;
             if (selectedItem?.AnnoObject != null)

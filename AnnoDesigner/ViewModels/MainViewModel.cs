@@ -34,6 +34,7 @@ using AnnoDesigner.Localization;
 using AnnoDesigner.Models;
 using AnnoDesigner.Models.Interface;
 using AnnoDesigner.PreferencesPages;
+using AnnoDesigner.Services;
 using AnnoDesigner.Services.Undo.Operations;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -52,6 +53,10 @@ namespace AnnoDesigner.ViewModels
         private readonly ICoordinateHelper _coordinateHelper;
         private readonly IBrushCache _brushCache;
         private readonly IPenCache _penCache;
+        private readonly IDocumentServicesFactory _documentServicesFactory;
+        private readonly ISharedResourceManager _sharedResourceManager;
+        private readonly ILayoutService _layoutService;
+        private IDocumentServices _currentDocumentServices;
         private readonly IAdjacentCellGrouper _adjacentCellGrouper;
         private readonly IRecentFilesHelper _recentFilesHelper;
         private readonly IMessageBoxService _messageBoxService;
@@ -62,6 +67,10 @@ namespace AnnoDesigner.ViewModels
 
         private Dictionary<int, bool> _treeViewState;
         private readonly TreeLocalizationContainer _treeLocalizationContainer;
+
+        // Prefer shared resources when available
+        private BuildingPresets BuildingPresets => _sharedResourceManager?.BuildingPresets ?? AnnoCanvas?.BuildingPresets;
+        private Dictionary<string, AnnoDesigner.Core.Models.IconImage> Icons => _sharedResourceManager?.Icons ?? AnnoCanvas?.Icons;
 
         //for identifier checking process
         private static readonly List<string> IconFieldNamesCheck =
@@ -81,7 +90,10 @@ namespace AnnoDesigner.ViewModels
             IBrushCache brushCacheToUse = null,
             IPenCache penCacheToUse = null,
             IAdjacentCellGrouper adjacentCellGrouper = null,
-            ITreeLocalizationLoader treeLocalizationLoader = null)
+            ITreeLocalizationLoader treeLocalizationLoader = null,
+            IDocumentServicesFactory documentServicesFactoryToUse = null,
+            ISharedResourceManager sharedResourceManagerToUse = null,
+            ILayoutService layoutServiceToUse = null)
         {
             _commons = commonsToUse;
             _commons.SelectedLanguageChanged += Commons_SelectedLanguageChanged;
@@ -93,11 +105,16 @@ namespace AnnoDesigner.ViewModels
             _localizationHelper = localizationHelperToUse;
             _fileSystem = fileSystemToUse;
 
-            _layoutLoader = layoutLoaderToUse ?? new LayoutLoader();
-            _coordinateHelper = coordinateHelperToUse ?? new CoordinateHelper();
-            _brushCache = brushCacheToUse ?? new BrushCache();
-            _penCache = penCacheToUse ?? new PenCache();
+            // Prefer shared resources when available, fall back to provided or defaults
+            _sharedResourceManager = sharedResourceManagerToUse;
+            _layoutLoader = sharedResourceManagerToUse?.LayoutLoader ?? layoutLoaderToUse ?? new LayoutLoader();
+            _coordinateHelper = sharedResourceManagerToUse?.CoordinateHelper ?? coordinateHelperToUse ?? new CoordinateHelper();
+            _brushCache = sharedResourceManagerToUse?.BrushCache ?? brushCacheToUse ?? new BrushCache();
+            _penCache = sharedResourceManagerToUse?.PenCache ?? penCacheToUse ?? new PenCache();
             _adjacentCellGrouper = adjacentCellGrouper ?? new AdjacentCellGrouper();
+
+            _documentServicesFactory = documentServicesFactoryToUse;
+            _layoutService = layoutServiceToUse;
 
             HotkeyCommandManager = new HotkeyCommandManager(_localizationHelper);
 
@@ -272,7 +289,7 @@ namespace AnnoDesigner.ViewModels
 
                 if (!IsLanguageChange && string.IsNullOrWhiteSpace(PresetsTreeSearchViewModel.DebouncedSearchText))
                 {
-                    PresetsTreeViewModel.SetCondensedTreeState(_treeViewState, AnnoCanvas.BuildingPresets.Version);
+                    PresetsTreeViewModel.SetCondensedTreeState(_treeViewState, BuildingPresets?.Version);
                 }
             }
             else if (string.Equals(e.PropertyName, nameof(PresetsTreeSearchViewModel.HasFocus),
@@ -366,7 +383,7 @@ namespace AnnoDesigner.ViewModels
             if (obj.Size is { Width: > 0, Height: > 0 } && obj.Radius >= 0)
             {
                 //gets icons and origin building info
-                var buildingInfo = AnnoCanvas.BuildingPresets.Buildings.FirstOrDefault(_ =>
+                var buildingInfo = BuildingPresets?.Buildings.FirstOrDefault(_ =>
                     _.IconFileName?.Equals(objIconFileName, StringComparison.OrdinalIgnoreCase) ?? false);
                 if (buildingInfo != null)
                 {
@@ -401,6 +418,12 @@ namespace AnnoDesigner.ViewModels
                             obj.Identifier = textBoxText;
                         }
                     }
+                }
+
+                if (AnnoCanvas == null)
+                {
+                    Logger.Warn("AnnoCanvas is null; cannot apply current object.");
+                    return;
                 }
 
                 AnnoCanvas.SetCurrentObject(new LayoutObject(obj, _coordinateHelper, _brushCache, _penCache));
@@ -467,7 +490,7 @@ namespace AnnoDesigner.ViewModels
             else
             {
                 _ = BuildingSettingsViewModel.GetDistanceRange(true,
-                    AnnoCanvas.BuildingPresets.Buildings.FirstOrDefault(_ =>
+                    BuildingPresets?.Buildings.FirstOrDefault(_ =>
                         _.Identifier == BuildingSettingsViewModel.BuildingIdentifier));
             }
 
@@ -542,14 +565,14 @@ namespace AnnoDesigner.ViewModels
             }
         }
 
-        private void AnnoCanvas_OpenFileRequested(object sender, OpenFileEventArgs e)
+        private async void AnnoCanvas_OpenFileRequested(object sender, OpenFileEventArgs e)
         {
-            using var _ = OpenFile(e.FilePath);
+            await OpenFile(e.FilePath).ConfigureAwait(false);
         }
 
-        private void AnnoCanvas_SaveFileRequested(object sender, SaveFileEventArgs e)
+        private async void AnnoCanvas_SaveFileRequested(object sender, SaveFileEventArgs e)
         {
-            SaveFile(e.FilePath);
+            await SaveFileAsync(e.FilePath).ConfigureAwait(false);
         }
 
         private Task UpdateStatisticsAsync(UpdateMode mode)
@@ -559,7 +582,7 @@ namespace AnnoDesigner.ViewModels
                 : StatisticsViewModel.UpdateStatisticsAsync(mode,
                     [.. AnnoCanvas.PlacedObjects],
                     AnnoCanvas.SelectedObjects,
-                    AnnoCanvas.BuildingPresets);
+                    BuildingPresets);
         }
 
         /// <summary>
@@ -567,17 +590,17 @@ namespace AnnoDesigner.ViewModels
         /// </summary>
         private void RepopulateTreeView()
         {
-            if (AnnoCanvas.BuildingPresets == null) return;
+            if (BuildingPresets == null) return; // prefer shared resources when available
             var treeState = PresetsTreeViewModel.GetCondensedTreeState();
 
-            PresetsTreeViewModel.LoadItems(AnnoCanvas.BuildingPresets);
+            PresetsTreeViewModel.LoadItems(BuildingPresets);
 
-            PresetsTreeViewModel.SetCondensedTreeState(treeState, AnnoCanvas.BuildingPresets.Version);
+            PresetsTreeViewModel.SetCondensedTreeState(treeState, BuildingPresets?.Version);
         }
 
         public void LoadAvailableIcons()
         {
-            foreach (var icon in AnnoCanvas.Icons.OrderBy(x => x.Value.NameForLanguage(_commons.CurrentLanguageCode)))
+            foreach (var icon in (Icons ?? new Dictionary<string, AnnoDesigner.Core.Models.IconImage>()).OrderBy(x => x.Value.NameForLanguage(_commons.CurrentLanguageCode)))
             {
                 AvailableIcons.Add(icon.Value);
             }
@@ -585,8 +608,11 @@ namespace AnnoDesigner.ViewModels
 
         public void LoadSettings()
         {
-            StatisticsViewModel.ToggleBuildingList(_appSettings.StatsShowBuildingCount, [.. AnnoCanvas.PlacedObjects],
-                AnnoCanvas.SelectedObjects, AnnoCanvas.BuildingPresets);
+            // AnnoCanvas may not be created yet (e.g. on startup). Guard against null to avoid NREs.
+            var placedObjects = (AnnoCanvas?.PlacedObjects) is { } p ? new List<LayoutObject>(p) : new List<LayoutObject>();
+            var selectedObjects = (AnnoCanvas?.SelectedObjects) is { } s ? new List<LayoutObject>(s) : new List<LayoutObject>();
+            StatisticsViewModel.ToggleBuildingList(_appSettings.StatsShowBuildingCount, [.. placedObjects],
+                selectedObjects, BuildingPresets);
 
             PreferencesUpdateViewModel.AutomaticUpdateCheck = _appSettings.EnableAutomaticUpdateCheck;
             PreferencesUpdateViewModel.UpdateSupportsPrerelease = _appSettings.UpdateSupportsPrerelease;
@@ -661,7 +687,7 @@ namespace AnnoDesigner.ViewModels
 
         public void LoadPresets()
         {
-            var presets = AnnoCanvas.BuildingPresets;
+            var presets = BuildingPresets;
             if (presets == null)
             {
                 PresetsSectionHeader = "Building presets - load failed";
@@ -804,7 +830,7 @@ namespace AnnoDesigner.ViewModels
         /// <summary>
         /// Writes layout to file.
         /// </summary>
-        public void SaveFile(string filePath)
+        public async Task SaveFileAsync(string filePath)
         {
             try
             {
@@ -813,7 +839,17 @@ namespace AnnoDesigner.ViewModels
                 {
                     LayoutVersion = LayoutSettingsViewModel.LayoutVersion
                 };
-                _layoutLoader.SaveLayout(layoutToSave, filePath);
+
+                if (_layoutService != null)
+                {
+                    await _layoutService.SaveLayoutAsync(AnnoCanvas, filePath).ConfigureAwait(false);
+                }
+                else
+                {
+                    // fall back to synchronous save wrapped on a background thread
+                    await Task.Run(() => _layoutLoader.SaveLayout(layoutToSave, filePath)).ConfigureAwait(false);
+                }
+
                 AnnoCanvas.UndoManager.IsDirty = false;
             }
             catch (Exception e)
@@ -821,6 +857,11 @@ namespace AnnoDesigner.ViewModels
                 IoErrorMessageBox(e);
             }
         }
+
+        /// <summary>
+        /// Synchronous wrapper for callers/tests that still use the old API.
+        /// </summary>
+        public void SaveFile(string filePath) => SaveFileAsync(filePath).GetAwaiter().GetResult();
 
         /// <summary>
         /// Displays a message box containing some error information.
@@ -838,27 +879,98 @@ namespace AnnoDesigner.ViewModels
             get;
             set
             {
-                if (field != null)
+                // Detach handlers from old instance
+                var old = field;
+                if (old != null)
                 {
-                    field.StatisticsUpdated -= AnnoCanvas_StatisticsUpdated;
+                    try
+                    {
+                        old.StatisticsUpdated -= AnnoCanvas_StatisticsUpdated;
+                        old.OnCurrentObjectChanged -= UpdateUiFromObject;
+                        old.OnStatusMessageChanged -= AnnoCanvas_StatusMessageChanged;
+                        old.OnLoadedFileChanged -= AnnoCanvas_LoadedFileChanged;
+                        old.OpenFileRequested -= AnnoCanvas_OpenFileRequested;
+                        old.SaveFileRequested -= AnnoCanvas_SaveFileRequested;
+                    }
+                    catch
+                    {
+                        // ignore detach errors
+                    }
                 }
 
+                // assign new value
                 field = value;
-                field.StatisticsUpdated += AnnoCanvas_StatisticsUpdated;
-                field.OnCurrentObjectChanged += UpdateUiFromObject;
-                field.OnStatusMessageChanged += AnnoCanvas_StatusMessageChanged;
-                field.OnLoadedFileChanged += AnnoCanvas_LoadedFileChanged;
-                field.OpenFileRequested += AnnoCanvas_OpenFileRequested;
-                field.SaveFileRequested += AnnoCanvas_SaveFileRequested;
-                BuildingSettingsViewModel.AnnoCanvasToUse = field;
 
-                field.RenderGrid = CanvasShowGrid;
-                field.RenderIcon = CanvasShowIcons;
-                field.RenderLabel = CanvasShowLabels;
-                field.RenderTrueInfluenceRange = CanvasShowTrueInfluenceRange;
-                field.RenderInfluences = CanvasShowInfluences;
-                field.RenderHarborBlockedArea = CanvasShowHarborBlockedArea;
-                field.RenderPanorama = CanvasShowPanorama;
+                if (field != null)
+                {
+                    // attach handlers to new instance
+                    field.StatisticsUpdated += AnnoCanvas_StatisticsUpdated;
+                    field.OnCurrentObjectChanged += UpdateUiFromObject;
+                    field.OnStatusMessageChanged += AnnoCanvas_StatusMessageChanged;
+                    field.OnLoadedFileChanged += AnnoCanvas_LoadedFileChanged;
+                    field.OpenFileRequested += AnnoCanvas_OpenFileRequested;
+                    field.SaveFileRequested += AnnoCanvas_SaveFileRequested;
+
+                    // Create and attach document-scoped services (UndoManager, etc.) if factory is available
+                    _currentDocumentServices?.Dispose();
+                    if (_documentServicesFactory != null)
+                    {
+                        _currentDocumentServices = _documentServicesFactory.CreateDocumentServices();
+                        // If we have the concrete AnnoCanvas implementation we can attach UndoManager
+                        if (field is AnnoDesigner.Controls.Canvas.AnnoCanvas concrete)
+                        {
+                            concrete.UndoManager = _currentDocumentServices.CreateUndoManager();
+                        }
+                    }
+
+                    BuildingSettingsViewModel.AnnoCanvasToUse = field;
+
+                    field.RenderGrid = CanvasShowGrid;
+                    field.RenderIcon = CanvasShowIcons;
+                    field.RenderLabel = CanvasShowLabels;
+                    field.RenderTrueInfluenceRange = CanvasShowTrueInfluenceRange;
+                    field.RenderInfluences = CanvasShowInfluences;
+                    field.RenderHarborBlockedArea = CanvasShowHarborBlockedArea;
+                    field.RenderPanorama = CanvasShowPanorama;
+                }
+                else
+                {
+                    // ensure dependent viewmodels know no canvas is available
+                    BuildingSettingsViewModel.AnnoCanvasToUse = null;
+                }
+            }
+        }
+
+        // Collection of open documents (document per tab/document pane)
+        private readonly ObservableCollection<DocumentViewModel> _documents = new ObservableCollection<DocumentViewModel>();
+        public ObservableCollection<DocumentViewModel> Documents => _documents;
+
+        // The currently active document (bound to AvalonDock's active content)
+        private DocumentViewModel _activeDocument;
+        public DocumentViewModel ActiveDocument
+        {
+            get => _activeDocument;
+            set
+            {
+                var old = _activeDocument;
+                if (SetProperty(ref _activeDocument, value))
+                {
+                    if (old != null)
+                    {
+                        old.IsActive = false;
+                    }
+
+                    if (_activeDocument != null)
+                    {
+                        _activeDocument.IsActive = true;
+                        // Update the main canvas reference so existing code bound to `AnnoCanvas` keeps working
+                        AnnoCanvas = _activeDocument.Canvas;
+                    }
+                    else
+                    {
+                        AnnoCanvas = null;
+                    }
+                }
             }
         }
 
@@ -1546,7 +1658,7 @@ namespace AnnoDesigner.ViewModels
             sw.Start();
 
             var icons = new Dictionary<string, IconImage>(StringComparer.OrdinalIgnoreCase);
-            foreach (var curIcon in AnnoCanvas.Icons)
+            foreach (var curIcon in Icons ?? new Dictionary<string, AnnoDesigner.Core.Models.IconImage>())
             {
                 icons.Add(curIcon.Key,
                     new IconImage(curIcon.Value.Name, curIcon.Value.Localizations, curIcon.Value.IconPath));
@@ -1560,7 +1672,7 @@ namespace AnnoDesigner.ViewModels
                 new LayoutObject(o, _coordinateHelper, _brushCache, _penCache)));
             // initialize output canvas
             var target =
-                new AnnoCanvas(AnnoCanvas.BuildingPresets, icons, _appSettings, _coordinateHelper, _brushCache,
+                new AnnoCanvas(BuildingPresets, icons, _appSettings, _coordinateHelper, _brushCache,
                     _penCache, _messageBoxService)
                 {
                     PlacedObjects = quadTree,
@@ -1735,7 +1847,7 @@ namespace AnnoDesigner.ViewModels
         private void ShowStatisticsBuildingCount(object param)
         {
             StatisticsViewModel.ToggleBuildingList(StatisticsViewModel.ShowStatisticsBuildingCount,
-                [.. AnnoCanvas.PlacedObjects], AnnoCanvas.SelectedObjects, AnnoCanvas.BuildingPresets);
+                [.. AnnoCanvas.PlacedObjects], AnnoCanvas.SelectedObjects, BuildingPresets);
         }
 
 
