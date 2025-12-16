@@ -28,8 +28,6 @@ using NLog;
 using NLog.Targets;
 using AnnoDesigner.Views;
 using AnnoDesigner.Services.Undo;
-using AnnoDesigner.Core.Layout.Models;
-using AnnoDesigner.Core.Layout;
 
 namespace AnnoDesigner
 {
@@ -43,7 +41,7 @@ namespace AnnoDesigner
         /// <summary>
         /// Gets the <see cref="IServiceProvider"/> instance to resolve application services.
         /// </summary>
-        public IServiceProvider Services { get; } 
+        public IServiceProvider Services { get; }
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private const string AppMutexName = "AnnoDesigner_SingleInstance_Mutex";
@@ -144,7 +142,7 @@ namespace AnnoDesigner
             {
                 await updateHelper.ReplaceUpdatedPresetsFilesAsync();
             }
-             
+
             var commons = Services.GetRequiredService<ICommons>();
 
             MainViewModel.UpdateRegisteredExtension();
@@ -164,7 +162,7 @@ namespace AnnoDesigner
                 if (StartupArguments is not ExportArgs)
                 {
                     var w = new Welcome();
-                    w.DataContext = mainVM.WelcomeViewModel; 
+                    w.DataContext = mainVM.WelcomeViewModel;
                     w.ShowDialog();
                 }
                 else
@@ -200,9 +198,9 @@ namespace AnnoDesigner
         {
             var commons = Commons.Instance;
             var appSettings = AppSettings.Instance;
-            Localization.Localization.Init(commons);  
+            Localization.Localization.Init(commons);
 
-            var _services = new ServiceCollection() 
+            var _services = new ServiceCollection()
                 .AddSingleton<ICommons>(commons)
                 .AddSingleton<IAppSettings>(appSettings)
                 .AddSingleton<ThemeService>()
@@ -211,7 +209,7 @@ namespace AnnoDesigner
                 .AddTransient<IFileSystem, FileSystem>()
                 .AddTransient<IConsole, ConsoleManager.LazyConsole>()
                 .AddTransient<ITreeLocalizationLoader, TreeLocalizationLoader>()
-                 
+
                 .AddTransient<IUpdateHelper>(sp => new UpdateHelper(
                     ApplicationPath,
                     sp.GetRequiredService<IAppSettings>(),
@@ -228,7 +226,7 @@ namespace AnnoDesigner
                         sp.GetRequiredService<IMessageBoxService>(),
                         sp.GetRequiredService<ILocalizationHelper>(),
                         sp.GetService<Controls.Canvas.Services.Contracts.IFileDialogService>()))
-                 
+
                 // core layout loader used by a few services
                 .AddTransient<AnnoDesigner.Core.Layout.Models.ILayoutLoader, AnnoDesigner.Core.Layout.LayoutLoader>()
 
@@ -238,7 +236,7 @@ namespace AnnoDesigner
                 .AddSingleton<IPenCache, PenCache>()
 
                 // clipboard service (uses core clipboard impl)
-                .AddSingleton<IClipboardService>(sp => new  ClipboardService(
+                .AddSingleton<IClipboardService>(sp => new ClipboardService(
                     sp.GetService<AnnoDesigner.Core.Layout.Models.ILayoutLoader>() ?? new AnnoDesigner.Core.Layout.LayoutLoader(),
                     new WindowsClipboard()))
 
@@ -253,16 +251,17 @@ namespace AnnoDesigner
                 .AddSingleton<IDocumentServicesFactory, DocumentServicesFactory>()
 
                 .AddTransient<RecentFilesAppSettingsSerializer>()
-                 
-                .AddTransient<IRecentFilesHelper>(sp => {
+
+                .AddTransient<IRecentFilesHelper>(sp =>
+                {
                     var settings = sp.GetRequiredService<IAppSettings>();
                     var serializer = sp.GetRequiredService<RecentFilesAppSettingsSerializer>();
                     var fs = sp.GetRequiredService<IFileSystem>();
                     return new RecentFilesHelper(serializer, fs, settings.MaxRecentFiles);
                 })
-                 
+
                 .AddSingleton<MainViewModel>()
-                 
+
                 .AddSingleton<MainWindow>()
 
                 .BuildServiceProvider();
@@ -298,7 +297,7 @@ namespace AnnoDesigner
                 vm.AnnoCanvas?.CheckUnsavedChangesBeforeCrash();
             }
 
-            Environment.Exit(-1);
+            // Environment.Exit(-1);
         }
 
         public static void ShowMessageWithUnexpectedError(bool exitProgram = false)
