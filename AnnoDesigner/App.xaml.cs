@@ -234,6 +234,7 @@ namespace AnnoDesigner
                 .AddSingleton<ICoordinateHelper, CoordinateHelper>()
                 .AddSingleton<IBrushCache, BrushCache>()
                 .AddSingleton<IPenCache, PenCache>()
+                .AddSingleton<AnnoDesigner.Core.Services.ITransformationService, AnnoDesigner.Services.TransformationService>()
 
                 // clipboard service (uses core clipboard impl)
                 .AddSingleton<IClipboardService>(sp => new ClipboardService(

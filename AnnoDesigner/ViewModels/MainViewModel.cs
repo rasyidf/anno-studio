@@ -39,6 +39,7 @@ using AnnoDesigner.Services;
 using AnnoDesigner.Services.Undo.Operations;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Windows.Input;
 using Microsoft.Win32;
 using NLog;
 
@@ -58,12 +59,13 @@ public partial class MainViewModel : ObservableObject
     private readonly IDocumentServicesFactory _documentServicesFactory;
     private readonly ISharedResourceManager _sharedResourceManager;
     private readonly ILayoutService _layoutService;
-    private IDocumentServices _currentDocumentServices;
     private readonly IAdjacentCellGrouper _adjacentCellGrouper;
     private readonly IRecentFilesHelper _recentFilesHelper;
     private readonly IMessageBoxService _messageBoxService;
     private readonly ILocalizationHelper _localizationHelper;
     private readonly IFileSystem _fileSystem;
+    private readonly ITransformationService _transformationService;
+
 
     public event EventHandler<EventArgs> ShowStatisticsChanged;
 
@@ -94,7 +96,8 @@ public partial class MainViewModel : ObservableObject
         ITreeLocalizationLoader treeLocalizationLoader = null,
         IDocumentServicesFactory documentServicesFactoryToUse = null,
         ISharedResourceManager sharedResourceManagerToUse = null,
-        ILayoutService layoutServiceToUse = null)
+        ILayoutService layoutServiceToUse = null,
+        ITransformationService transformationServiceToUse = null)
     {
         _commons = commonsToUse;
         _commons.SelectedLanguageChanged += Commons_SelectedLanguageChanged;
@@ -116,6 +119,7 @@ public partial class MainViewModel : ObservableObject
 
         _documentServicesFactory = documentServicesFactoryToUse;
         _layoutService = layoutServiceToUse;
+        _transformationService = transformationServiceToUse ?? new TransformationService();
 
         HotkeyCommandManager = new HotkeyCommandManager(_localizationHelper);
 
@@ -192,6 +196,8 @@ public partial class MainViewModel : ObservableObject
         // ensure at least one document exists on startup
         CreateNewDocument();
     }
+
+    // Grouping and Z-ordering are unused; methods removed
 
     private void LayoutSettingsViewModel_PropertyChangedWithValues(object sender,
         PropertyChangedWithValuesEventArgs<object> e)
@@ -652,7 +658,7 @@ public partial class MainViewModel : ObservableObject
 
     public void LoadAvailableIcons()
     {
-        foreach (var icon in (Icons ?? new Dictionary<string, AnnoDesigner.Core.Models.IconImage>()).OrderBy(x => x.Value.NameForLanguage(_commons.CurrentLanguageCode)))
+        foreach (var icon in (Icons ?? []).OrderBy(x => x.Value.NameForLanguage(_commons.CurrentLanguageCode)))
         {
             AvailableIcons.Add(icon.Value);
         }
@@ -876,6 +882,34 @@ public partial class MainViewModel : ObservableObject
     }
 
 
+    [RelayCommand]
+    private void Align(object parameter)
+    {
+        if (!(AnnoCanvas is AnnoCanvas canvas)) return;
+        canvas.ExecuteAlign(parameter);
+    }
+
+    [RelayCommand]
+    private void Distribute(object parameter)
+    {
+        if (!(AnnoCanvas is AnnoCanvas canvas)) return;
+        canvas.ExecuteDistribute(parameter);
+    }
+
+    [RelayCommand]
+    private void Rotate(object parameter)
+    {
+        if (!(AnnoCanvas is AnnoCanvas canvas)) return;
+        canvas.ExecuteRotate(parameter);
+    }
+
+    [RelayCommand]
+    private void Flip(object parameter)
+    {
+        if (!(AnnoCanvas is AnnoCanvas canvas)) return;
+        canvas.ExecuteFlip(parameter);
+    }
+
 
     /// <summary>
     /// Writes layout to file.
@@ -961,17 +995,8 @@ public partial class MainViewModel : ObservableObject
                 field.OpenFileRequested += AnnoCanvas_OpenFileRequested;
                 field.SaveFileRequested += AnnoCanvas_SaveFileRequested;
 
-                // Create and attach document-scoped services (UndoManager, etc.) if factory is available
-                _currentDocumentServices?.Dispose();
-                if (_documentServicesFactory != null)
-                {
-                    _currentDocumentServices = _documentServicesFactory.CreateDocumentServices();
-                    // If we have the concrete AnnoCanvas implementation we can attach UndoManager
-                    if (field is AnnoDesigner.Controls.Canvas.AnnoCanvas concrete)
-                    {
-                        concrete.UndoManager = _currentDocumentServices.CreateUndoManager();
-                    }
-                }
+                // Document-scoped services (UndoManager, etc.) are created and owned by each DocumentViewModel.
+                // Do not create/override them here to avoid replacing per-document undo stacks when switching documents.
 
                 BuildingSettingsViewModel.AnnoCanvasToUse = field;
 
@@ -992,33 +1017,28 @@ public partial class MainViewModel : ObservableObject
     }
 
     // Collection of open documents (document per tab/document pane)
-    private readonly ObservableCollection<DocumentViewModel> _documents = new ObservableCollection<DocumentViewModel>();
-    public ObservableCollection<DocumentViewModel> Documents => _documents;
+    public ObservableCollection<DocumentViewModel> Documents { get; } = new ObservableCollection<DocumentViewModel>();
 
     // The currently active document (bound to AvalonDock's active content)
-    private DocumentViewModel _activeDocument;
     public DocumentViewModel ActiveDocument
     {
-        get => _activeDocument;
+        get;
         set
         {
-            var old = _activeDocument;
-            if (SetProperty(ref _activeDocument, value))
+            var old = field;
+            if (SetProperty(ref field, value))
             {
-                if (old != null)
-                {
-                    old.IsActive = false;
-                }
+                old?.IsActive = false;
 
-                if (_activeDocument != null)
+                if (field != null)
                 {
-                    _activeDocument.IsActive = true;
+                    field.IsActive = true;
                     // Update the main canvas reference so existing code bound to `AnnoCanvas` keeps working
-                    AnnoCanvas = _activeDocument.Canvas;
+                    AnnoCanvas = field.Canvas;
                     // Clear previously registered hotkeys to avoid duplicate IDs across documents
                     HotkeyCommandManager.Clear();
                     // Register hotkeys for the new active document's canvas
-                    if (_activeDocument.Canvas is IHotkeySource newHotkeySource)
+                    if (field.Canvas is IHotkeySource newHotkeySource)
                     {
                         newHotkeySource.RegisterHotkeys(HotkeyCommandManager);
                     }
@@ -1118,22 +1138,12 @@ public partial class MainViewModel : ObservableObject
     {
         if (sender is DocumentViewModel document)
         {
-            if (Documents.Contains(document))
-            {
-                Documents.Remove(document);
-            }
+            Documents.Remove(document);
 
             document.PropertyChanged -= Document_PropertyChanged;
             document.Dispose();
 
-            if (Documents.Count > 0)
-            {
-                ActiveDocument = Documents.Last();
-            }
-            else
-            {
-                ActiveDocument = null;
-            }
+            ActiveDocument = Documents.Count > 0 ? Documents.Last() : null;
         }
     }
 
@@ -1395,78 +1405,22 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void CanvasZoomIn(object param)
     {
-        if (AnnoCanvas == null)
-        {
-            return;
-        }
-
-        var newSize = AnnoCanvas.GridSize * 2;
-        if (newSize > Constants.GridStepMax)
-        {
-            newSize = Constants.GridStepMax;
-        }
-
-        AnnoCanvas.GridSize = newSize;
+        if (!(AnnoCanvas is AnnoDesigner.Controls.Canvas.AnnoCanvas canvas)) return;
+        canvas.ExecuteZoomIn(param);
     }
 
     [RelayCommand]
     private void CanvasZoomOut(object param)
     {
-        if (AnnoCanvas == null)
-        {
-            return;
-        }
-
-        var newSize = Math.Max(Constants.GridStepMin, AnnoCanvas.GridSize / 2);
-        AnnoCanvas.GridSize = newSize;
+        if (!(AnnoCanvas is AnnoDesigner.Controls.Canvas.AnnoCanvas canvas)) return;
+        canvas.ExecuteZoomOut(param);
     }
 
     [RelayCommand]
     private void CanvasZoomFit(object param)
     {
-        try
-        {
-            if (AnnoCanvas == null || AnnoCanvas.PlacedObjects == null || AnnoCanvas.PlacedObjects.Count == 0)
-            {
-                return;
-            }
-
-            var bounds = AnnoCanvas.ComputeBoundingRect(AnnoCanvas.PlacedObjects);
-
-            if (bounds.Width <= 0 || bounds.Height <= 0)
-            {
-                return;
-            }
-
-            var availableWidth = Application.Current?.MainWindow?.ActualWidth ?? 800;
-            var availableHeight = Application.Current?.MainWindow?.ActualHeight ?? 600;
-
-            // leave some padding
-            var padding = 20;
-            availableWidth = Math.Max(100, availableWidth - padding);
-            availableHeight = Math.Max(100, availableHeight - padding);
-
-            var gridSizeForWidth = (int)Math.Floor(availableWidth / bounds.Width);
-            var gridSizeForHeight = (int)Math.Floor(availableHeight / bounds.Height);
-
-            var targetGridSize = Math.Min(gridSizeForWidth, gridSizeForHeight);
-
-            if (targetGridSize < Constants.GridStepMin)
-            {
-                targetGridSize = Constants.GridStepMin;
-            }
-            else if (targetGridSize > Constants.GridStepMax)
-            {
-                targetGridSize = Constants.GridStepMax;
-            }
-
-            AnnoCanvas.GridSize = targetGridSize;
-            AnnoCanvas.CenterViewportOnRect(bounds);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(ex, "Error during ZoomFit.");
-        }
+        if (!(AnnoCanvas is AnnoDesigner.Controls.Canvas.AnnoCanvas canvas)) return;
+        canvas.ExecuteZoomFit(param);
     }
 
     [RelayCommand]
@@ -1644,9 +1598,9 @@ public partial class MainViewModel : ObservableObject
 
             if (await _messageBoxService.ShowQuestion(
                     _localizationHelper.GetLocalization("FileVersionMismatchMessage"),
-                    _localizationHelper.GetLocalization("FileVersionMismatchTitle")))
+                    _localizationHelper.GetLocalization("FileVersionMismatchTitle")).ConfigureAwait(false))
             {
-                await LoadLayoutFromJsonSub(jsonString, true);
+                await LoadLayoutFromJsonSub(jsonString, true).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
@@ -1830,7 +1784,7 @@ public partial class MainViewModel : ObservableObject
         sw.Start();
 
         var icons = new Dictionary<string, IconImage>(StringComparer.OrdinalIgnoreCase);
-        foreach (var curIcon in Icons ?? new Dictionary<string, AnnoDesigner.Core.Models.IconImage>())
+        foreach (var curIcon in Icons ?? new Dictionary<string, IconImage>())
         {
             icons.Add(curIcon.Key,
                 new IconImage(curIcon.Value.Name, curIcon.Value.Localizations, curIcon.Value.IconPath));

@@ -193,6 +193,7 @@
         <ui:MenuItem Header="{l:Localize Edit}" TabIndex="20">
             <ui:MenuItem
                 Command="ApplicationCommands.Undo"
+                CommandTarget="{Binding DataContext.ActiveDocument.Canvas, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                 Header="{l:Localize Undo}"
                 InputGestureText="Ctrl+Z">
                 <ui:MenuItem.Icon>
@@ -202,6 +203,7 @@
 
             <ui:MenuItem
                 Command="ApplicationCommands.Redo"
+                CommandTarget="{Binding DataContext.ActiveDocument.Canvas, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                 Header="{l:Localize Redo}"
                 InputGestureText="Ctrl+Y">
                 <ui:MenuItem.Icon>
@@ -213,6 +215,7 @@
 
             <ui:MenuItem
                 Command="ApplicationCommands.Cut"
+                CommandTarget="{Binding DataContext.ActiveDocument.Canvas, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                 Header="{l:Localize Cut}"
                 InputGestureText="Ctrl+X">
                 <ui:MenuItem.Icon>
@@ -222,6 +225,7 @@
 
             <ui:MenuItem
                 Command="ApplicationCommands.Copy"
+                CommandTarget="{Binding DataContext.ActiveDocument.Canvas, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                 Header="{l:Localize Copy}"
                 InputGestureText="Ctrl+C">
                 <ui:MenuItem.Icon>
@@ -231,6 +235,7 @@
 
             <ui:MenuItem
                 Command="ApplicationCommands.Paste"
+                CommandTarget="{Binding DataContext.ActiveDocument.Canvas, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                 Header="{l:Localize Paste}"
                 InputGestureText="Ctrl+V">
                 <ui:MenuItem.Icon>
@@ -241,7 +246,7 @@
             <Separator />
 
             <ui:MenuItem
-                Command="{Binding SelectAllCommand}"
+                Command="{Binding DataContext.SelectAllCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                 Header="{l:Localize SelectAll}"
                 InputGestureText="Ctrl+A">
                 <ui:MenuItem.Icon>
@@ -250,7 +255,7 @@
             </ui:MenuItem>
 
             <ui:MenuItem
-                Command="{Binding DeleteSelectionCommand}"
+                Command="{Binding DataContext.DeleteSelectionCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                 Header="{l:Localize DeleteSelected}"
                 InputGestureText="Del">
                 <ui:MenuItem.Icon>
@@ -259,9 +264,9 @@
             </ui:MenuItem>
         </ui:MenuItem>
 
-        <!--<ui:MenuItem Header="{l:Localize Layout}" TabIndex="25">
+        <ui:MenuItem Header="{l:Localize Layout}" TabIndex="25">
             <ui:MenuItem
-                Command="{Binding RotateCommand}"
+                Command="{Binding DataContext.RotateCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                 CommandParameter="Clockwise"
                 Header="{l:Localize RotateCW}"
                 InputGestureText="R">
@@ -271,7 +276,7 @@
             </ui:MenuItem>
 
             <ui:MenuItem
-                Command="{Binding RotateCommand}"
+                Command="{Binding DataContext.RotateCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                 CommandParameter="CounterClockwise"
                 Header="{l:Localize RotateCCW}"
                 InputGestureText="Shift+R">
@@ -285,7 +290,7 @@
                     <ui:SymbolIcon Symbol="ArrowSwap24" />
                 </ui:MenuItem.Icon>
                 <ui:MenuItem
-                    Command="{Binding FlipCommand}"
+                    Command="{Binding DataContext.FlipCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                     CommandParameter="Horizontal"
                     Header="{l:Localize FlipHorizontal}">
                     <ui:MenuItem.Icon>
@@ -293,7 +298,7 @@
                     </ui:MenuItem.Icon>
                 </ui:MenuItem>
                 <ui:MenuItem
-                    Command="{Binding FlipCommand}"
+                    Command="{Binding DataContext.FlipCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                     CommandParameter="Vertical"
                     Header="{l:Localize FlipVertical}">
                     <ui:MenuItem.Icon>
@@ -302,59 +307,14 @@
                 </ui:MenuItem>
             </ui:MenuItem>
 
-            <Separator />
-
-            <ui:MenuItem Header="{l:Localize Order}">
-                <ui:MenuItem.Icon>
-                    <ui:SymbolIcon Symbol="Layer24" />
-                </ui:MenuItem.Icon>
-                <ui:MenuItem
-                    Command="{Binding ZOrderCommand}"
-                    CommandParameter="BringToFront"
-                    Header="{l:Localize BringToFront}"
-                    InputGestureText="Ctrl+Shift+]">
-                    <ui:MenuItem.Icon>
-                        <ui:SymbolIcon Symbol="PositionToFront24" />
-                    </ui:MenuItem.Icon>
-                </ui:MenuItem>
-                <ui:MenuItem
-                    Command="{Binding ZOrderCommand}"
-                    CommandParameter="SendToBack"
-                    Header="{l:Localize SendToBack}"
-                    InputGestureText="Ctrl+Shift+[">
-                    <ui:MenuItem.Icon>
-                        <ui:SymbolIcon Symbol="PositionToBack24" />
-                    </ui:MenuItem.Icon>
-                </ui:MenuItem>
-                <Separator />
-                <ui:MenuItem
-                    Command="{Binding ZOrderCommand}"
-                    CommandParameter="BringForward"
-                    Header="{l:Localize BringForward}"
-                    InputGestureText="Ctrl+]">
-                    <ui:MenuItem.Icon>
-                        <ui:SymbolIcon Symbol="ArrowUp24" />
-                    </ui:MenuItem.Icon>
-                </ui:MenuItem>
-                <ui:MenuItem
-                    Command="{Binding ZOrderCommand}"
-                    CommandParameter="SendBackward"
-                    Header="{l:Localize SendBackward}"
-                    InputGestureText="Ctrl+[">
-                    <ui:MenuItem.Icon>
-                        <ui:SymbolIcon Symbol="ArrowDown24" />
-                    </ui:MenuItem.Icon>
-                </ui:MenuItem>
-            </ui:MenuItem>
-
-            <Separator />
+            
 
             <ui:MenuItem Header="{l:Localize Align}">
                 <ui:MenuItem.Icon>
                     <ui:SymbolIcon Symbol="AlignLeft24" />
                 </ui:MenuItem.Icon>
                 <ui:MenuItem
-                    Command="{Binding AlignCommand}"
+                    Command="{Binding DataContext.AlignCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                     CommandParameter="Left"
                     Header="{l:Localize AlignLeft}">
                     <ui:MenuItem.Icon>
@@ -362,7 +322,7 @@
                     </ui:MenuItem.Icon>
                 </ui:MenuItem>
                 <ui:MenuItem
-                    Command="{Binding AlignCommand}"
+                    Command="{Binding DataContext.AlignCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                     CommandParameter="Center"
                     Header="{l:Localize AlignCenter}">
                     <ui:MenuItem.Icon>
@@ -370,7 +330,7 @@
                     </ui:MenuItem.Icon>
                 </ui:MenuItem>
                 <ui:MenuItem
-                    Command="{Binding AlignCommand}"
+                    Command="{Binding DataContext.AlignCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                     CommandParameter="Right"
                     Header="{l:Localize AlignRight}">
                     <ui:MenuItem.Icon>
@@ -379,7 +339,7 @@
                 </ui:MenuItem>
                 <Separator />
                 <ui:MenuItem
-                    Command="{Binding AlignCommand}"
+                    Command="{Binding DataContext.AlignCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                     CommandParameter="Top"
                     Header="{l:Localize AlignTop}">
                     <ui:MenuItem.Icon>
@@ -387,7 +347,7 @@
                     </ui:MenuItem.Icon>
                 </ui:MenuItem>
                 <ui:MenuItem
-                    Command="{Binding AlignCommand}"
+                    Command="{Binding DataContext.AlignCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                     CommandParameter="Middle"
                     Header="{l:Localize AlignMiddle}">
                     <ui:MenuItem.Icon>
@@ -395,7 +355,7 @@
                     </ui:MenuItem.Icon>
                 </ui:MenuItem>
                 <ui:MenuItem
-                    Command="{Binding AlignCommand}"
+                    Command="{Binding DataContext.AlignCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                     CommandParameter="Bottom"
                     Header="{l:Localize AlignBottom}">
                     <ui:MenuItem.Icon>
@@ -409,35 +369,19 @@
                     <ui:SymbolIcon Symbol="AlignSpaceEvenlyHorizontal24" />
                 </ui:MenuItem.Icon>
                 <ui:MenuItem
-                    Command="{Binding DistributeCommand}"
+                    Command="{Binding DataContext.DistributeCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                     CommandParameter="Horizontal"
                     Header="{l:Localize DistributeHorizontally}" />
                 <ui:MenuItem
-                    Command="{Binding DistributeCommand}"
+                    Command="{Binding DataContext.DistributeCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
                     CommandParameter="Vertical"
                     Header="{l:Localize DistributeVertically}" />
             </ui:MenuItem>
 
             <Separator />
 
-            <ui:MenuItem
-                Command="{Binding GroupCommand}"
-                Header="{l:Localize Group}"
-                InputGestureText="Ctrl+G">
-                <ui:MenuItem.Icon>
-                    <ui:SymbolIcon Symbol="Group24" />
-                </ui:MenuItem.Icon>
-            </ui:MenuItem>
-
-            <ui:MenuItem
-                Command="{Binding UngroupCommand}"
-                Header="{l:Localize Ungroup}"
-                InputGestureText="Ctrl+Shift+G">
-                <ui:MenuItem.Icon>
-                    <ui:SymbolIcon Symbol="GroupDismiss20" />
-                </ui:MenuItem.Icon>
-            </ui:MenuItem>
-        </ui:MenuItem>-->
+            
+        </ui:MenuItem>
 
         <ui:MenuItem Header="{l:Localize View}" TabIndex="30">
 
