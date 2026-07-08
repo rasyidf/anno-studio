@@ -27,6 +27,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using NLog.Targets;
 using AnnoDesigner.Views;
+using AnnoDesigner.Services.Undo;
 
 namespace AnnoDesigner
 {
@@ -40,7 +41,7 @@ namespace AnnoDesigner
         /// <summary>
         /// Gets the <see cref="IServiceProvider"/> instance to resolve application services.
         /// </summary>
-        public IServiceProvider Services { get; } 
+        public IServiceProvider Services { get; }
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private const string AppMutexName = "AnnoDesigner_SingleInstance_Mutex";
@@ -68,8 +69,8 @@ namespace AnnoDesigner
             TaskScheduler.UnobservedTaskException += (s, e) => LogUnhandledException(e.Exception, "TaskScheduler.UnobservedTaskException");
         }
 
-        public static string ExecutablePath => Assembly.GetEntryAssembly().Location;
-        public static string ApplicationPath => Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+        public static string ExecutablePath => Assembly.GetEntryAssembly()?.Location;
+        public static string ApplicationPath => Path.GetDirectoryName(ExecutablePath);
         public static IProgramArgs StartupArguments { get; private set; }
 
         protected override async void OnStartup(StartupEventArgs e)
@@ -141,7 +142,7 @@ namespace AnnoDesigner
             {
                 await updateHelper.ReplaceUpdatedPresetsFilesAsync();
             }
-             
+
             var commons = Services.GetRequiredService<ICommons>();
 
             MainViewModel.UpdateRegisteredExtension();
@@ -161,7 +162,7 @@ namespace AnnoDesigner
                 if (StartupArguments is not ExportArgs)
                 {
                     var w = new Welcome();
-                    w.DataContext = mainVM.WelcomeViewModel; 
+                    w.DataContext = mainVM.WelcomeViewModel;
                     w.ShowDialog();
                 }
                 else
@@ -197,9 +198,9 @@ namespace AnnoDesigner
         {
             var commons = Commons.Instance;
             var appSettings = AppSettings.Instance;
-            Localization.Localization.Init(commons);  
+            Localization.Localization.Init(commons);
 
-            var _services = new ServiceCollection() 
+            var _services = new ServiceCollection()
                 .AddSingleton<ICommons>(commons)
                 .AddSingleton<IAppSettings>(appSettings)
                 .AddSingleton<ThemeService>()
@@ -208,7 +209,7 @@ namespace AnnoDesigner
                 .AddTransient<IFileSystem, FileSystem>()
                 .AddTransient<IConsole, ConsoleManager.LazyConsole>()
                 .AddTransient<ITreeLocalizationLoader, TreeLocalizationLoader>()
-                 
+
                 .AddTransient<IUpdateHelper>(sp => new UpdateHelper(
                     ApplicationPath,
                     sp.GetRequiredService<IAppSettings>(),
@@ -225,18 +226,43 @@ namespace AnnoDesigner
                         sp.GetRequiredService<IMessageBoxService>(),
                         sp.GetRequiredService<ILocalizationHelper>(),
                         sp.GetService<Controls.Canvas.Services.Contracts.IFileDialogService>()))
-                 
+
+                // core layout loader used by a few services
+                .AddTransient<AnnoDesigner.Core.Layout.Models.ILayoutLoader, AnnoDesigner.Core.Layout.LayoutLoader>()
+
+                // caches/helpers — shared singletons
+                .AddSingleton<ICoordinateHelper, CoordinateHelper>()
+                .AddSingleton<IBrushCache, BrushCache>()
+                .AddSingleton<IPenCache, PenCache>()
+                .AddSingleton<AnnoDesigner.Core.Services.ITransformationService, AnnoDesigner.Services.TransformationService>()
+
+                // clipboard service (uses core clipboard impl)
+                .AddSingleton<IClipboardService>(sp => new ClipboardService(
+                    sp.GetService<AnnoDesigner.Core.Layout.Models.ILayoutLoader>() ?? new AnnoDesigner.Core.Layout.LayoutLoader(),
+                    new WindowsClipboard()))
+
+                // small layout helper used by documents
+                .AddTransient<ILayoutService, LayoutService>()
+
+                // scoped undo manager for per-document undo stacks
+                .AddScoped<IUndoManager, UndoManager>()
+
+                // document & shared resource factories
+                .AddSingleton<ISharedResourceManager, SharedResourceManager>()
+                .AddSingleton<IDocumentServicesFactory, DocumentServicesFactory>()
+
                 .AddTransient<RecentFilesAppSettingsSerializer>()
-                 
-                .AddTransient<IRecentFilesHelper>(sp => {
+
+                .AddTransient<IRecentFilesHelper>(sp =>
+                {
                     var settings = sp.GetRequiredService<IAppSettings>();
                     var serializer = sp.GetRequiredService<RecentFilesAppSettingsSerializer>();
                     var fs = sp.GetRequiredService<IFileSystem>();
                     return new RecentFilesHelper(serializer, fs, settings.MaxRecentFiles);
                 })
-                 
+
                 .AddSingleton<MainViewModel>()
-                 
+
                 .AddSingleton<MainWindow>()
 
                 .BuildServiceProvider();
@@ -272,10 +298,10 @@ namespace AnnoDesigner
                 vm.AnnoCanvas?.CheckUnsavedChangesBeforeCrash();
             }
 
-            Environment.Exit(-1);
+            // Environment.Exit(-1);
         }
 
-        public static void ShowMessageWithUnexpectedError(bool exitProgram = true)
+        public static void ShowMessageWithUnexpectedError(bool exitProgram = false)
         {
             var message = "An unhandled exception occurred.";
 

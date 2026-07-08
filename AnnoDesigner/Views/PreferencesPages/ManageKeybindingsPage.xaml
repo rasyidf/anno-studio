@@ -170,7 +170,7 @@
         <ui:CardExpander
             Grid.Row="0"
             Icon="{ui:SymbolIcon Keyboard20}"
-            IsExpanded="True">
+            IsExpanded="True" ContentPadding="0">
             <ui:CardExpander.Header>
                 <Grid>
                     <Grid.ColumnDefinitions>

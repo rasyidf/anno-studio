@@ -121,27 +121,8 @@
                         </LayoutAnchorable>
                     </LayoutAnchorablePane>
 
-                    <LayoutDocumentPane>
-
-                        <LayoutDocument
-                            CanClose="False"
-                            CanFloat="False"
-                            ContentId="MainDocument2">
-                            <LayoutDocument.Title>
-                                <MultiBinding Converter="{StaticResource ConverterUnsavedChanges}">
-                                    <Binding FallbackValue="Layout"
-                                            Path="AnnoCanvas.Filename"/>
-                                    <Binding Path="AnnoCanvas.UndoManager.IsDirty"/>
-                                </MultiBinding>
-                            </LayoutDocument.Title>
-                            <ScrollViewer
-                                CanContentScroll="True"
-                                Focusable="False"
-                                HorizontalScrollBarVisibility="{Binding ShowScrollbars}"
-                                VerticalScrollBarVisibility="{Binding ShowScrollbars}">
-                                <cv2:AnnoCanvas x:Name="annoCanvas"/>
-                            </ScrollViewer>
-                        </LayoutDocument>
+                    <LayoutDocumentPane x:Name="documentPane">
+                        <!--  Documents are added dynamically via code-behind  -->
                     </LayoutDocumentPane>
                     <LayoutPanel DockWidth="380"
                             Orientation="Vertical">

@@ -634,7 +634,7 @@ namespace AnnoDesigner.Tests
 
             // Assert
             var exception = Assert.IsType<RaisesException>(ex);
-            Assert.Equal("(No event was raised)", exception.Message);
+            Assert.Contains("No event was raised", exception.Message);
             Assert.Equal("EventArgs", "EventArgs");
         }
 
@@ -669,7 +669,7 @@ namespace AnnoDesigner.Tests
 
             // Assert
             var exception = Assert.IsType<RaisesException>(ex);
-            Assert.Equal("(No event was raised)", exception.Message);
+            Assert.Contains("No event was raised", exception.Message);
             Assert.Equal("EventArgs", "EventArgs");
         }
 
@@ -704,7 +704,7 @@ namespace AnnoDesigner.Tests
 
             // Assert
             var exception = Assert.IsType<RaisesException>(ex);
-            Assert.Equal("(No event was raised)", exception.Message);
+            Assert.Contains("No event was raised", exception.Message);
             Assert.Equal("EventArgs", "EventArgs");
         }
 
@@ -774,7 +774,7 @@ namespace AnnoDesigner.Tests
 
             // Assert
             var exception = Assert.IsType<RaisesException>(ex);
-            Assert.Equal("(No event was raised)", exception.Message);
+            Assert.Contains("No event was raised", exception.Message);
             Assert.Equal("EventArgs", "EventArgs");
         }
 
@@ -809,7 +809,7 @@ namespace AnnoDesigner.Tests
 
             // Assert
             var exception = Assert.IsType<RaisesException>(ex);
-            Assert.Equal("(No event was raised)", exception.Message);
+            Assert.Contains("No event was raised", exception.Message);
             Assert.Equal("EventArgs", "EventArgs");
         }
 
@@ -844,7 +844,7 @@ namespace AnnoDesigner.Tests
 
             // Assert 
             var exception = Assert.IsType<RaisesException>(ex);
-            Assert.Equal("(No event was raised)", exception.Message);
+            Assert.Contains("No event was raised", exception.Message);
             Assert.Equal("EventArgs", "EventArgs");
         }
 

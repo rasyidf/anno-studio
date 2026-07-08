@@ -14,14 +14,21 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <Style x:Key="PropertyLabel" TargetType="{x:Type TextBlock}">
-            <Setter Property="FontSize" Value="12" />
-            <Setter Property="Margin" Value="0,0,6,0" />
-            <Setter Property="VerticalAlignment" Value="Center" />
+        <Style x:Key="PropertyLabel"
+                TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize"
+                    Value="12"/>
+            <Setter Property="Margin"
+                    Value="0,0,6,0"/>
+            <Setter Property="VerticalAlignment"
+                    Value="Center"/>
         </Style>
-        <Style x:Key="CompactStack" TargetType="{x:Type StackPanel}">
-            <Setter Property="Orientation" Value="Horizontal" />
-            <Setter Property="Margin" Value="0,1,0,1" />
+        <Style x:Key="CompactStack"
+                TargetType="{x:Type StackPanel}">
+            <Setter Property="Orientation"
+                    Value="Horizontal"/>
+            <Setter Property="Margin"
+                    Value="0,1,0,1"/>
         </Style>
     </UserControl.Resources>
 
@@ -30,64 +37,49 @@
         Margin="2"
         LastChildFill="True">
 
-        <!--  Selection summary (compact header like Figma)  -->
-        <StackPanel Margin="4,0,4,6" DockPanel.Dock="Top">
-            <TextBlock
-                FontSize="14"
-                FontWeight="Bold"
-                Text="{Binding SelectionSummary}" />
-            <TextBlock
-                FontSize="11"
-                Foreground="#FF6B6B6B"
-                Text="{Binding SelectionSubtitle}" />
-            <Separator Margin="0,6,0,6" />
-        </StackPanel>
 
         <!--  Hidden accessible color picker instance for code-behind and programmatic access  -->
         <cp:PortableColorPicker
             x:Name="colorPicker"
             SelectedColor="{Binding BuildingSettingsViewModel.SelectedColor, Mode=TwoWay}"
             ShowAlpha="False"
-            Visibility="Collapsed" />
+            Visibility="Collapsed"/>
         <!--  Header / Layout settings  -->
-        <GroupBox Margin="0,0,0,6" DockPanel.Dock="Top">
+        <ui:CardExpander
+            Margin="0,6,0,0"
+            Padding="8"
+            DockPanel.Dock="Top"
+            Header="{l:Localize LayoutSettings}"
+            IsExpanded="True">
             <Grid Margin="2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    VerticalAlignment="Center"
-                    FontWeight="Bold"
-                    Style="{StaticResource PropertyLabel}"
-                    Text="{l:Localize LayoutSettings}" />
-                <TextBlock
                     Grid.Row="1"
                     Grid.Column="0"
                     VerticalAlignment="Center"
                     Style="{StaticResource PropertyLabel}"
-                    Text="{l:Localize Version}" />
+                    Text="{l:Localize Version}"/>
 
                 <TextBox
                     Grid.Row="1"
-                    Grid.Column="1"
-                    Width="120"
+                    Width="200"
                     Margin="0,0,0,4"
                     HorizontalAlignment="Right"
-                    Text="{Binding LayoutSettingsViewModel.LayoutVersionDisplayValue}" />
+                    Text="{Binding LayoutSettingsViewModel.LayoutVersionDisplayValue}"/>
                 <TextBlock
                     Grid.Row="1"
                     Grid.Column="1"
                     HorizontalAlignment="Right"
-                    Text="" />
+                    Text=""/>
             </Grid>
-        </GroupBox>
+        </ui:CardExpander>
 
         <ui:CardExpander
             Margin="0,6,0,0"
@@ -104,18 +96,20 @@
                     Header="{l:Localize Size}">
                     <local:PropertyGridItem.ValueTemplate>
                         <DataTemplate>
-                            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                            <StackPanel HorizontalAlignment="Right"
+                                    Orientation="Horizontal">
                                 <ui:NumberBox
                                     Width="100"
                                     Minimum="1"
                                     SpinButtonPlacementMode="Compact"
-                                    Value="{Binding BuildingSettingsViewModel.BuildingWidth}" />
-                                <TextBlock Margin="6,0" VerticalAlignment="Center"><Run Text="x" /></TextBlock>
+                                    Value="{Binding BuildingSettingsViewModel.BuildingWidth}"/>
+                                <TextBlock Margin="6,0"
+                                        VerticalAlignment="Center"><Run Text="x"/></TextBlock>
                                 <ui:NumberBox
                                     Width="100"
                                     Minimum="1"
                                     SpinButtonPlacementMode="Compact"
-                                    Value="{Binding BuildingSettingsViewModel.BuildingHeight}" />
+                                    Value="{Binding BuildingSettingsViewModel.BuildingHeight}"/>
                             </StackPanel>
                         </DataTemplate>
                     </local:PropertyGridItem.ValueTemplate>
@@ -129,7 +123,8 @@
                     Header="{l:Localize Color}">
                     <local:PropertyGridItem.ValueTemplate>
                         <DataTemplate>
-                            <ui:Card Padding="4" HorizontalAlignment="Right">
+                            <ui:Card Padding="4"
+                                    HorizontalAlignment="Right">
                                 <cp:PortableColorPicker
                                     Width="100"
                                     Height="28"
@@ -137,14 +132,15 @@
                                     SelectedColor="{Binding BuildingSettingsViewModel.SelectedColor, Mode=TwoWay}"
                                     ShowAlpha="False"
                                     Style="{StaticResource DefaultColorPickerStyle}"
-                                    UseHintColor="True" />
+                                    UseHintColor="True"/>
                             </ui:Card>
                         </DataTemplate>
                     </local:PropertyGridItem.ValueTemplate>
                 </local:PropertyGridItem>
 
                 <!--  Color actions  -->
-                <TextBlock Grid.Row="3" Grid.Column="0" />
+                <TextBlock Grid.Row="3"
+                        Grid.Column="0"/>
                 <StackPanel
                     Grid.Row="3"
                     Grid.Column="1"
@@ -158,14 +154,16 @@
                         ToolTip="{l:Localize ApplyColorToSelectionToolTip}">
                         <ui:SplitButton.Flyout>
                             <ContextMenu>
-                                <MenuItem Command="{Binding BuildingSettingsViewModel.ApplyPredefinedColorToSelectionCommand}" Header="{l:Localize ApplyPredefinedColorToSelection}" />
+                                <MenuItem Command="{Binding BuildingSettingsViewModel.ApplyPredefinedColorToSelectionCommand}"
+                                        Header="{l:Localize ApplyPredefinedColorToSelection}"/>
                             </ContextMenu>
                         </ui:SplitButton.Flyout>
                     </ui:SplitButton>
                 </StackPanel>
 
                 <!--  Colors in layout expander  -->
-                <TextBlock Grid.Row="4" Grid.Column="0" />
+                <TextBlock Grid.Row="4"
+                        Grid.Column="0"/>
                 <Expander
                     Grid.Row="4"
                     Grid.Column="0"
@@ -190,7 +188,7 @@
                                                 <MouseBinding
                                                     Command="{Binding DataContext.BuildingSettingsViewModel.UseColorInLayoutCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}, Mode=FindAncestor}}"
                                                     CommandParameter="{Binding}"
-                                                    Gesture="LeftDoubleClick" />
+                                                    Gesture="LeftDoubleClick"/>
                                             </Rectangle.InputBindings>
                                         </Rectangle>
                                     </Border>
@@ -201,7 +199,7 @@
                                     <WrapPanel
                                         HorizontalAlignment="Right"
                                         ItemHeight="20"
-                                        ItemWidth="20" />
+                                        ItemWidth="20"/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>
@@ -219,7 +217,7 @@
                             <TextBox
                                 Width="200"
                                 HorizontalAlignment="Right"
-                                Text="{Binding BuildingSettingsViewModel.BuildingName}" />
+                                Text="{Binding BuildingSettingsViewModel.BuildingName}"/>
                         </DataTemplate>
                     </local:PropertyGridItem.ValueTemplate>
                 </local:PropertyGridItem>
@@ -233,43 +231,58 @@
                     Header="{l:Localize Icon}">
                     <local:PropertyGridItem.ValueTemplate>
                         <DataTemplate>
-                            <ComboBox
-                                Width="200"
-                                HorizontalAlignment="Right"
-                                ItemsSource="{Binding AvailableIcons}"
-                                SelectedItem="{Binding SelectedIcon}"
-                                TextSearch.TextPath="DisplayName">
-                                <ComboBox.Resources>
-                                    <Style TargetType="{x:Type Popup}">
-                                        <Setter Property="Width" Value="300" />
-                                    </Style>
-                                    <converters:IconImageToDisplayNameConverter x:Key="converterIconImageToDisplayName" />
-                                </ComboBox.Resources>
-                                <ComboBox.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <VirtualizingStackPanel VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" />
-                                    </ItemsPanelTemplate>
-                                </ComboBox.ItemsPanel>
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Viewbox Margin="4">
-                                                <Image Width="20" Source="{Binding Icon}" />
-                                            </Viewbox>
-                                            <TextBlock
-                                                Margin="4,0,4,0"
-                                                VerticalAlignment="Center"
-                                                Text="{Binding ., Converter={StaticResource converterIconImageToDisplayName}}" />
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
+                            <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Right">
+                                <!-- Selected icon preview (single image only) -->
+                                <Viewbox Margin="0,0,6,0">
+                                    <Image Width="20"
+                                            Height="20"
+                                            Source="{Binding SelectedIcon.Icon}"/>
+                                </Viewbox>
+
+                                <!-- Text-only dropdown for performance -->
+                                <ComboBox Width="200"
+                                          ItemsSource="{Binding AvailableIcons}"
+                                          SelectedItem="{Binding SelectedIcon}"
+                                          IsEditable="True"
+                                          IsReadOnly="False"
+                                          IsTextSearchEnabled="True"
+                                          TextSearch.TextPath="DisplayName"
+                                          StaysOpenOnEdit="True"
+                                          ScrollViewer.CanContentScroll="True"
+                                          VirtualizingPanel.IsVirtualizing="True"
+                                          VirtualizingPanel.VirtualizationMode="Recycling">
+
+                                    <ComboBox.Resources>
+                                        <Style TargetType="{x:Type Popup}">
+                                            <Setter Property="Width"
+                                                    Value="300"/>
+                                        </Style>
+                                        <converters:IconImageToDisplayNameConverter x:Key="converterIconImageToDisplayName"/>
+                                    </ComboBox.Resources>
+
+                                    <ComboBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <VirtualizingStackPanel/>
+                                        </ItemsPanelTemplate>
+                                    </ComboBox.ItemsPanel>
+
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Margin="4,2"
+                                                       VerticalAlignment="Center"
+                                                       Text="{Binding ., Converter={StaticResource converterIconImageToDisplayName}}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </StackPanel>
                         </DataTemplate>
                     </local:PropertyGridItem.ValueTemplate>
                 </local:PropertyGridItem>
 
                 <!--  Influence type  -->
-                <local:PropertyGridItem Grid.Row="7" Header="{l:Localize InfluenceType}">
+                <local:PropertyGridItem Grid.Row="7"
+                        Header="{l:Localize InfluenceType}">
                     <local:PropertyGridItem.ValueTemplate>
                         <DataTemplate>
                             <ComboBox
@@ -277,7 +290,7 @@
                                 HorizontalAlignment="Right"
                                 DisplayMemberPath="Name"
                                 ItemsSource="{Binding BuildingSettingsViewModel.BuildingInfluences}"
-                                SelectedItem="{Binding BuildingSettingsViewModel.SelectedBuildingInfluence}" />
+                                SelectedItem="{Binding BuildingSettingsViewModel.SelectedBuildingInfluence}"/>
                         </DataTemplate>
                     </local:PropertyGridItem.ValueTemplate>
                 </local:PropertyGridItem>
@@ -294,7 +307,7 @@
                                 HorizontalAlignment="Left"
                                 Minimum="0"
                                 SpinButtonPlacementMode="Compact"
-                                Value="{Binding BuildingSettingsViewModel.BuildingRadius, FallbackValue=0}" />
+                                Value="{Binding BuildingSettingsViewModel.BuildingRadius, FallbackValue=0}"/>
                         </DataTemplate>
                     </local:PropertyGridItem.ValueTemplate>
                 </local:PropertyGridItem>
@@ -312,7 +325,7 @@
                                 LargeChange="0.1"
                                 MaxDecimalPlaces="2"
                                 SpinButtonPlacementMode="Compact"
-                                Value="{Binding BuildingSettingsViewModel.BuildingInfluenceRange, FallbackValue=0}" />
+                                Value="{Binding BuildingSettingsViewModel.BuildingInfluenceRange, FallbackValue=0}"/>
                         </DataTemplate>
                     </local:PropertyGridItem.ValueTemplate>
                 </local:PropertyGridItem>
@@ -328,7 +341,7 @@
                                 HorizontalAlignment="Right"
                                 IsChecked="{Binding BuildingSettingsViewModel.IsPavedStreet}"
                                 OffContent="{l:Localize Off}"
-                                OnContent="{l:Localize On}" />
+                                OnContent="{l:Localize On}"/>
                         </DataTemplate>
                     </local:PropertyGridItem.ValueTemplate>
                 </local:PropertyGridItem>
@@ -350,7 +363,7 @@
                                         HorizontalAlignment="Right"
                                         IsChecked="{Binding BuildingSettingsViewModel.IsEnableLabelChecked}"
                                         OffContent="{l:Localize Off}"
-                                        OnContent="{l:Localize On}" />
+                                        OnContent="{l:Localize On}"/>
                                 </DataTemplate>
                             </local:PropertyGridItem.ValueTemplate>
                         </local:PropertyGridItem>
@@ -362,7 +375,7 @@
                                         HorizontalAlignment="Right"
                                         IsChecked="{Binding BuildingSettingsViewModel.IsBorderlessChecked}"
                                         OffContent="{l:Localize Off}"
-                                        OnContent="{l:Localize On}" />
+                                        OnContent="{l:Localize On}"/>
                                 </DataTemplate>
                             </local:PropertyGridItem.ValueTemplate>
                         </local:PropertyGridItem>
@@ -374,7 +387,7 @@
                                         HorizontalAlignment="Right"
                                         IsChecked="{Binding BuildingSettingsViewModel.IsRoadChecked}"
                                         OffContent="{l:Localize Off}"
-                                        OnContent="{l:Localize On}" />
+                                        OnContent="{l:Localize On}"/>
                                 </DataTemplate>
                             </local:PropertyGridItem.ValueTemplate>
                         </local:PropertyGridItem>
@@ -393,7 +406,7 @@
             HorizontalAlignment="Right"
             Command="{Binding PlaceBuildingCommand}"
             Content="{l:Localize PlaceBuilding}"
-            DockPanel.Dock="Bottom" />
+            DockPanel.Dock="Bottom"/>
 
     </DockPanel>
 </UserControl>

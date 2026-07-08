@@ -117,6 +117,20 @@ namespace AnnoDesigner.Helper
         }
 
         /// <summary>
+        /// Removes all registered hotkeys from this manager and resets observable state.
+        /// </summary>
+        public void Clear()
+        {
+            foreach (var kvp in hotkeys.ToList())
+            {
+                kvp.Value.PropertyChanged -= Hotkey_PropertyChanged;
+            }
+            hotkeys.Clear();
+            _observableCollection.Clear();
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        }
+
+        /// <summary>
         /// Resets all hotkeys to their defaults
         /// </summary>
         public void ResetHotkeys()

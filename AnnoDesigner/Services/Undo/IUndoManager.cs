@@ -1,9 +1,10 @@
 ﻿using System;
+using System.ComponentModel;
 using AnnoDesigner.Services.Undo.Operations;
 
 namespace AnnoDesigner.Services.Undo
 {
-    public interface IUndoManager
+    public interface IUndoManager : INotifyPropertyChanged
     {
         bool IsDirty { get; set; }
 

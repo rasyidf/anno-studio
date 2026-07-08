@@ -13,8 +13,10 @@ using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Presets.Models;
 using AnnoDesigner.Core.RecentFiles;
 using AnnoDesigner.Core.Services;
+using AnnoDesigner.Services;
 using AnnoDesigner.Models;
 using AnnoDesigner.Models.Interface;
+using AnnoDesigner.Services;
 using AnnoDesigner.Services.Undo;
 using AnnoDesigner.Services.Undo.Operations;
 using AnnoDesigner.ViewModels;
@@ -91,6 +93,112 @@ namespace AnnoDesigner.Tests
             {
                 AnnoCanvas = annoCanvasToUse ?? _mockedAnnoCanvas
             };
+        }
+
+        [Fact]
+        public void NewDocumentCommand_ShouldCreateAndActivateDocument()
+        {
+            // Arrange
+            var docServicesFactory = new Mock<AnnoDesigner.Services.IDocumentServicesFactory>();
+            var mockDocServices = new Mock<AnnoDesigner.Services.IDocumentServices>();
+            docServicesFactory.Setup(x => x.CreateDocumentServices()).Returns(mockDocServices.Object);
+
+            var vm = new MainViewModel(_mockedCommons,
+                _mockedAppSettings,
+                _inMemoryRecentFilesHelper,
+                _mockedMessageBoxService,
+                _mockedUpdateHelper,
+                _mockedLocalizationHelper,
+                _mockedFileSystem,
+                adjacentCellGrouper: _mockedCellGrouper,
+                documentServicesFactoryToUse: docServicesFactory.Object)
+            {
+                AnnoCanvas = _mockedAnnoCanvas
+            };
+
+            // Act
+            vm.NewDocumentCommand.Execute(null);
+
+            // Assert
+            Assert.Single(vm.Documents);
+            Assert.NotNull(vm.ActiveDocument);
+            Assert.True(vm.ActiveDocument.IsActive);
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task OpenFile_ShouldCreateNewDocumentAndLoadLayoutAsync()
+        {
+            // Arrange
+            var layout = new LayoutFile();
+            layout.Objects.Add(new AnnoDesigner.Core.Models.AnnoObject());
+
+            var layoutLoaderMock = new Mock<ILayoutLoader>();
+            layoutLoaderMock.Setup(x => x.LoadLayout(It.IsAny<string>(), It.IsAny<bool>())).Returns(layout);
+
+            var docServicesFactory = new Mock<AnnoDesigner.Services.IDocumentServicesFactory>();
+            var mockDocServices = new Mock<AnnoDesigner.Services.IDocumentServices>();
+            docServicesFactory.Setup(x => x.CreateDocumentServices()).Returns(mockDocServices.Object);
+
+            var vm = new MainViewModel(_mockedCommons,
+                _mockedAppSettings,
+                _inMemoryRecentFilesHelper,
+                _mockedMessageBoxService,
+                _mockedUpdateHelper,
+                _mockedLocalizationHelper,
+                _mockedFileSystem,
+                adjacentCellGrouper: _mockedCellGrouper,
+                layoutLoaderToUse: layoutLoaderMock.Object,
+                documentServicesFactoryToUse: docServicesFactory.Object)
+            {
+                AnnoCanvas = _mockedAnnoCanvas
+            };
+
+            // Act
+            await vm.OpenFile("/some/path/layout.json").ConfigureAwait(false);
+
+            // Assert
+            Assert.Single(vm.Documents);
+            var doc = vm.Documents.First();
+            Assert.Equal("/some/path/layout.json", doc.FilePath);
+            Assert.False(doc.IsDirty);
+            Assert.NotEmpty(doc.Canvas.PlacedObjects);
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task SaveCommand_ShouldSaveActiveDocumentAsync()
+        {
+            // Arrange
+            var layoutServiceMock = new Mock<ILayoutService>();
+            var mockDocServices = new Mock<AnnoDesigner.Services.IDocumentServices>();
+            mockDocServices.SetupGet(x => x.LayoutService).Returns(layoutServiceMock.Object);
+
+            var docServicesFactory = new Mock<AnnoDesigner.Services.IDocumentServicesFactory>();
+            docServicesFactory.Setup(x => x.CreateDocumentServices()).Returns(mockDocServices.Object);
+
+            var vm = new MainViewModel(_mockedCommons,
+                _mockedAppSettings,
+                _inMemoryRecentFilesHelper,
+                _mockedMessageBoxService,
+                _mockedUpdateHelper,
+                _mockedLocalizationHelper,
+                _mockedFileSystem,
+                adjacentCellGrouper: _mockedCellGrouper,
+                documentServicesFactoryToUse: docServicesFactory.Object)
+            {
+                AnnoCanvas = _mockedAnnoCanvas
+            };
+
+            // Create document and set a path so SaveAsync will call LayoutService
+            vm.NewDocumentCommand.Execute(null);
+            var doc = vm.ActiveDocument;
+            var path = "/tmp/some.layout";
+            doc.FilePath = path;
+
+            // Act
+            await vm.SaveCommand.ExecuteAsync(null).ConfigureAwait(false);
+
+            // Assert
+            layoutServiceMock.Verify(x => x.SaveLayoutAsync(doc.Canvas, path), Times.Once);
         }
 
         #region ctor tests
