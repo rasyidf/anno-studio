@@ -29,6 +29,8 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
             _invalidate = invalidate ?? throw new ArgumentNullException(nameof(invalidate));
         }
 
+        private Point ToWorld(Point screenPoint) => (_owner is EditorCanvas ec) ? ec.ScreenToWorld(screenPoint) : screenPoint;
+
         public void Activate()
         {
             _start = null;
@@ -51,14 +53,14 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
         public void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
         {
             if (e == null || e.ChangedButton != System.Windows.Input.MouseButton.Left) return;
-            _start = e.GetPosition(_owner);
+            _start = ToWorld(e.GetPosition(_owner));
             _rubberBand = Rect.Empty;
         }
 
         public void OnMouseMove(System.Windows.Input.MouseEventArgs e)
         {
             if (!_start.HasValue || e == null || e.LeftButton != System.Windows.Input.MouseButtonState.Pressed) return;
-            var current = e.GetPosition(_owner);
+            var current = ToWorld(e.GetPosition(_owner));
             _rubberBand = NormalizeRect(_start.Value, current);
             _invalidate();
         }
@@ -66,7 +68,7 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
         public void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e)
         {
             if (!_start.HasValue || e == null || e.ChangedButton != System.Windows.Input.MouseButton.Left) return;
-            var end = e.GetPosition(_owner);
+            var end = ToWorld(e.GetPosition(_owner));
             var selectionRect = NormalizeRect(_start.Value, end);
             var hits = _objectManager.GetAll()?.Where(o => o != null && o.Bounds.IntersectsWith(selectionRect)).ToList() ?? new List<CanvasObject>();
             _setSelection(hits);

@@ -31,6 +31,8 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
             _afterCommit = afterCommit ?? (() => { });
         }
 
+        private Point ToWorld(Point screenPoint) => (_owner is EditorCanvas ec) ? ec.ScreenToWorld(screenPoint) : screenPoint;
+
         public void Activate()
         {
             Reset();
@@ -51,14 +53,14 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
         {
             if (e == null || e.ChangedButton != System.Windows.Input.MouseButton.Left) return;
             _points.Clear();
-            _points.Add(e.GetPosition(_owner));
+            _points.Add(ToWorld(e.GetPosition(_owner)));
             _isDrawing = true;
         }
 
         public void OnMouseMove(System.Windows.Input.MouseEventArgs e)
         {
             if (!_isDrawing || e == null || e.LeftButton != System.Windows.Input.MouseButtonState.Pressed) return;
-            var pt = e.GetPosition(_owner);
+            var pt = ToWorld(e.GetPosition(_owner));
             if (_points.Count == 0 || DistanceSquared(_points[^1], pt) > 1)
             {
                 _points.Add(pt);
@@ -110,10 +112,13 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
             var obj = new CanvasObject
             {
                 Bounds = bounds,
+                ShapeType = "Path",
+                PathPoints = new List<Point>(_points),
                 Identifier = "Pencil",
                 IsSelectable = true
             };
-            _objectManager.Add(obj);
+            if (_owner is EditorCanvas ec) ec.AddObjectWithUndo(obj);
+            else _objectManager.Add(obj);
             _setSelection(new[] { obj });
             _afterCommit?.Invoke();
         }

@@ -15,7 +15,10 @@ namespace AnnoDesigner.EditorCanvas.Demo
             { "RectDraw", "Drag to place a rectangle" },
             { "LineDraw", "Drag to place a line" },
             { "PencilDraw", "Sketch freeform geometry" },
+            { "Multiline", "Click points, double-click/Enter to finish polyline" },
+            { "Curve", "Click for anchors, drag for handles, Enter to finish" },
             { "Transform", "Drag handles to resize/move" },
+            { "PathEdit", "Drag points • Dbl-click add • Right-click remove" },
             { "Duplicate", "Drag to copy selection" }
         };
         private const string DefaultHint = "Esc to cancel • Ctrl+D duplicate";
@@ -139,6 +142,26 @@ namespace AnnoDesigner.EditorCanvas.Demo
         private void OnToolChanged(AnnoDesigner.Controls.EditorCanvas.Tooling.ITool? tool)
         {
             UpdateStatus(tool?.Name, editorCanvas.SelectedObjects?.Count);
+        }
+
+        private void BtnZoomIn_Click(object sender, RoutedEventArgs e)
+        {
+            var center = new Point(editorCanvas.ActualWidth / 2, editorCanvas.ActualHeight / 2);
+            editorCanvas.TransformService?.ZoomAt(center, 1.25);
+            editorCanvas.InvalidateVisual();
+        }
+
+        private void BtnZoomOut_Click(object sender, RoutedEventArgs e)
+        {
+            var center = new Point(editorCanvas.ActualWidth / 2, editorCanvas.ActualHeight / 2);
+            editorCanvas.TransformService?.ZoomAt(center, 0.8);
+            editorCanvas.InvalidateVisual();
+        }
+
+        private void BtnZoomReset_Click(object sender, RoutedEventArgs e)
+        {
+            editorCanvas.TransformService?.Reset();
+            editorCanvas.InvalidateVisual();
         }
 
         private void UpdateStatus(string toolName, int? selectionCount)

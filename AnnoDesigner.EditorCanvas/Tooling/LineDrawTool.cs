@@ -30,6 +30,8 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
             _afterCommit = afterCommit ?? (() => { });
         }
 
+        private Point ToWorld(Point screenPoint) => (_owner is EditorCanvas ec) ? ec.ScreenToWorld(screenPoint) : screenPoint;
+
         public void Activate()
         {
             Reset();
@@ -49,21 +51,21 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
         public void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
         {
             if (e == null || e.ChangedButton != System.Windows.Input.MouseButton.Left) return;
-            _start = e.GetPosition(_owner);
+            _start = ToWorld(e.GetPosition(_owner));
             _current = _start;
         }
 
         public void OnMouseMove(System.Windows.Input.MouseEventArgs e)
         {
             if (!_start.HasValue || e == null || e.LeftButton != System.Windows.Input.MouseButtonState.Pressed) return;
-            _current = e.GetPosition(_owner);
+            _current = ToWorld(e.GetPosition(_owner));
             _invalidate();
         }
 
         public void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e)
         {
             if (!_start.HasValue || e == null || e.ChangedButton != System.Windows.Input.MouseButton.Left) return;
-            _current = e.GetPosition(_owner);
+            _current = ToWorld(e.GetPosition(_owner));
             Commit();
             Reset();
             _invalidate();
@@ -94,10 +96,14 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
             var obj = new CanvasObject
             {
                 Bounds = rect,
+                ShapeType = "Line",
+                LineStart = _start.Value,
+                LineEnd = _current.Value,
                 Identifier = "Line",
                 IsSelectable = true
             };
-            _objectManager.Add(obj);
+            if (_owner is EditorCanvas ec) ec.AddObjectWithUndo(obj);
+            else _objectManager.Add(obj);
             _setSelection(new[] { obj });
             _afterCommit?.Invoke();
         }

@@ -42,9 +42,28 @@ namespace AnnoDesigner.Controls.EditorCanvas.Core
                 copy = _layers.ToArray();
             }
 
-            foreach (var layer in copy.OrderBy(l => l.Order))
+            var ordered = copy.Where(l => l != null && l.Enabled).OrderBy(l => l.Order).ToArray();
+
+            // Apply zoom/pan transform from TransformService for world-space layers (order < 500)
+            // This includes grid, objects, and tooling overlays (selection handles, tool visuals).
+            // Only pure HUD layers (order >= 500, e.g. OverlayText) render in screen space.
+            var ts = canvas.TransformService;
+            var zoom = ts?.Zoom ?? 1.0;
+            var panX = ts?.Pan.X ?? 0.0;
+            var panY = ts?.Pan.Y ?? 0.0;
+
+            dc.PushTransform(new System.Windows.Media.MatrixTransform(zoom, 0, 0, zoom, panX, panY));
+
+            foreach (var layer in ordered.Where(l => l.Order < 500))
             {
-                if (layer == null || !layer.Enabled) continue;
+                layer.Render(dc, canvas, clip);
+            }
+
+            dc.Pop();
+
+            // Screen-space layers (order >= 500) render without transform
+            foreach (var layer in ordered.Where(l => l.Order >= 500))
+            {
                 layer.Render(dc, canvas, clip);
             }
         }

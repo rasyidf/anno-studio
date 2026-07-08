@@ -29,6 +29,8 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
             _invalidate = invalidate ?? throw new ArgumentNullException(nameof(invalidate));
         }
 
+        private Point ToWorld(Point screenPoint) => (_owner is EditorCanvas ec) ? ec.ScreenToWorld(screenPoint) : screenPoint;
+
         public void Activate()
         {
             Reset();
@@ -49,14 +51,14 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
         {
             if (e == null || e.ChangedButton != System.Windows.Input.MouseButton.Left) return;
             _points.Clear();
-            _points.Add(e.GetPosition(_owner));
+            _points.Add(ToWorld(e.GetPosition(_owner)));
             _isCapturing = true;
         }
 
         public void OnMouseMove(System.Windows.Input.MouseEventArgs e)
         {
             if (!_isCapturing || e == null || e.LeftButton != System.Windows.Input.MouseButtonState.Pressed) return;
-            var pt = e.GetPosition(_owner);
+            var pt = ToWorld(e.GetPosition(_owner));
             if (_points.Count == 0 || DistanceSquared(_points[^1], pt) > 2)
             {
                 _points.Add(pt);

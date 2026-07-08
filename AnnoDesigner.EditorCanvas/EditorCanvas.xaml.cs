@@ -31,6 +31,17 @@ namespace AnnoDesigner.Controls.EditorCanvas
         public Core.IPreferencesService Preferences { get; private set; }
         public Core.ITransformService TransformService { get; private set; }
         public Content.IObjectManager<Content.Models.CanvasObject> ObjectManager { get; private set; }
+
+        /// <summary>
+        /// Converts a screen-space point (from mouse events) to world-space coordinates,
+        /// accounting for current zoom and pan. Tools should use this for hit-testing.
+        /// </summary>
+        public Point ScreenToWorld(Point screenPoint)
+        {
+            return TransformService?.ScreenToWorld(screenPoint) ?? screenPoint;
+        }
+        public Core.IPlacementValidator PlacementValidator { get; set; } = new Core.DefaultPlacementValidator();
+        public Core.IUndoManager? UndoManager { get; set; }
         private readonly List<CanvasObject> _selectedObjects = new();
         public IReadOnlyList<CanvasObject> SelectedObjects => _selectedObjects;
         public CanvasObject? SelectedObject => _selectedObjects.FirstOrDefault();
@@ -102,6 +113,16 @@ namespace AnnoDesigner.Controls.EditorCanvas
         public static readonly DependencyProperty OverlayTextBrushProperty = DependencyProperty.Register(
             nameof(OverlayTextBrush), typeof(Brush), typeof(EditorCanvas),
             new FrameworkPropertyMetadata(Brushes.Black, FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public Brush BackgroundBrush
+        {
+            get => (Brush)GetValue(BackgroundBrushProperty);
+            set => SetValue(BackgroundBrushProperty, value);
+        }
+
+        public static readonly DependencyProperty BackgroundBrushProperty = DependencyProperty.Register(
+            nameof(BackgroundBrush), typeof(Brush), typeof(EditorCanvas),
+            new FrameworkPropertyMetadata(Brushes.White, FrameworkPropertyMetadataOptions.AffectsRender));
         public EditorCanvas()
         {
             InitializeComponent();
@@ -116,10 +137,14 @@ namespace AnnoDesigner.Controls.EditorCanvas
             Hotkeys = new Interaction.HotkeyManager(ToolManager, HandleCommand);
             _inputHandler = new Interaction.InputInteractionService(ToolManager, Hotkeys);
             ObjectManager = new Content.ObjectManagerQuadTree();
+            UndoManager = new Core.UndoManager();
 
             // register default render layers when the renderer supports layering
             if (_renderer is Core.ILayeredRenderer layered)
             {
+                // Background fill (order 0 = drawn first)
+                layered.AddLayer(new Core.Layers.BackgroundLayer(order: 0));
+
                 // Primary grid and fine-grain grid layers
                 layered.AddLayer(new Core.Layers.GridLayer(order: 100) { CellSize = 128 });
                 layered.AddLayer(new Core.Layers.SubGridLayer(order: 110) { CellSize = 32 });
@@ -140,13 +165,39 @@ namespace AnnoDesigner.Controls.EditorCanvas
 
             ToolManager.RegisterTool(new RectSelectTool(ObjectManager, this, SetSelection, () => _renderer.Invalidate()));
             ToolManager.RegisterTool(new LassoSelectTool(ObjectManager, this, SetSelection, () => _renderer.Invalidate()));
-            ToolManager.RegisterTool(new RectDrawTool(ObjectManager, this, SetSelection, () => _renderer.Invalidate(), MaybeReturnToSelection));
+            ToolManager.RegisterTool(new RectDrawTool(ObjectManager, this, SetSelection, () => _renderer.Invalidate(), obj => PlacementValidator.CanPlace(obj), MaybeReturnToSelection));
             ToolManager.RegisterTool(new LineDrawTool(ObjectManager, this, SetSelection, () => _renderer.Invalidate(), MaybeReturnToSelection));
             ToolManager.RegisterTool(new PencilDrawTool(ObjectManager, this, SetSelection, () => _renderer.Invalidate(), MaybeReturnToSelection));
+            ToolManager.RegisterTool(new MultilineTool(ObjectManager, this, SetSelection, () => _renderer.Invalidate(), MaybeReturnToSelection));
+            ToolManager.RegisterTool(new CurveTool(ObjectManager, this, SetSelection, () => _renderer.Invalidate(), MaybeReturnToSelection));
             ToolManager.RegisterTool(new TransformTool(this, () => SelectedObjects, () => _renderer.Invalidate()));
-            ToolManager.RegisterTool(new DuplicateTool(ObjectManager, () => SelectedObjects, SetSelection, () => _renderer.Invalidate(), MaybeReturnToSelection));
+            ToolManager.RegisterTool(new DuplicateTool(ObjectManager, () => SelectedObjects, SetSelection, () => _renderer.Invalidate(), MaybeReturnToSelection, AddObjectWithUndo));
+            ToolManager.RegisterTool(new PathEditTool(this, () => SelectedObjects, () => _renderer.Invalidate()));
+            ToolManager.RegisterTool(new PlacementTool(ObjectManager, this, SetSelection, () => _renderer.Invalidate()));
 
-            ToolManager.ActiveToolChanged += tool => ToolChanged?.Invoke(tool);
+            // Wire cursor changes from TransformTool
+            var transformTool = ToolManager.RegisteredTools.OfType<TransformTool>().FirstOrDefault();
+            if (transformTool != null)
+            {
+                transformTool.CursorChanged += () =>
+                    this.Cursor = transformTool.SuggestedCursor ?? Cursors.Arrow;
+            }
+
+            // Wire cursor changes from PathEditTool
+            var pathEditTool = ToolManager.RegisteredTools.OfType<PathEditTool>().FirstOrDefault();
+            if (pathEditTool != null)
+            {
+                pathEditTool.CursorChanged += () =>
+                    this.Cursor = pathEditTool.SuggestedCursor ?? Cursors.Arrow;
+            }
+
+            ToolManager.ActiveToolChanged += tool =>
+            {
+                // Reset cursor unless switching to Transform (which manages its own cursor)
+                if (tool is not TransformTool)
+                    this.Cursor = Cursors.Arrow;
+                ToolChanged?.Invoke(tool);
+            };
             ToolManager.Activate(selection.Name);
             RegisterDefaultHotkeys();
 
@@ -163,6 +214,30 @@ namespace AnnoDesigner.Controls.EditorCanvas
             this.KeyUp += (s, e) => _inputHandler.OnKeyUp(e);
             // keep focus when clicked so keyboard events are received
             this.MouseDown += (s, e) => this.Focus();
+        }
+
+        public void AddObjectWithUndo(CanvasObject obj)
+        {
+            if (UndoManager != null)
+            {
+                UndoManager.Execute(new Core.Operations.AddObjectOperation(ObjectManager, obj));
+            }
+            else
+            {
+                ObjectManager.Add(obj);
+            }
+        }
+
+        public void RemoveObjectWithUndo(CanvasObject obj)
+        {
+            if (UndoManager != null)
+            {
+                UndoManager.Execute(new Core.Operations.RemoveObjectOperation(ObjectManager, obj));
+            }
+            else
+            {
+                ObjectManager.Remove(obj);
+            }
         }
 
         public void SetSelection(IEnumerable<CanvasObject> objects)
@@ -241,6 +316,14 @@ namespace AnnoDesigner.Controls.EditorCanvas
                 case "ToggleLayerManager":
                     LayerManagerToggleRequested?.Invoke();
                     break;
+                case "Undo":
+                    UndoManager?.Undo();
+                    _renderer.Invalidate();
+                    break;
+                case "Redo":
+                    UndoManager?.Redo();
+                    _renderer.Invalidate();
+                    break;
                 default:
                     break;
             }
@@ -256,8 +339,11 @@ namespace AnnoDesigner.Controls.EditorCanvas
                 new HotkeyBinding { Id = "RectDraw", DisplayName = "Rectangle Draw", Key = Key.D, ActionType = HotkeyActionType.ActivateTool, Target = "RectDraw" },
                 new HotkeyBinding { Id = "LineDraw", DisplayName = "Line Draw", Key = Key.N, ActionType = HotkeyActionType.ActivateTool, Target = "LineDraw" },
                 new HotkeyBinding { Id = "PencilDraw", DisplayName = "Pencil Draw", Key = Key.P, ActionType = HotkeyActionType.ActivateTool, Target = "PencilDraw" },
+                new HotkeyBinding { Id = "Multiline", DisplayName = "Multiline Draw", Key = Key.W, ActionType = HotkeyActionType.ActivateTool, Target = "Multiline" },
+                new HotkeyBinding { Id = "Curve", DisplayName = "Curve Draw", Key = Key.C, ActionType = HotkeyActionType.ActivateTool, Target = "Curve" },
                 new HotkeyBinding { Id = "Transform", DisplayName = "Transform", Key = Key.M, ActionType = HotkeyActionType.ActivateTool, Target = "Transform" },
                 new HotkeyBinding { Id = "Duplicate", DisplayName = "Duplicate Selection", Key = Key.D, Modifiers = ModifierKeys.Control, ActionType = HotkeyActionType.ActivateTool, Target = "Duplicate" },
+                new HotkeyBinding { Id = "PathEdit", DisplayName = "Path Edit", Key = Key.A, ActionType = HotkeyActionType.ActivateTool, Target = "PathEdit" },
                 new HotkeyBinding { Id = "Cancel", DisplayName = "Cancel", Key = Key.Escape, ActionType = HotkeyActionType.Command, Target = "Cancel" },
                 // zoom and pan commands
                 new HotkeyBinding { Id = "ZoomIn", DisplayName = "Zoom In", Key = Key.OemPlus, Modifiers = ModifierKeys.Control, ActionType = HotkeyActionType.Command, Target = "ZoomIn" },
@@ -268,7 +354,10 @@ namespace AnnoDesigner.Controls.EditorCanvas
                 new HotkeyBinding { Id = "PanUp", DisplayName = "Pan Up", Key = Key.Up, ActionType = HotkeyActionType.Command, Target = "PanUp" },
                 new HotkeyBinding { Id = "PanDown", DisplayName = "Pan Down", Key = Key.Down, ActionType = HotkeyActionType.Command, Target = "PanDown" },
                 // toggle a layout/layer manager UI
-                new HotkeyBinding { Id = "ToggleLayerManager", DisplayName = "Toggle Layer Manager", Key = Key.L, Modifiers = ModifierKeys.Control | ModifierKeys.Shift, ActionType = HotkeyActionType.Command, Target = "ToggleLayerManager" }
+                new HotkeyBinding { Id = "ToggleLayerManager", DisplayName = "Toggle Layer Manager", Key = Key.L, Modifiers = ModifierKeys.Control | ModifierKeys.Shift, ActionType = HotkeyActionType.Command, Target = "ToggleLayerManager" },
+                // undo / redo
+                new HotkeyBinding { Id = "Undo", DisplayName = "Undo", Key = Key.Z, Modifiers = ModifierKeys.Control, ActionType = HotkeyActionType.Command, Target = "Undo" },
+                new HotkeyBinding { Id = "Redo", DisplayName = "Redo", Key = Key.Y, Modifiers = ModifierKeys.Control, ActionType = HotkeyActionType.Command, Target = "Redo" }
             });
         }
 

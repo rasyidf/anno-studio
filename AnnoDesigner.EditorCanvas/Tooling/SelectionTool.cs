@@ -44,7 +44,8 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
         public void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
         {
             if (e == null) return;
-            var pt = e.GetPosition(_owner);
+            var screenPt = e.GetPosition(_owner);
+            var pt = (_owner is EditorCanvas ec) ? ec.ScreenToWorld(screenPt) : screenPt;
             var hits = _objectManager.GetObjectsAt(pt);
             // pick the first hit (topmost logic not implemented yet)
             foreach (var hit in hits)

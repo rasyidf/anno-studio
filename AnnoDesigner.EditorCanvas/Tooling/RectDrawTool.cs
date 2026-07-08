@@ -16,19 +16,23 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
         private readonly System.Windows.IInputElement _owner;
         private readonly Action<IEnumerable<CanvasObject>> _setSelection;
         private readonly Action _invalidate;
+        private readonly Func<ICanvasObject, bool> _canPlace;
         private readonly Action _afterCommit;
 
         private Point? _start;
         private Rect _preview;
 
-        public RectDrawTool(Content.IObjectManager<CanvasObject> objectManager, System.Windows.IInputElement owner, Action<IEnumerable<CanvasObject>> setSelection, Action invalidate, Action? afterCommit = null)
+        public RectDrawTool(Content.IObjectManager<CanvasObject> objectManager, System.Windows.IInputElement owner, Action<IEnumerable<CanvasObject>> setSelection, Action invalidate, Func<ICanvasObject, bool> canPlace, Action? afterCommit = null)
         {
             _objectManager = objectManager ?? throw new ArgumentNullException(nameof(objectManager));
             _owner = owner ?? throw new ArgumentNullException(nameof(owner));
             _setSelection = setSelection ?? throw new ArgumentNullException(nameof(setSelection));
             _invalidate = invalidate ?? throw new ArgumentNullException(nameof(invalidate));
+            _canPlace = canPlace ?? throw new ArgumentNullException(nameof(canPlace));
             _afterCommit = afterCommit ?? (() => { });
         }
+
+        private Point ToWorld(Point screenPoint) => (_owner is EditorCanvas ec) ? ec.ScreenToWorld(screenPoint) : screenPoint;
 
         public void Activate()
         {
@@ -49,13 +53,13 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
         public void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
         {
             if (e == null || e.ChangedButton != System.Windows.Input.MouseButton.Left) return;
-            _start = e.GetPosition(_owner);
+            _start = ToWorld(e.GetPosition(_owner));
         }
 
         public void OnMouseMove(System.Windows.Input.MouseEventArgs e)
         {
             if (!_start.HasValue || e == null || e.LeftButton != System.Windows.Input.MouseButtonState.Pressed) return;
-            var current = e.GetPosition(_owner);
+            var current = ToWorld(e.GetPosition(_owner));
             _preview = Normalize(_start.Value, current);
             _invalidate();
         }
@@ -63,7 +67,7 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
         public void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e)
         {
             if (!_start.HasValue || e == null || e.ChangedButton != System.Windows.Input.MouseButton.Left) return;
-            var end = e.GetPosition(_owner);
+            var end = ToWorld(e.GetPosition(_owner));
             var rect = Normalize(_start.Value, end);
             Commit(rect);
             Reset();
@@ -97,7 +101,9 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
                 Identifier = "Rect",
                 IsSelectable = true
             };
-            _objectManager.Add(obj);
+            if (!_canPlace(obj)) return;
+            if (_owner is EditorCanvas ec) ec.AddObjectWithUndo(obj);
+            else _objectManager.Add(obj);
             _setSelection(new[] { obj });
             _afterCommit?.Invoke();
         }

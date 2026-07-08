@@ -64,6 +64,9 @@
                 Content="Auto-return to Selection"
                 IsChecked="True"
                 Unchecked="ChkAutoReturn_Changed" />
+            <Button x:Name="btnZoomIn" Content="Zoom +" Margin="4" Padding="6" Click="BtnZoomIn_Click" />
+            <Button x:Name="btnZoomOut" Content="Zoom -" Margin="4" Padding="6" Click="BtnZoomOut_Click" />
+            <Button x:Name="btnZoomReset" Content="Reset" Margin="4" Padding="6" Click="BtnZoomReset_Click" />
         </StackPanel>
 
         <StackPanel
@@ -106,12 +109,27 @@
                 Click="OnToolButtonClick"
                 Content="Pencil (P)"
                 Tag="PencilDraw" />
+            <Button
+                Margin="2"
+                Click="OnToolButtonClick"
+                Content="Multiline (W)"
+                Tag="Multiline" />
+            <Button
+                Margin="2"
+                Click="OnToolButtonClick"
+                Content="Curve (C)"
+                Tag="Curve" />
             <Separator Margin="4,6" />
             <Button
                 Margin="2"
                 Click="OnToolButtonClick"
                 Content="Transform (M)"
                 Tag="Transform" />
+            <Button
+                Margin="2"
+                Click="OnToolButtonClick"
+                Content="Path Edit (A)"
+                Tag="PathEdit" />
             <Button
                 Margin="2"
                 Click="OnToolButtonClick"
@@ -123,7 +141,7 @@
         </StackPanel>
 
         <Grid>
-            <controls:EditorCanvas x:Name="editorCanvas" />
+            <controls:EditorCanvas x:Name="editorCanvas" BackgroundBrush="#FFF8F8F8" />
         </Grid>
     </DockPanel>
 </Window>

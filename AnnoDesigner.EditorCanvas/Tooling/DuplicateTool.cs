@@ -18,15 +18,17 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
         private readonly Action<IEnumerable<CanvasObject>> _setSelection;
         private readonly Action _invalidate;
         private readonly Action _afterCommit;
+        private readonly Action<CanvasObject>? _addAction;
         private readonly Vector _offset = new Vector(12, 12);
 
-        public DuplicateTool(Content.IObjectManager<CanvasObject> objectManager, Func<IReadOnlyList<CanvasObject>> selectionProvider, Action<IEnumerable<CanvasObject>> setSelection, Action invalidate, Action? afterCommit = null)
+        public DuplicateTool(Content.IObjectManager<CanvasObject> objectManager, Func<IReadOnlyList<CanvasObject>> selectionProvider, Action<IEnumerable<CanvasObject>> setSelection, Action invalidate, Action? afterCommit = null, Action<CanvasObject>? addAction = null)
         {
             _objectManager = objectManager ?? throw new ArgumentNullException(nameof(objectManager));
             _selectionProvider = selectionProvider ?? throw new ArgumentNullException(nameof(selectionProvider));
             _setSelection = setSelection ?? throw new ArgumentNullException(nameof(setSelection));
             _invalidate = invalidate ?? throw new ArgumentNullException(nameof(invalidate));
             _afterCommit = afterCommit ?? (() => { });
+            _addAction = addAction;
         }
 
         public void Activate()
@@ -39,10 +41,10 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
             {
                 if (item == null) continue;
                 var clone = item.Clone();
-                var bounds = clone.Bounds;
-                clone.Bounds = new Rect(bounds.X + _offset.X, bounds.Y + _offset.Y, bounds.Width, bounds.Height);
+                clone.OffsetBy(_offset);
                 clone.ZIndex = item.ZIndex + 1;
-                _objectManager.Add(clone);
+                if (_addAction != null) _addAction(clone);
+                else _objectManager.Add(clone);
                 duplicates.Add(clone);
             }
             if (duplicates.Count > 0)

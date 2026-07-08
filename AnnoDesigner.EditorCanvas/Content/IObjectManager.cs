@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using AnnoDesigner.Controls.EditorCanvas.Content.Models;
 
 namespace AnnoDesigner.Controls.EditorCanvas.Content
 {
@@ -6,7 +7,7 @@ namespace AnnoDesigner.Controls.EditorCanvas.Content
     /// Generic object manager contract for EditorCanvas content layer.
     /// Implementations will manage storage, querying, and lifecycle of canvas objects.
     /// </summary>
-    public interface IObjectManager<T>
+    public interface IObjectManager<T> where T : ICanvasObject
     {
         /// <summary>
         /// Returns all objects that intersect the provided point (hit test).
