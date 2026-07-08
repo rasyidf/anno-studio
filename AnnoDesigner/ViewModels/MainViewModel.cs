@@ -524,7 +524,7 @@ public partial class MainViewModel : ObservableObject
             }
             else
             {
-                var foundIconImage = AvailableIcons.SingleOrDefault(x =>
+                var foundIconImage = AvailableIcons.FirstOrDefault(x =>
                     x.Name.Equals(_fileSystem.Path.GetFileNameWithoutExtension(obj.Icon),
                         StringComparison.OrdinalIgnoreCase));
                 SelectedIcon = foundIconImage ?? _noIconItem;
@@ -658,6 +658,10 @@ public partial class MainViewModel : ObservableObject
 
     public void LoadAvailableIcons()
     {
+        // Clear existing icons (except _noIconItem) to prevent duplicates on re-load
+        AvailableIcons.Clear();
+        AvailableIcons.Add(_noIconItem);
+
         foreach (var icon in (Icons ?? []).OrderBy(x => x.Value.NameForLanguage(_commons.CurrentLanguageCode)))
         {
             AvailableIcons.Add(icon.Value);
