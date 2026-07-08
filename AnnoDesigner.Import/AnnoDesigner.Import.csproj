@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows8.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <RootNamespace>AnnoDesigner.Import</RootNamespace>
+    <AssemblyName>AnnoDesigner.Import</AssemblyName>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="docs\**" />
+    <EmbeddedResource Remove="docs\**" />
+    <None Remove="docs\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Outlines\Anno117.zip" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AnnoDesigner.Core\AnnoDesigner.Core.csproj" />
+    <ProjectReference Include="..\AnnoDesigner.Gamedata\AnnoDesigner.Gamedata.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="FileDBSerializer">
+      <HintPath>..\Libs\FileDBSerializer.dll</HintPath>
+    </Reference>
+    <Reference Include="RDAExplorer">
+      <HintPath>..\Libs\RDAExplorer.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

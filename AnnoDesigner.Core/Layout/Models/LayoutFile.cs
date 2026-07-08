@@ -14,12 +14,16 @@ namespace AnnoDesigner.Core.Layout.Models
         [DataMember(Order = 99)]
         public List<AnnoObject> Objects { get; set; }
 
+        [DataMember(Order = 100)]
+        public List<SessionLayout> Sessions { get; set; }
+
         public LayoutFile() { }
 
         public LayoutFile(IEnumerable<AnnoObject> objects)
         {
             FileVersion = CoreConstants.LayoutFileVersion;
             Objects = [.. objects];
+            Sessions = null;
         }
     }
 }

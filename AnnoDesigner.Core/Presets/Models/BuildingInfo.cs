@@ -1,5 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.Serialization;
+using System.Windows;
 using AnnoDesigner.Core.Models;
 
 namespace AnnoDesigner.Core.Presets.Models
@@ -49,7 +51,7 @@ namespace AnnoDesigner.Core.Presets.Models
         /// The information of the required space of the building.
         /// </summary>
         [DataMember(Order = 5)]
-        public SerializableDictionary<int> BuildBlocker { get; set; }
+        public SerializableDictionary<double> BuildBlocker { get; set; }
 
         /// <summary>
         /// The template used for this building (currently for some checkers).
@@ -108,6 +110,21 @@ namespace AnnoDesigner.Core.Presets.Models
         /// </remarks>
         [DataMember(Order = 14)]
         public int Guid { get; set; }
+
+        /// <summary>
+        /// Factor by which this road tile extends building influence range
+        /// (1.0 = dirt/base; Anno 117 paved/marble = 1.5). Only meaningful when Road is true.
+        /// </summary>
+        [DataMember(Order = 15)]
+        public double RoadInfluenceFactor { get; set; } = 1.0;
+
+        /// <summary>
+        /// Alternative footprints for buildings that have several variations of different size (e.g.
+        /// a land and a marsh version). The savegame importer picks whichever variation places the
+        /// building's stored position exactly on whole tiles.
+        /// </summary>
+        [DataMember(Order = 16)]
+        public List<SerializableDictionary<double>> BuildBlockerVariants { get; set; }
 
         /// <summary>
         /// The localized names of this building.

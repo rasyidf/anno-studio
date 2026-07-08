@@ -361,6 +361,9 @@ namespace AnnoDesigner.ViewModels
                 case "(A7) Anno 1800":
                     result = CoreConstants.GameVersion.Anno1800;
                     break;
+                case "(A8) Anno 117":
+                    result = CoreConstants.GameVersion.Anno117;
+                    break;
             }
 
             return result;

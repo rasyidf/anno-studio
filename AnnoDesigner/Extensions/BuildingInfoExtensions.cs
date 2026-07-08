@@ -8,15 +8,16 @@ namespace AnnoDesigner.Extensions
     {
         public static AnnoObject ToAnnoObject(this IBuildingInfo buildingInfo, string selectedLanguageCode)
         {
-            var labelLocalization = buildingInfo.Localization == null ? buildingInfo.Identifier : buildingInfo.Localization[selectedLanguageCode];
-            if (string.IsNullOrEmpty(labelLocalization))
-            {
-                labelLocalization = buildingInfo.Localization["eng"];
-            }
+            var result = buildingInfo.ToAnnoObject();
+            result.Label = GetOrderParameter(buildingInfo, selectedLanguageCode);
+            return result;
+        }
 
+        public static AnnoObject ToAnnoObject(this IBuildingInfo buildingInfo)
+        {
             return new AnnoObject
             {
-                Label = labelLocalization,
+                Label = buildingInfo.Identifier,
                 Icon = buildingInfo.IconFileName,
                 Radius = buildingInfo.InfluenceRadius,
                 InfluenceRange = buildingInfo.InfluenceRange - 2,
@@ -24,6 +25,7 @@ namespace AnnoDesigner.Extensions
                 Size = buildingInfo.BuildBlocker == null ? new Size() : new Size(buildingInfo.BuildBlocker["x"], buildingInfo.BuildBlocker["z"]),
                 Template = buildingInfo.Template,
                 Road = buildingInfo.Road,
+                RoadInfluenceFactor = buildingInfo.RoadInfluenceFactor,
                 Borderless = buildingInfo.Borderless,
                 //BuildCosts = BuildCost
                 BlockedAreaLength = buildingInfo.BlockedAreaLength,

@@ -1,0 +1,31 @@
+using System.Windows;
+using AnnoDesigner.Core.Models;
+using AnnoDesigner.Core.Presets.Models;
+
+// ponytail: namespace matches the fork so that AnnoDesigner.Import can resolve ToAnnoObject()
+// without a dependency on the main AnnoDesigner project.
+namespace AnnoDesigner.Core.Extensions
+{
+    public static class BuildingInfoExtensions
+    {
+        public static AnnoObject ToAnnoObject(this IBuildingInfo buildingInfo)
+        {
+            return new AnnoObject
+            {
+                Label = buildingInfo.Identifier,
+                Icon = buildingInfo.IconFileName,
+                Radius = buildingInfo.InfluenceRadius,
+                InfluenceRange = buildingInfo.InfluenceRange - 2,
+                Identifier = buildingInfo.Identifier,
+                Size = buildingInfo.BuildBlocker == null ? new Size() : new Size(buildingInfo.BuildBlocker["x"], buildingInfo.BuildBlocker["z"]),
+                Template = buildingInfo.Template,
+                Road = buildingInfo.Road,
+                RoadInfluenceFactor = buildingInfo.RoadInfluenceFactor,
+                Borderless = buildingInfo.Borderless,
+                BlockedAreaLength = buildingInfo.BlockedAreaLength,
+                BlockedAreaWidth = buildingInfo.BlockedAreaWidth,
+                Direction = buildingInfo.Direction
+            };
+        }
+    }
+}

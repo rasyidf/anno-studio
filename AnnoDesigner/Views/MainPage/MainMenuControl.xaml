@@ -72,6 +72,14 @@
                         <ui:SymbolIcon Symbol="Stack24" />
                     </ui:MenuItem.Icon>
                 </ui:MenuItem>
+                <Separator />
+                <ui:MenuItem
+                    Command="{Binding ImportAnno117SavegameCommand}"
+                    Header="Anno 117 Savegame...">
+                    <ui:MenuItem.Icon>
+                        <ui:SymbolIcon Symbol="Globe24" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
             </ui:MenuItem>
 
             <Separator />

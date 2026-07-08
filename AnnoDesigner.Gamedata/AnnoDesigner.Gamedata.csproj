@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="FileDBSerializer"> <!-- Version 2.3 because newer versions have problems parsing .a7s files (need to check with the authors why) -->
+      <HintPath>..\Libs\FileDBSerializer.dll</HintPath>
+    </Reference>
+    <Reference Include="RDAExplorer">
+      <HintPath>..\Libs\RDAExplorer.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="AnnoDesigner.Import" />
+    <InternalsVisibleTo Include="AnnoDesigner.Import.Tests" />
+    <InternalsVisibleTo Include="IslandOutlinesExtractor" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,73 @@
+﻿using System.Collections.Generic;
+using AnnoDesigner.Core.Models;
+
+namespace AnnoDesigner.Import.Model
+{
+    internal static class Modules
+    {
+        // pre-generated random colors
+        public static List<SerializableColor> Colors = new List<SerializableColor>
+        {
+            new SerializableColor(255, 51, 76, 165),
+            new SerializableColor(255, 29, 165, 120),
+            new SerializableColor(255, 33, 38, 183),
+            new SerializableColor(255, 209, 148, 43),
+            new SerializableColor(255, 108, 160, 19),
+            new SerializableColor(255, 233, 252, 93),
+            new SerializableColor(255, 122, 0, 193),
+            new SerializableColor(255, 216, 28, 125),
+            new SerializableColor(255, 186, 107, 27),
+            new SerializableColor(255, 74, 211, 122),
+            new SerializableColor(255, 242, 136, 31),
+            new SerializableColor(255, 82, 175, 196),
+            new SerializableColor(255, 226, 102, 179),
+            new SerializableColor(255, 219, 98, 6),
+            new SerializableColor(255, 18, 145, 15),
+            new SerializableColor(255, 111, 20, 160),
+            new SerializableColor(255, 193, 46, 83),
+            new SerializableColor(255, 93, 173, 32),
+            new SerializableColor(255, 244, 36, 161),
+            new SerializableColor(255, 9, 98, 114),
+            new SerializableColor(255, 234, 104, 68),
+            new SerializableColor(255, 209, 43, 52),
+            new SerializableColor(255, 64, 237, 130),
+            new SerializableColor(255, 82, 161, 221),
+            new SerializableColor(255, 28, 191, 150),
+            new SerializableColor(255, 110, 52, 173),
+            new SerializableColor(255, 170, 10, 55),
+            new SerializableColor(255, 252, 169, 35),
+            new SerializableColor(255, 219, 48, 213),
+            new SerializableColor(255, 28, 204, 37),
+            new SerializableColor(255, 27, 115, 247),
+            new SerializableColor(255, 18, 229, 194),
+            new SerializableColor(255, 37, 142, 221),
+            new SerializableColor(255, 239, 40, 143),
+            new SerializableColor(255, 15, 25, 132),
+            new SerializableColor(255, 94, 229, 179),
+            new SerializableColor(255, 249, 130, 97),
+            new SerializableColor(255, 90, 216, 65),
+            new SerializableColor(255, 134, 82, 201),
+            new SerializableColor(255, 102, 255, 242),
+            new SerializableColor(255, 193, 143, 50),
+            new SerializableColor(255, 226, 226, 49),
+            new SerializableColor(255, 186, 55, 35),
+            new SerializableColor(255, 1, 178, 125),
+            new SerializableColor(255, 255, 196, 35),
+            new SerializableColor(255, 104, 50, 252),
+            new SerializableColor(255, 145, 79, 198),
+            new SerializableColor(255, 244, 232, 7),
+            new SerializableColor(255, 171, 83, 219),
+            new SerializableColor(255, 71, 210, 232),
+            new SerializableColor(255, 115, 211, 67),
+            new SerializableColor(255, 90, 61, 237),
+            new SerializableColor(255, 188, 33, 82),
+            new SerializableColor(255, 166, 13, 232),
+            new SerializableColor(255, 155, 234, 103),
+            new SerializableColor(255, 112, 83, 244),
+            new SerializableColor(255, 28, 168, 121),
+            new SerializableColor(255, 185, 37, 221),
+            new SerializableColor(255, 1, 114, 105),
+            new SerializableColor(255, 30, 204, 175),
+        };
+    }
+}

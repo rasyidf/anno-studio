@@ -101,7 +101,12 @@ namespace AnnoDesigner.Helper
                 {
                     if (cellObject.Road)
                     {
-                        if (remainingDistance > 1)
+                        // ponytail: Anno 117 road influence factor — paved roads extend reach.
+                        // Factor > 1 means the road costs less budget to traverse.
+                        // Ceiling: upgrade to proper Dijkstra if fractional steps cause visual mismatches.
+                        var factor = cellObject.RoadInfluenceFactor > 0 ? cellObject.RoadInfluenceFactor : 1.0;
+                        var effectiveRemainingAfterStep = remainingDistance - (1.0 / factor);
+                        if (effectiveRemainingAfterStep > 0)
                         {
                             nextCells.Add((x, y));
                         }

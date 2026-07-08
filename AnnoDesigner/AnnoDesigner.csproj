@@ -89,6 +89,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AnnoDesigner.Core\AnnoDesigner.Core.csproj" />
+    <ProjectReference Include="..\AnnoDesigner.EditorCanvas\AnnoDesigner.EditorCanvas.csproj" />
+    <ProjectReference Include="..\AnnoDesigner.Import\AnnoDesigner.Import.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AvalonDock.Themes.WPFUI" />

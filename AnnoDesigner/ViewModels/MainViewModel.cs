@@ -1611,6 +1611,33 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    private void ImportAnno117Savegame(object param)
+    {
+        var importWindow = new Views.ImportSavegameWindow(BuildingPresets);
+        importWindow.Owner = System.Windows.Application.Current.MainWindow;
+
+        if (importWindow.ShowDialog() == true && importWindow.ImportedObjects is { Count: > 0 })
+        {
+            // ponytail: Load imported objects directly into canvas. 
+            // Full multi-tab integration is a follow-up.
+            if (!AnnoCanvas.CheckUnsavedChanges().GetAwaiter().GetResult())
+            {
+                return;
+            }
+
+            AnnoCanvas.SelectedObjects.Clear();
+            AnnoCanvas.PlacedObjects.Clear();
+            foreach (var obj in importWindow.ImportedObjects)
+            {
+                AnnoCanvas.PlacedObjects.Add(new LayoutObject(obj, _coordinateHelper, _brushCache, _penCache));
+            }
+
+            AnnoCanvas.Normalize(1);
+            AnnoCanvas.ForceRendering();
+        }
+    }
+
 
     [RelayCommand]
     private void UnregisterExtension(object param)

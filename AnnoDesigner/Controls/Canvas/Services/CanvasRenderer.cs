@@ -425,6 +425,18 @@ namespace AnnoDesigner.Controls.Canvas.Services
                 var brush = useTransparency ? curLayoutObject.TransparentBrush : curLayoutObject.RenderBrush;
 
                 var borderPen = obj.Borderless ? curLayoutObject.GetBorderlessPen(brush, linePenThickness) : linePen;
+
+                // ponytail: Anno 117 diagonal placement — apply rotation if non-zero
+                var hasRotation = Math.Abs(obj.Rotation) > 0.001;
+                if (hasRotation)
+                {
+                    var center = new Point(
+                        objRect.Left + obj.RotationCenter.X * gridSize,
+                        objRect.Top + obj.RotationCenter.Y * gridSize);
+                    var angleDegrees = obj.Rotation * (180.0 / Math.PI);
+                    drawingContext.PushTransform(new RotateTransform(angleDegrees, center.X, center.Y));
+                }
+
                 drawingContext.DrawRectangle(brush, borderPen, objRect);
                 if (renderHarborBlockedArea)
                 {
@@ -505,6 +517,11 @@ namespace AnnoDesigner.Controls.Canvas.Services
                     textLocation.Y -= text.Height;
 
                     drawingContext.DrawText(text, textLocation);
+                }
+
+                if (hasRotation)
+                {
+                    drawingContext.Pop();
                 }
             }
         }
