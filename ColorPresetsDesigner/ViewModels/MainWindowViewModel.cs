@@ -14,6 +14,7 @@ using AnnoDesigner.Core.Extensions;
 using AnnoDesigner.Core.Helper;
 using AnnoDesigner.Core.Presets.Loader;
 using AnnoDesigner.Core.Presets.Models;
+using AnnoDesigner.Core.Models;
 using ColorPresetsDesigner.Models;
 using NLog;
 

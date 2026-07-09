@@ -27,5 +27,29 @@ namespace AnnoDesigner.Core.Extensions
                 Direction = buildingInfo.Direction
             };
         }
+
+        /// <summary>
+        /// Creates an <see cref="AnnoObject"/> with a localized label from the building's localization dictionary.
+        /// </summary>
+        public static AnnoObject ToAnnoObject(this IBuildingInfo buildingInfo, string selectedLanguageCode)
+        {
+            var result = buildingInfo.ToAnnoObject();
+            result.Label = buildingInfo.GetOrderParameter(selectedLanguageCode);
+            return result;
+        }
+
+        /// <summary>
+        /// Resolves the localized display name for a building, falling back to English then Identifier.
+        /// </summary>
+        public static string GetOrderParameter(this IBuildingInfo buildingInfo, string selectedLanguageCode)
+        {
+            var labelLocalization = buildingInfo.Localization == null ? buildingInfo.Identifier : buildingInfo.Localization[selectedLanguageCode];
+            if (string.IsNullOrEmpty(labelLocalization))
+            {
+                labelLocalization = buildingInfo.Localization["eng"];
+            }
+
+            return labelLocalization;
+        }
     }
 }
