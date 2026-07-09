@@ -10,6 +10,7 @@ using AnnoDesigner.Core.Layout;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Extensions;
 using AnnoDesigner.ViewModels;
+using AnnoDesigner.Services;
 using System.Linq;
 using NLog;
 using Wpf.Ui.Appearance;
@@ -192,7 +193,7 @@ namespace AnnoDesigner.Views
                      !string.IsNullOrEmpty(exportArgs.ExportedImageFilePath))
             {
                 var layout = new LayoutLoader().LoadLayout(exportArgs.LayoutFilePath);
-                _mainViewModel.PrepareCanvasForRender(layout.Objects, [], Math.Max(exportArgs.Border, 0),
+                _mainViewModel.ExportService.PrepareCanvasForRender(layout.Objects, [], Math.Max(exportArgs.Border, 0),
                     new Models.CanvasRenderSetting()
                     {
                         GridSize = exportArgs.GridSize,
