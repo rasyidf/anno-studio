@@ -15,6 +15,11 @@ namespace AnnoDesigner.Controls.EditorCanvas.Content
         /// </summary>
         System.Collections.Generic.IEnumerable<T> GetObjectsAt(System.Windows.Point point);
 
+        /// <summary>
+        /// Returns all objects whose bounds intersect the provided rectangle.
+        /// </summary>
+        System.Collections.Generic.IEnumerable<T> GetObjectsInRegion(System.Windows.Rect region);
+
         IEnumerable<T> GetAll();
         void Add(T item);
         void Remove(T item);
