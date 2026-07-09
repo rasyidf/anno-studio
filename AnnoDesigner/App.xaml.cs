@@ -197,7 +197,7 @@ namespace AnnoDesigner
         private IServiceProvider ConfigureServices()
         {
             var commons = Commons.Instance;
-            var appSettings = AppSettings.Instance;
+            var appSettings = new JsonAppSettings();
             Localization.Localization.Init(commons);
 
             var _services = new ServiceCollection()
