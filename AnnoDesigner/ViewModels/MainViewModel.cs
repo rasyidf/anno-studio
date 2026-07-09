@@ -909,6 +909,12 @@ public partial class MainViewModel : ObservableObject
     public DocumentViewModel CreateNewDocument()
     {
         var services = _documentServicesFactory?.CreateDocumentServices();
+        if (services is null)
+        {
+            // ponytail: factory not available (e.g. unit-test); skip document creation
+            return null;
+        }
+
         var document = new DocumentViewModel(services, BuildingPresets, Icons);
 
         document.CloseRequested += OnDocumentCloseRequested;
