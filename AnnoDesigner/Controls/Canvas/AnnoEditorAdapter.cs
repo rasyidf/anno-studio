@@ -5,7 +5,11 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using AnnoDesigner.Controls.Canvas.Layers;
 using AnnoDesigner.Controls.EditorCanvas.Content.Models;
+using AnnoDesigner.Core.Layout.Models;
+using AnnoDesigner.Core.Models;
+using AnnoDesigner.Helper;
 using AnnoDesigner.Models;
+using AnnoDesigner.Models.Interface;
 
 namespace AnnoDesigner.Controls.Canvas;
 
@@ -17,12 +21,22 @@ namespace AnnoDesigner.Controls.Canvas;
 public class AnnoEditorAdapter
 {
     private readonly Dictionary<LayoutObject, LayoutObjectWrapper> _wrapperMap = new();
+    private readonly ICoordinateHelper _coordinateHelper;
+    private readonly IBrushCache _brushCache;
+    private readonly IPenCache _penCache;
 
     public EditorCanvas.EditorCanvas Canvas { get; }
 
-    public AnnoEditorAdapter(EditorCanvas.EditorCanvas canvas)
+    public AnnoEditorAdapter(
+        EditorCanvas.EditorCanvas canvas,
+        ICoordinateHelper coordinateHelper = null,
+        IBrushCache brushCache = null,
+        IPenCache penCache = null)
     {
         Canvas = canvas ?? throw new ArgumentNullException(nameof(canvas));
+        _coordinateHelper = coordinateHelper ?? new CoordinateHelper();
+        _brushCache = brushCache ?? new BrushCache();
+        _penCache = penCache ?? new PenCache();
         RegisterLayers();
     }
 
@@ -87,6 +101,38 @@ public class AnnoEditorAdapter
         return _wrapperMap.Keys.ToList();
     }
 
+    /// <summary>
+    /// Loads raw AnnoObjects (e.g., from LayoutLoader.LoadLayout) into the EditorCanvas.
+    /// Constructs LayoutObject wrappers internally.
+    /// </summary>
+    public void LoadLayout(IEnumerable<AnnoObject> annoObjects)
+    {
+        ClearAll();
+        foreach (var annoObj in annoObjects)
+        {
+            var layoutObj = new LayoutObject(annoObj, _coordinateHelper, _brushCache, _penCache);
+            AddLayoutObject(layoutObj);
+        }
+        Canvas.InvalidateVisual();
+    }
+
+    /// <summary>
+    /// Loads a LayoutFile (from LayoutLoader) into the EditorCanvas.
+    /// </summary>
+    public void LoadLayoutFile(LayoutFile layoutFile)
+    {
+        if (layoutFile?.Objects == null) return;
+        LoadLayout(layoutFile.Objects);
+    }
+
+    /// <summary>
+    /// Returns all AnnoObjects for saving via LayoutLoader.SaveLayout.
+    /// </summary>
+    public IEnumerable<AnnoObject> GetAnnoObjectsForSave()
+    {
+        return _wrapperMap.Keys.Select(lo => lo.WrappedAnnoObject);
+    }
+
     public void ClearAll()
     {
         _wrapperMap.Clear();
@@ -117,9 +163,7 @@ public class AnnoEditorAdapter
         public LayoutObjectWrapper(LayoutObject source)
         {
             _source = source;
-            _bounds = new Rect(source.Position, source.Size);
-            _identifier = source.Identifier;
-            ZIndex = 0;
+            SyncFromSource();
             Tag = source;
             IsSelectable = true;
             ShapeType = "Rectangle";
@@ -150,12 +194,18 @@ public class AnnoEditorAdapter
         }
 
         /// <summary>
-        /// Pull Position/Size/Identifier from the underlying LayoutObject into this wrapper.
+        /// Pull all properties from the underlying LayoutObject into this wrapper.
         /// </summary>
         public void SyncFromSource()
         {
             _bounds = new Rect(_source.Position, _source.Size);
             _identifier = _source.Identifier;
+            FillColor = _source.Color.MediaColor;
+            IconName = _source.WrappedAnnoObject?.Icon;
+            Label = _source.WrappedAnnoObject?.Label;
+            IsRoad = _source.WrappedAnnoObject?.Road ?? false;
+            IsBorderless = _source.WrappedAnnoObject?.Borderless ?? false;
+            ZIndex = IsRoad ? -1 : 0; // roads render below buildings
         }
     }
 }

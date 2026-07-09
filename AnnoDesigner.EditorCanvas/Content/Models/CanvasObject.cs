@@ -29,6 +29,32 @@ namespace AnnoDesigner.Controls.EditorCanvas.Content.Models
         /// <inheritdoc />
         public object? Tag { get; set; }
 
+        /// <summary>
+        /// Fill color for the object. When backed by an AnnoObject (via Tag), this is synced from AnnoObject.Color.
+        /// </summary>
+        public System.Windows.Media.Color? FillColor { get; set; }
+
+        /// <summary>
+        /// Icon name for rendering (file name without extension from game assets).
+        /// When backed by an AnnoObject (via Tag), synced from AnnoObject.Icon.
+        /// </summary>
+        public string? IconName { get; set; }
+
+        /// <summary>
+        /// Display label text. When backed by an AnnoObject (via Tag), synced from AnnoObject.Label.
+        /// </summary>
+        public string? Label { get; set; }
+
+        /// <summary>
+        /// Whether this object represents a road segment.
+        /// </summary>
+        public bool IsRoad { get; set; }
+
+        /// <summary>
+        /// Whether this object should be rendered without borders.
+        /// </summary>
+        public bool IsBorderless { get; set; }
+
         /// <summary>Shape type hint for rendering.</summary>
         public string ShapeType { get; set; } = "Rectangle";
 
@@ -54,6 +80,11 @@ namespace AnnoDesigner.Controls.EditorCanvas.Content.Models
                 ZIndex = this.ZIndex,
                 RotationDegrees = this.RotationDegrees,
                 Tag = this.Tag,
+                FillColor = this.FillColor,
+                IconName = this.IconName,
+                Label = this.Label,
+                IsRoad = this.IsRoad,
+                IsBorderless = this.IsBorderless,
                 ShapeType = this.ShapeType,
                 LineStart = this.LineStart,
                 LineEnd = this.LineEnd,
