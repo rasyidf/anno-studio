@@ -28,7 +28,16 @@ namespace AnnoDesigner.Services
             try
             {
                 var loader = new BuildingPresetsLoader();
-                BuildingPresets = loader.Load(Path.Combine(App.ApplicationPath, CoreConstants.PresetsFiles.BuildingPresetsFile));
+                var manifestPath = Path.Combine(App.ApplicationPath, "Assets", "presets_manifest.json");
+                if (File.Exists(manifestPath))
+                {
+                    BuildingPresets = loader.LoadFromManifest(manifestPath);
+                }
+                else
+                {
+                    // ponytail: fallback to monolithic file for installations without split presets
+                    BuildingPresets = loader.Load(Path.Combine(App.ApplicationPath, CoreConstants.PresetsFiles.BuildingPresetsFile));
+                }
             }
             catch
             {

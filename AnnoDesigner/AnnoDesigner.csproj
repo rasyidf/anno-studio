@@ -58,6 +58,14 @@
       <Link>Assets\presets.json</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="..\Presets\presets_manifest.json" Condition="Exists('..\Presets\presets_manifest.json')">
+      <Link>Assets\presets_manifest.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Presets\presets_*.json" Exclude="..\Presets\presets.json;..\Presets\presets_manifest.json">
+      <Link>Assets\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\Presets\treeLocalization.json" Link="Assets\treeLocalization.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

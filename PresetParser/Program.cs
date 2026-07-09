@@ -201,14 +201,14 @@ namespace PresetParser
             var validVersion = false;
             while (!validVersion)
             {
-                Console.Write("Please enter an Anno version (1 of: {0} {1} {2} {3}):", Constants.ANNO_VERSION_1404, Constants.ANNO_VERSION_2070, Constants.ANNO_VERSION_2205, Constants.ANNO_VERSION_1800);
+                Console.Write("Please enter an Anno version (1 of: {0} {1} {2} {3} {4}):", Constants.ANNO_VERSION_1404, Constants.ANNO_VERSION_2070, Constants.ANNO_VERSION_2205, Constants.ANNO_VERSION_1800, Constants.ANNO_VERSION_117);
                 annoVersion = Console.ReadLine();
                 if (annoVersion == "quit")
                 {
                     Environment.Exit(0);
                 }
 
-                if (annoVersion is Constants.ANNO_VERSION_1404 or Constants.ANNO_VERSION_2070 or Constants.ANNO_VERSION_2205 or Constants.ANNO_VERSION_1800 or "-ALL")
+                if (annoVersion is Constants.ANNO_VERSION_1404 or Constants.ANNO_VERSION_2070 or Constants.ANNO_VERSION_2205 or Constants.ANNO_VERSION_1800 or Constants.ANNO_VERSION_117 or "-ALL")
                 {
                     validVersion = true;
                 }
@@ -508,6 +508,13 @@ namespace PresetParser
                 Console.WriteLine("THIS IS A TEST DUMMY FILE WRITEN!!!!");
                 SerializationHelper.SaveToFile(presets, "DUMMY.json");
             }
+            // Split presets into per-game files
+            var monolithicPath = testVersion
+                ? "DUMMY.json"
+                : "presets-Anno" + annoVersion + "-v" + BUILDING_PRESETS_VERSION + ".json";
+            var splitOutputDir = Path.GetDirectoryName(Path.GetFullPath(monolithicPath)) ?? ".";
+            SplitPresets.SplitPresetsFile(Path.GetFullPath(monolithicPath), splitOutputDir);
+
             // wait for key-press before exiting
             Console.WriteLine("This list contains {0} Buildings", annoBuildingsListCount);
             Console.WriteLine();
@@ -1006,7 +1013,7 @@ namespace PresetParser
         // Parsing Buildings Info 
         #region Parsing Buildings for Anno 1404/2070
 
-        private static void ParseAssetsFile(string filename, string xPathToBuildingsNode, string YPath, List<IBuildingInfo> buildings,
+        internal static void ParseAssetsFile(string filename, string xPathToBuildingsNode, string YPath, List<IBuildingInfo> buildings,
             IEnumerable<XmlNode> iconNodes, Dictionary<string, SerializableDictionary<string>> localizations, string innerNameTag, string annoVersion)
         {
             var assetsDocument = new XmlDocument();
@@ -1311,7 +1318,7 @@ namespace PresetParser
 
         #region Parsing Buildings for Anno 2205
 
-        private static void ParseAssetsFile2205(string filename, string xPathToBuildingsNode, string YPath, List<IBuildingInfo> buildings, string innerNameTag, string annoVersion)
+        internal static void ParseAssetsFile2205(string filename, string xPathToBuildingsNode, string YPath, List<IBuildingInfo> buildings, string innerNameTag, string annoVersion)
         {
             var assetsDocument = new XmlDocument();
             assetsDocument.Load(filename);
@@ -1672,7 +1679,7 @@ namespace PresetParser
 
         #region Parsing Buildings for Anno 1800
 
-        private static void ParseAssetsFile1800(string filename, string xPathToBuildingsNode, List<IBuildingInfo> buildings)
+        internal static void ParseAssetsFile1800(string filename, string xPathToBuildingsNode, List<IBuildingInfo> buildings)
         {
             var assetsDocument = new XmlDocument();
             assetsDocument.Load(filename);
