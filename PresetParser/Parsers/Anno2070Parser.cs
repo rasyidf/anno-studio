@@ -8,7 +8,7 @@ using PresetParser.Models;
 namespace PresetParser.Parsers;
 
 /// <summary>
-/// Parser for Anno 2070 game data. Shares most logic with Anno 1404 via LocalizationHelper.
+/// Parser for Anno 2070 game data. Shares most logic with Anno 1404 via Anno1404_2070ParserHelper.
 /// </summary>
 public class Anno2070Parser : GameParserBase
 {
@@ -44,19 +44,25 @@ public class Anno2070Parser : GameParserBase
         var localizations = _localizationHelper.GetLocalization(
             Version, addPrefix: false, versionPaths, Languages, BasePath);
 
+        var iconNodes = Anno1404_2070ParserHelper.LoadIconNodes(BasePath, versionPaths[Version]["icons"]);
+
+        var helper = new Anno1404_2070ParserHelper(
+            BasePath, Version, BuildingBlockProvider, IconFileNameHelper,
+            ExcludeNameList, ExcludeTemplateList, ExcludeFactionList, Languages);
+
         var assetPaths = versionPaths[Version]["assets"];
         foreach (var p in assetPaths)
         {
-            Program.ParseAssetsFile(
+            helper.ParseAssetsFile(
                 BasePath + p.Path, p.XPath, p.YPath,
-                buildings, null, localizations, p.InnerNameTag, Version);
+                buildings, iconNodes, localizations, p.InnerNameTag);
         }
 
         AddExtraPresets(buildings);
         AddExtraRoads(buildings);
         AddBlockingTiles(buildings);
 
-        Console.WriteLine($"[{Version}] Parsed {buildings.Count} buildings.");
+        Console.WriteLine($"[{Version}] Parsed {buildings.Count} buildings (helper count: {helper.BuildingCount}).");
         return buildings;
     }
 

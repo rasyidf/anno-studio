@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO.Abstractions;
-using System.Linq;
-using System.Xml;
-using AnnoDesigner.Core.Models;
 using AnnoDesigner.Core.Presets.Models;
 using PresetParser.Anno1404_Anno2070;
 using PresetParser.Models;
@@ -43,25 +40,28 @@ public class Anno1404Parser : GameParserBase
         var buildings = new List<IBuildingInfo>();
         var versionPaths = GetVersionPaths();
 
-        // Load localizations (with prefix for icon mapping, without for presets)
         var localizations = _localizationHelper.GetLocalization(
             Version, addPrefix: false, versionPaths, Languages, BasePath);
 
-        // Parse buildings from asset files
+        var iconNodes = Anno1404_2070ParserHelper.LoadIconNodes(BasePath, versionPaths[Version]["icons"]);
+
+        var helper = new Anno1404_2070ParserHelper(
+            BasePath, Version, BuildingBlockProvider, IconFileNameHelper,
+            ExcludeNameList, ExcludeTemplateList, excludeFactionList: null, Languages);
+
         var assetPaths = versionPaths[Version]["assets"];
         foreach (var p in assetPaths)
         {
-            ParseAssetsFile(
+            helper.ParseAssetsFile(
                 BasePath + p.Path, p.XPath, p.YPath,
-                buildings, localizations, p.InnerNameTag);
+                buildings, iconNodes, localizations, p.InnerNameTag);
         }
 
-        // Add extras
         AddExtraPresets(buildings);
         AddExtraRoads(buildings);
         AddBlockingTiles(buildings);
 
-        Console.WriteLine($"[{Version}] Parsed {buildings.Count} buildings.");
+        Console.WriteLine($"[{Version}] Parsed {buildings.Count} buildings (helper count: {helper.BuildingCount}).");
         return buildings;
     }
 
@@ -87,16 +87,5 @@ public class Anno1404Parser : GameParserBase
             }
         };
         return paths;
-    }
-
-    private void ParseAssetsFile(
-        string filePath, string xPath, string yPath,
-        List<IBuildingInfo> buildings, Dictionary<string, SerializableDictionary<string>> localizations,
-        string innerNameTag)
-    {
-        // ponytail: This delegates to the existing Program.ParseAssetsFile logic.
-        // Full extraction of the 200+ line method body is a follow-up task.
-        // For now, this establishes the interface boundary.
-        Program.ParseAssetsFile(filePath, xPath, yPath, buildings, null, localizations, innerNameTag, Version);
     }
 }
