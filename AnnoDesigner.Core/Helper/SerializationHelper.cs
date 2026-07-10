@@ -40,7 +40,19 @@ namespace AnnoDesigner.Core.Helper
         /// <param name="filename">output JSON filename</param>
         public static void SaveToFile<T>(T obj, string filename)
         {
-            _fileSystem.File.WriteAllText(filename, SaveToJsonString(obj));
+            var tempPath = filename + ".tmp";
+            try
+            {
+                _fileSystem.File.WriteAllText(tempPath, SaveToJsonString(obj));
+                _fileSystem.File.Move(tempPath, filename, overwrite: true);
+            }
+            finally
+            {
+                if (_fileSystem.File.Exists(tempPath))
+                {
+                    _fileSystem.File.Delete(tempPath);
+                }
+            }
         }
 
         /// <summary>
