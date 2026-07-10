@@ -90,6 +90,12 @@ public sealed class EditorCanvasAnnoAdapter : UserControl, IAnnoCanvas
         // Disable guidelines (crosshair dashes) — not useful for Anno tile-based placement
         _editorCanvas.ShowGuides = false;
 
+        // Register Anno-specific tools
+        _editorCanvas.ToolManager?.RegisterTool(new EditorCanvas.Tooling.RoadPlacementTool(
+            _editorCanvas.ObjectManager, _editorCanvas,
+            objs => _editorCanvas.SetSelection(objs?.ToList() ?? new()),
+            () => _editorCanvas.InvalidateVisual()));
+
         // Set initial zoom to match Anno GridSize
         if (_editorCanvas.TransformService != null)
             _editorCanvas.TransformService.Zoom = _gridSize;
@@ -141,11 +147,11 @@ public sealed class EditorCanvasAnnoAdapter : UserControl, IAnnoCanvas
         {
             ("Selection", "⇱", "V"),
             ("RectSelect", "⬚", "R"),
-            ("Lasso", "◇", "L"),
+            ("LassoSelect", "◇", "L"),
             ("Placement", "⊞", "P"),
             ("Transform", "↔", "M"),
-            ("Line", "╱", "N"),
-            ("Road", "═", "⇧R"),
+            ("LineDraw", "╱", "N"),
+            ("RoadPlacement", "═", "⇧R"),
         };
 
         foreach (var (name, label, hotkey) in tools)
