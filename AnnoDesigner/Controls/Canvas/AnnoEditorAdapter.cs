@@ -24,6 +24,7 @@ public class AnnoEditorAdapter
     private readonly ICoordinateHelper _coordinateHelper;
     private readonly IBrushCache _brushCache;
     private readonly IPenCache _penCache;
+    private readonly Func<int> _getGridSize;
 
     public EditorCanvas.EditorCanvas Canvas { get; }
 
@@ -31,12 +32,14 @@ public class AnnoEditorAdapter
         EditorCanvas.EditorCanvas canvas,
         ICoordinateHelper coordinateHelper = null,
         IBrushCache brushCache = null,
-        IPenCache penCache = null)
+        IPenCache penCache = null,
+        Func<int> getGridSize = null)
     {
         Canvas = canvas ?? throw new ArgumentNullException(nameof(canvas));
         _coordinateHelper = coordinateHelper ?? new CoordinateHelper();
         _brushCache = brushCache ?? new BrushCache();
         _penCache = penCache ?? new PenCache();
+        _getGridSize = getGridSize ?? (() => AnnoDesigner.Constants.GridStepDefault);
         RegisterLayers();
     }
 
@@ -45,7 +48,7 @@ public class AnnoEditorAdapter
         var renderer = Canvas.LayeredRenderer;
         if (renderer == null) return;
 
-        renderer.AddLayer(new IconRenderLayer(GetLayoutObjects, new Dictionary<string, BitmapImage>()));
+        renderer.AddLayer(new IconRenderLayer(GetLayoutObjects, _getGridSize, new Dictionary<string, BitmapImage>()));
         renderer.AddLayer(new BlockedAreaRenderLayer(GetLayoutObjects));
         renderer.AddLayer(new InfluenceRenderLayer(GetLayoutObjects));
     }

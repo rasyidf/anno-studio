@@ -59,21 +59,14 @@ namespace AnnoDesigner.Controls.Canvas.Layers
                 var identifier = obj.Identifier;
                 if (!string.IsNullOrEmpty(identifier))
                 {
-                    // ponytail: allocates FormattedText per frame per labeled object.
-                    // Upgrade path: cache FormattedText on LayoutObject (it already has _formattedText field).
-                    var fontSize = Math.Max(8, Math.Min(12, screenRect.Height * 0.3));
-                    var text = new FormattedText(
-                        identifier,
+                    var pixelsPerDip = VisualTreeHelper.GetDpi(canvas).PixelsPerDip;
+                    var text = obj.GetFormattedText(
+                        TextAlignment.Center,
                         CultureInfo.CurrentCulture,
-                        FlowDirection.LeftToRight,
                         LabelTypeface,
-                        fontSize,
-                        Brushes.Black,
-                        VisualTreeHelper.GetDpi(canvas).PixelsPerDip);
-
-                    text.MaxTextWidth = screenRect.Width;
-                    text.MaxTextHeight = screenRect.Height;
-                    text.TextAlignment = TextAlignment.Center;
+                        pixelsPerDip,
+                        screenRect.Width,
+                        screenRect.Height);
 
                     var textOrigin = new Point(
                         screenRect.X,

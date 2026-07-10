@@ -18,6 +18,7 @@ namespace AnnoDesigner.Controls.Canvas.Layers
         private static readonly Pen PlaceholderPen;
 
         private readonly Func<IEnumerable<LayoutObject>> _getObjects;
+        private readonly Func<int> _getGridSize;
         private readonly Dictionary<string, BitmapImage> _iconLookup;
 
         static IconRenderLayer()
@@ -30,11 +31,13 @@ namespace AnnoDesigner.Controls.Canvas.Layers
 
         public IconRenderLayer(
             Func<IEnumerable<LayoutObject>> getObjects,
+            Func<int> getGridSize,
             Dictionary<string, BitmapImage> iconLookup,
-            int order = 500)
+            int order = 350)
             : base("Icons", order)
         {
             _getObjects = getObjects ?? throw new ArgumentNullException(nameof(getObjects));
+            _getGridSize = getGridSize ?? throw new ArgumentNullException(nameof(getGridSize));
             _iconLookup = iconLookup ?? throw new ArgumentNullException(nameof(iconLookup));
         }
 
@@ -43,18 +46,13 @@ namespace AnnoDesigner.Controls.Canvas.Layers
             var objects = _getObjects();
             if (objects == null) return;
 
+            var gridSize = _getGridSize();
+
             foreach (var obj in objects)
             {
-                var gridRect = obj.GridRect;
-                if (gridRect.IsEmpty) continue;
-
-                // ponytail: icon rect is inset from grid rect; no scaling to screen coords yet.
-                // Upgrade path: use canvas transform/grid-size to compute screen rect.
-                var iconRect = new Rect(
-                    gridRect.X + gridRect.Width * 0.25,
-                    gridRect.Y + gridRect.Height * 0.25,
-                    gridRect.Width * 0.5,
-                    gridRect.Height * 0.5);
+                var iconRect = obj.GetIconRect(gridSize);
+                if (iconRect.IsEmpty) continue;
+                if (!clip.IntersectsWith(iconRect)) continue;
 
                 var identifier = obj.Identifier;
                 if (identifier != null && _iconLookup.TryGetValue(identifier, out var icon))
