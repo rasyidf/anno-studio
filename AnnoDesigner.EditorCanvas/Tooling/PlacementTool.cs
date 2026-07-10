@@ -119,13 +119,22 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
             var snapped = SnapToGrid(world);
             var bounds = new Rect(snapped, _templateSize);
 
-            var obj = new CanvasObject
+            CanvasObject obj;
+            if (_templateObject != null)
             {
-                Bounds = bounds,
-                Identifier = _templateIdentifier,
-                ShapeType = "Rectangle",
-                IsSelectable = true
-            };
+                obj = _templateObject.Clone();
+                obj.Bounds = bounds;
+            }
+            else
+            {
+                obj = new CanvasObject
+                {
+                    Bounds = bounds,
+                    Identifier = _templateIdentifier,
+                    ShapeType = "Rectangle",
+                    IsSelectable = true
+                };
+            }
 
             bool force = (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
 

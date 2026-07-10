@@ -14,11 +14,13 @@ namespace AnnoDesigner.Controls.EditorCanvas.Core.Layers
         {
             if (!canvas.ShowToolOverlays) return;
 
+            var zoom = canvas.TransformService?.Zoom ?? 1.0;
+
             // Selection outlines (shape-aware)
             var selected = canvas.SelectedObjects;
             if (selected != null && selected.Count > 0)
             {
-                var selPen = new Pen(canvas.SelectionStrokeBrush ?? Brushes.Red, 1.5)
+                var selPen = new Pen(canvas.SelectionStrokeBrush ?? Brushes.Red, 1.5 / zoom)
                 {
                     DashStyle = DashStyles.Dash
                 };

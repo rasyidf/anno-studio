@@ -89,6 +89,17 @@ public sealed class EditorCanvasAnnoAdapter : UserControl, IAnnoCanvas
 
         // Disable guidelines (crosshair dashes) — not useful for Anno tile-based placement
         _editorCanvas.ShowGuides = false;
+        _editorCanvas.ShowToolOverlays = false; // We render selection in ObjectsLayer instead
+
+        // Disable extra grid layers (SubGrid, DotGrid, CrossGrid) — Anno only needs simple tile grid
+        if (_editorCanvas.LayeredRenderer is EditorCanvas.Core.ILayeredRenderer layered)
+        {
+            foreach (var layer in layered.Layers.ToList())
+            {
+                if (layer.Name is "SubGrid" or "DotGrid" or "CrossGrid" or "Guidelines")
+                    layer.Enabled = false;
+            }
+        }
 
         // Register Anno-specific tools
         _editorCanvas.ToolManager?.RegisterTool(new EditorCanvas.Tooling.RoadPlacementTool(
