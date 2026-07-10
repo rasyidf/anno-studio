@@ -34,7 +34,7 @@ public sealed class EditorCanvasAnnoAdapter : UserControl, IAnnoCanvas
     private QuadTree<LayoutObject> _placedObjects;
     private HashSet<LayoutObject> _selectedObjects;
     private string _loadedFile;
-    private int _gridSize = Constants.GridStepDefault;
+    private int _gridSize = 30; // ponytail: 30px per grid cell for clear visibility. Old canvas uses 20.
     private readonly List<LayoutObject> _currentObjects = new();
 
     #region IAnnoCanvas Events
@@ -69,10 +69,12 @@ public sealed class EditorCanvasAnnoAdapter : UserControl, IAnnoCanvas
             "ApplicationBackgroundBrush");
         _editorCanvas.SetResourceReference(EditorCanvas.EditorCanvas.GridLineBrushProperty,
             "ControlStrokeColorDefaultBrush");
-        _editorCanvas.SetResourceReference(EditorCanvas.EditorCanvas.ObjectStrokeBrushProperty,
-            "TextFillColorPrimaryBrush");
         _editorCanvas.SetResourceReference(EditorCanvas.EditorCanvas.SelectionStrokeBrushProperty,
             "SystemAccentColorPrimaryBrush");
+        // ponytail: ObjectStrokeBrush left as default (Black, 1px) for building borders.
+        // ObjectFillBrush left null so per-object FillColor is used.
+        _editorCanvas.ObjectStrokeBrush = System.Windows.Media.Brushes.Black;
+        _editorCanvas.ObjectFillBrush = System.Windows.Media.Brushes.Transparent;
 
         // Configure for Anno grid: 1 world-unit = 1 grid cell, zoom = GridSize pixels per cell
         if (_editorCanvas.Preferences != null)
@@ -85,9 +87,20 @@ public sealed class EditorCanvasAnnoAdapter : UserControl, IAnnoCanvas
             _editorCanvas.Preferences.MaxZoom = 120.0;
         }
 
+        // Disable guidelines (crosshair dashes) — not useful for Anno tile-based placement
+        _editorCanvas.ShowGuides = false;
+
         // Set initial zoom to match Anno GridSize
         if (_editorCanvas.TransformService != null)
             _editorCanvas.TransformService.Zoom = _gridSize;
+
+        // ponytail: Zoom might not apply if canvas isn't laid out yet. Re-apply on Loaded.
+        _editorCanvas.Loaded += (s, e) =>
+        {
+            if (_editorCanvas.TransformService != null && _editorCanvas.TransformService.Zoom < _gridSize)
+                _editorCanvas.TransformService.Zoom = _gridSize;
+            _editorCanvas.InvalidateVisual();
+        };
 
         // Configure grid layer cell size to 1 world-unit
         var gridLayer = _editorCanvas.LayeredRenderer?.Layers
