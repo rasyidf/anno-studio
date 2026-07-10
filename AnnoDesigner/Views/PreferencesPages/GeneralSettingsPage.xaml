@@ -309,6 +309,29 @@
 
         </ui:CardExpander>
 
+        <!--  Experimental: New Canvas Engine  -->
+        <ui:CardControl Margin="0,8,0,0">
+            <ui:CardControl.Header>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <ui:TextBlock
+                        Grid.Row="0"
+                        FontSize="16"
+                        FontTypography="Body"
+                        Text="Use New Canvas Engine (Experimental)" />
+                    <ui:TextBlock
+                        Grid.Row="1"
+                        FontSize="12"
+                        Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                        Text="Requires restart. Enables the new EditorCanvas renderer." />
+                </Grid>
+            </ui:CardControl.Header>
+            <ToggleButton IsChecked="{Binding UseNewCanvas}" />
+        </ui:CardControl>
+
     </StackPanel>
 
 </Page>

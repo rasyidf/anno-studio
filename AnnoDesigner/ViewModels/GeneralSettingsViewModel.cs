@@ -67,6 +67,9 @@ namespace AnnoDesigner.ViewModels
         private bool includeRoadsInStatisticCalculation;
 
         [ObservableProperty]
+        private bool useNewCanvas;
+
+        [ObservableProperty]
         private int maxRecentFiles;
 
         [ObservableProperty]
@@ -89,6 +92,7 @@ namespace AnnoDesigner.ViewModels
             InvertPanningDirection = _appSettings.InvertPanningDirection;
             InvertScrollingDirection = _appSettings.InvertScrollingDirection;
             MaxRecentFiles = _appSettings.MaxRecentFiles;
+            UseNewCanvas = _appSettings.UseNewCanvas;
 
             // Theme options
             ThemeOptions = new ObservableCollection<Services.ThemePreference>(
@@ -390,6 +394,12 @@ namespace AnnoDesigner.ViewModels
             _recentFilesHelper.MaximumItemCount = value;
 
             if (ResetMaxRecentFilesCommand is IRelayCommand cmd) cmd.NotifyCanExecuteChanged();
+        }
+
+        partial void OnUseNewCanvasChanged(bool value)
+        {
+            _appSettings.UseNewCanvas = value;
+            _appSettings.Save();
         }
     }
 }

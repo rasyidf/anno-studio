@@ -54,5 +54,6 @@ namespace AnnoDesigner.Core.Models
         bool IncludeRoadsInStatisticCalculation { get; set; }
         bool RenderVersionOnExportedImageValue { get; set; }
         string ThemePreference { get; set; }
+        bool UseNewCanvas { get; set; }
     }
 }
