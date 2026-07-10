@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using AnnoDesigner.Controls.Canvas.Layers;
 using AnnoDesigner.Controls.EditorCanvas.Content.Models;
+using AnnoDesigner.Core.Layout.Helper;
 using AnnoDesigner.Core.Layout.Models;
 using AnnoDesigner.Core.Models;
 using AnnoDesigner.Helper;
@@ -25,6 +26,7 @@ public class AnnoEditorAdapter
     private readonly IBrushCache _brushCache;
     private readonly IPenCache _penCache;
     private readonly Func<int> _getGridSize;
+    private InfluenceRenderLayer _influenceLayer;
 
     public EditorCanvas.EditorCanvas Canvas { get; }
 
@@ -50,7 +52,60 @@ public class AnnoEditorAdapter
 
         renderer.AddLayer(new IconRenderLayer(GetLayoutObjects, _getGridSize, new Dictionary<string, BitmapImage>()));
         renderer.AddLayer(new BlockedAreaRenderLayer(GetLayoutObjects));
-        renderer.AddLayer(new InfluenceRenderLayer(GetLayoutObjects));
+
+        _influenceLayer = new InfluenceRenderLayer(
+            GetLayoutObjects,
+            order: 250,
+            getInfluencePolygonPoints: GetInfluencePolygonPoints);
+        renderer.AddLayer(_influenceLayer);
+    }
+
+    /// <summary>
+    /// Computes road-network influence polygon points for a given object.
+    /// Only computes for objects with PavedStreet set (road-connected influence).
+    /// Falls back to null (circle rendering) when road data isn't available.
+    /// </summary>
+    private IEnumerable<Point> GetInfluencePolygonPoints(LayoutObject obj)
+    {
+        var annoObj = obj.WrappedAnnoObject;
+        if (annoObj == null || annoObj.InfluenceRange <= 0)
+            return null;
+
+        // ponytail: only compute expensive polygon for PavedStreet objects.
+        // Ceiling: extend to all objects with road-connectivity when perf allows.
+        if (!annoObj.PavedStreet)
+            return null;
+
+        var allAnnoObjects = _wrapperMap.Keys.Select(lo => lo.WrappedAnnoObject).ToList();
+        if (allAnnoObjects.Count == 0)
+            return null;
+
+        var gridDictionary = RoadSearchHelper.PrepareGridDictionary(allAnnoObjects);
+        if (gridDictionary == null)
+            return null;
+
+        var startObjects = new[] { annoObj };
+        var visitedCells = RoadSearchHelper.BreadthFirstSearch(
+            allAnnoObjects,
+            startObjects,
+            o => (int)o.InfluenceRange,
+            gridDictionary);
+
+        if (visitedCells == null || visitedCells.Length == 0)
+            return null;
+
+        var boundaryPoints = PolygonBoundaryFinderHelper.GetBoundaryPoints(visitedCells);
+        if (boundaryPoints.Count == 0)
+            return null;
+
+        // Convert grid-relative boundary points back to absolute grid coordinates
+        var result = new List<Point>(boundaryPoints.Count);
+        foreach (var (x, y) in boundaryPoints)
+        {
+            result.Add(new Point(x + gridDictionary.Offset.x, y + gridDictionary.Offset.y));
+        }
+
+        return result;
     }
 
     private IEnumerable<LayoutObject> GetLayoutObjects() => _wrapperMap.Keys;
@@ -63,6 +118,7 @@ public class AnnoEditorAdapter
         var wrapper = new LayoutObjectWrapper(obj);
         _wrapperMap[obj] = wrapper;
         Canvas.ObjectManager.Add(wrapper);
+        _influenceLayer?.InvalidatePolygonCache();
     }
 
     public void RemoveLayoutObject(LayoutObject obj)
@@ -72,6 +128,7 @@ public class AnnoEditorAdapter
 
         _wrapperMap.Remove(obj);
         Canvas.ObjectManager.Remove(wrapper);
+        _influenceLayer?.InvalidatePolygonCache();
     }
 
     public int ObjectCount => _wrapperMap.Count;
@@ -140,6 +197,7 @@ public class AnnoEditorAdapter
     {
         _wrapperMap.Clear();
         Canvas.ObjectManager.Clear();
+        _influenceLayer?.InvalidatePolygonCache();
     }
 
     /// <summary>
