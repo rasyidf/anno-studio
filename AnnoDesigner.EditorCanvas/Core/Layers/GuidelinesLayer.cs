@@ -13,7 +13,8 @@ namespace AnnoDesigner.Controls.EditorCanvas.Core.Layers
         {
             if (!canvas.ShowGuides) return;
 
-            var pen = new Pen(canvas.GuideLineBrush ?? Brushes.Gray, 1);
+            var zoom = canvas.TransformService?.Zoom ?? 1.0;
+            var pen = new Pen(canvas.GuideLineBrush ?? Brushes.Gray, 1.0 / zoom);
             pen.DashStyle = DashStyles.Dash;
             pen.Freeze();
 
