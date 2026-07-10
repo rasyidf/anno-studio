@@ -13,6 +13,7 @@ using PresetParser.Anno1800;
 using PresetParser.Anno1800.Models;
 using PresetParser.Extensions;
 using PresetParser.Models;
+using PresetParser.Parsers;
 
 namespace PresetParser
 {
@@ -24,6 +25,7 @@ namespace PresetParser
         private static string BASE_PATH_2070 { get; set; }
         private static string BASE_PATH_2205 { get; set; }
         private static string BASE_PATH_1800 { get; set; }
+        private static string BASE_PATH_117 { get; set; }
 
         public static bool isExcludedName = false;
         public static bool isExcludeIconName = false; /*Only for Anno 1800*/
@@ -201,14 +203,14 @@ namespace PresetParser
             var validVersion = false;
             while (!validVersion)
             {
-                Console.Write("Please enter an Anno version (1 of: {0} {1} {2} {3}):", Constants.ANNO_VERSION_1404, Constants.ANNO_VERSION_2070, Constants.ANNO_VERSION_2205, Constants.ANNO_VERSION_1800);
+                Console.Write("Please enter an Anno version (1 of: {0} {1} {2} {3} {4}):", Constants.ANNO_VERSION_1404, Constants.ANNO_VERSION_2070, Constants.ANNO_VERSION_2205, Constants.ANNO_VERSION_1800, Constants.ANNO_VERSION_117);
                 annoVersion = Console.ReadLine();
                 if (annoVersion == "quit")
                 {
                     Environment.Exit(0);
                 }
 
-                if (annoVersion is Constants.ANNO_VERSION_1404 or Constants.ANNO_VERSION_2070 or Constants.ANNO_VERSION_2205 or Constants.ANNO_VERSION_1800 or "-ALL")
+                if (annoVersion is Constants.ANNO_VERSION_1404 or Constants.ANNO_VERSION_2070 or Constants.ANNO_VERSION_2205 or Constants.ANNO_VERSION_1800 or Constants.ANNO_VERSION_117 or "-ALL")
                 {
                     validVersion = true;
                 }
@@ -279,6 +281,7 @@ namespace PresetParser
                 BASE_PATH_2070 = GetBASE_PATH(Constants.ANNO_VERSION_2070);
                 BASE_PATH_2205 = GetBASE_PATH(Constants.ANNO_VERSION_2205);
                 BASE_PATH_1800 = GetBASE_PATH(Constants.ANNO_VERSION_1800);
+                BASE_PATH_117 = GetBASE_PATH(Constants.ANNO_VERSION_117);
             }
 
             if (!testVersion)
@@ -453,38 +456,65 @@ namespace PresetParser
             #region Prepare JSON Files
             if (annoVersion != "-ALL")
             {
-                //execute a Single Anno Preset
+                //execute using modular parser for the selected version
                 ValidateIconFile("Test.png", "TestBuilding", "Checker"); // Enable the WriteFile system for Missing Icons if Directory Exists
-                DoAnnoPreset(annoVersion, addRoads: true);
+
+                var singleParsers = new Dictionary<string, IGameParser>
+                {
+                    [Constants.ANNO_VERSION_1404] = new Parsers.Anno1404Parser(),
+                    [Constants.ANNO_VERSION_2070] = new Parsers.Anno2070Parser(),
+                    [Constants.ANNO_VERSION_2205] = new Parsers.Anno2205Parser(),
+                    [Constants.ANNO_VERSION_1800] = new Parsers.Anno1800Parser(),
+                    [Constants.ANNO_VERSION_117] = new Parsers.Anno117Parser(),
+                };
+
+                if (singleParsers.TryGetValue(annoVersion, out var parser))
+                {
+                    parser.Configure(BASE_PATH, testVersion);
+                    var parsed = parser.ParseBuildings();
+                    buildings.AddRange(parsed);
+                    annoBuildingsListCount += parsed.Count;
+                }
+                else
+                {
+                    // Fallback to legacy DoAnnoPreset for unknown versions
+                    DoAnnoPreset(annoVersion, addRoads: true);
+                }
             }
             else
             {
-                //Execute for all Anno Presets in one
-                ValidateIconFile("Test.png", "TestBuilding", "Checker"); // Enable the WriteFile system for Missing Icons if Directory Exists
-                Console.WriteLine();
-                Console.WriteLine("----------------------------------------------");
-                Console.WriteLine("Reading RDA data from {0} for anno version {1}.", BASE_PATH_1404, Constants.ANNO_VERSION_1404);
-                BASE_PATH = BASE_PATH_1404;
-                DoAnnoPreset(Constants.ANNO_VERSION_1404, addRoads: false);
-                annoBuildingLists.Clear();
-                Console.WriteLine();
-                Console.WriteLine("----------------------------------------------");
-                Console.WriteLine("Reading RDA data from {0} for anno version {1}.", BASE_PATH_2070, Constants.ANNO_VERSION_2070);
-                BASE_PATH = BASE_PATH_2070;
-                DoAnnoPreset(Constants.ANNO_VERSION_2070, addRoads: false);
-                annoBuildingLists.Clear();
-                Console.WriteLine();
-                Console.WriteLine("----------------------------------------------");
-                Console.WriteLine("Reading RDA data from {0} for anno version {1}.", BASE_PATH_2205, Constants.ANNO_VERSION_2205);
-                BASE_PATH = BASE_PATH_2205;
-                DoAnnoPreset(Constants.ANNO_VERSION_2205, addRoads: false);
-                annoBuildingLists.Clear();
-                Console.WriteLine();
-                Console.WriteLine("----------------------------------------------");
-                Console.WriteLine("Reading RDA data from {0} for anno version {1}.", BASE_PATH_1800, Constants.ANNO_VERSION_1800);
-                BASE_PATH = BASE_PATH_1800;
-                DoAnnoPreset(Constants.ANNO_VERSION_1800, addRoads: true);
-                annoBuildingLists.Clear();
+                //Execute for all Anno Presets using modular parsers
+                var parsers = new Dictionary<string, IGameParser>
+                {
+                    [Constants.ANNO_VERSION_1404] = new Parsers.Anno1404Parser(),
+                    [Constants.ANNO_VERSION_2070] = new Parsers.Anno2070Parser(),
+                    [Constants.ANNO_VERSION_2205] = new Parsers.Anno2205Parser(),
+                    [Constants.ANNO_VERSION_1800] = new Parsers.Anno1800Parser(),
+                    [Constants.ANNO_VERSION_117] = new Parsers.Anno117Parser(),
+                };
+
+                var allPaths = new Dictionary<string, string>
+                {
+                    [Constants.ANNO_VERSION_1404] = BASE_PATH_1404,
+                    [Constants.ANNO_VERSION_2070] = BASE_PATH_2070,
+                    [Constants.ANNO_VERSION_2205] = BASE_PATH_2205,
+                    [Constants.ANNO_VERSION_1800] = BASE_PATH_1800,
+                    [Constants.ANNO_VERSION_117] = BASE_PATH_117,
+                };
+
+                foreach (var (version, parser) in parsers)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("----------------------------------------------");
+                    Console.WriteLine("Parsing Anno {0} from {1}", version, allPaths[version]);
+
+                    parser.Configure(allPaths[version], testVersion);
+                    var parsed = parser.ParseBuildings();
+                    buildings.AddRange(parsed);
+                    annoBuildingsListCount += parsed.Count;
+
+                    Console.WriteLine("[{0}] Done: {1} buildings", version, parsed.Count);
+                }
             }
             #endregion
 
@@ -508,6 +538,13 @@ namespace PresetParser
                 Console.WriteLine("THIS IS A TEST DUMMY FILE WRITEN!!!!");
                 SerializationHelper.SaveToFile(presets, "DUMMY.json");
             }
+            // Split presets into per-game files
+            var monolithicPath = testVersion
+                ? "DUMMY.json"
+                : "presets-Anno" + annoVersion + "-v" + BUILDING_PRESETS_VERSION + ".json";
+            var splitOutputDir = Path.GetDirectoryName(Path.GetFullPath(monolithicPath)) ?? ".";
+            SplitPresets.SplitPresetsFile(Path.GetFullPath(monolithicPath), splitOutputDir);
+
             // wait for key-press before exiting
             Console.WriteLine("This list contains {0} Buildings", annoBuildingsListCount);
             Console.WriteLine();
@@ -1006,7 +1043,7 @@ namespace PresetParser
         // Parsing Buildings Info 
         #region Parsing Buildings for Anno 1404/2070
 
-        private static void ParseAssetsFile(string filename, string xPathToBuildingsNode, string YPath, List<IBuildingInfo> buildings,
+        internal static void ParseAssetsFile(string filename, string xPathToBuildingsNode, string YPath, List<IBuildingInfo> buildings,
             IEnumerable<XmlNode> iconNodes, Dictionary<string, SerializableDictionary<string>> localizations, string innerNameTag, string annoVersion)
         {
             var assetsDocument = new XmlDocument();
@@ -1311,7 +1348,7 @@ namespace PresetParser
 
         #region Parsing Buildings for Anno 2205
 
-        private static void ParseAssetsFile2205(string filename, string xPathToBuildingsNode, string YPath, List<IBuildingInfo> buildings, string innerNameTag, string annoVersion)
+        internal static void ParseAssetsFile2205(string filename, string xPathToBuildingsNode, string YPath, List<IBuildingInfo> buildings, string innerNameTag, string annoVersion)
         {
             var assetsDocument = new XmlDocument();
             assetsDocument.Load(filename);
@@ -1672,7 +1709,7 @@ namespace PresetParser
 
         #region Parsing Buildings for Anno 1800
 
-        private static void ParseAssetsFile1800(string filename, string xPathToBuildingsNode, List<IBuildingInfo> buildings)
+        internal static void ParseAssetsFile1800(string filename, string xPathToBuildingsNode, List<IBuildingInfo> buildings)
         {
             var assetsDocument = new XmlDocument();
             assetsDocument.Load(filename);

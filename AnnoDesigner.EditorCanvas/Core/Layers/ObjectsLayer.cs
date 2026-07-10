@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -6,15 +7,17 @@ namespace AnnoDesigner.Controls.EditorCanvas.Core.Layers
 {
     public class ObjectsLayer : RenderLayerBase
     {
+        private static readonly Typeface LabelTypeface = new("Segoe UI");
+
         public ObjectsLayer(int order = 300) : base("Objects", order)
         {
         }
 
         public override void Render(DrawingContext dc, AnnoDesigner.Controls.EditorCanvas.EditorCanvas canvas, Rect clip)
         {
-            var pen = new Pen(canvas.ObjectStrokeBrush ?? Brushes.Blue, 1);
-            var fill = canvas.ObjectFillBrush ?? Brushes.Transparent;
-            pen.Freeze();
+            var defaultPen = new Pen(canvas.ObjectStrokeBrush ?? Brushes.Blue, 1);
+            var defaultFill = canvas.ObjectFillBrush ?? Brushes.Transparent;
+            defaultPen.Freeze();
 
             var all = canvas.ObjectManager?.GetAll();
             if (all == null) return;
@@ -23,12 +26,23 @@ namespace AnnoDesigner.Controls.EditorCanvas.Core.Layers
             {
                 if (obj == null) continue;
 
+                // Determine fill: use object-specific FillColor when set, otherwise default
+                Brush fill = defaultFill;
+                if (obj.FillColor.HasValue)
+                {
+                    fill = new SolidColorBrush(obj.FillColor.Value);
+                    fill.Freeze();
+                }
+
+                // Determine pen: borderless objects get no stroke
+                var pen = obj.IsBorderless ? null : defaultPen;
+
                 switch (obj.ShapeType)
                 {
                     case "Line":
                         var start = obj.LineStart ?? obj.Bounds.TopLeft;
                         var end = obj.LineEnd ?? obj.Bounds.BottomRight;
-                        dc.DrawLine(pen, start, end);
+                        dc.DrawLine(pen ?? defaultPen, start, end);
                         break;
 
                     case "Path":
@@ -42,7 +56,7 @@ namespace AnnoDesigner.Controls.EditorCanvas.Core.Layers
                                     ctx.LineTo(obj.PathPoints[i], true, false);
                             }
                             geo.Freeze();
-                            dc.DrawGeometry(null, pen, geo);
+                            dc.DrawGeometry(null, pen ?? defaultPen, geo);
                         }
                         break;
 
@@ -61,12 +75,37 @@ namespace AnnoDesigner.Controls.EditorCanvas.Core.Layers
                             }
                             pathGeo.Figures.Add(figure);
                             pathGeo.Freeze();
-                            dc.DrawGeometry(null, pen, pathGeo);
+                            dc.DrawGeometry(null, pen ?? defaultPen, pathGeo);
                         }
                         break;
 
                     default: // "Rectangle"
                         dc.DrawRectangle(fill, pen, obj.Bounds);
+
+                        // Draw label text when available
+                        if (!string.IsNullOrEmpty(obj.Label) && obj.Bounds.Width > 0 && obj.Bounds.Height > 0)
+                        {
+                            var fontSize = System.Math.Max(6, System.Math.Min(12, obj.Bounds.Height * 0.3));
+                            var text = new FormattedText(
+                                obj.Label,
+                                CultureInfo.CurrentCulture,
+                                FlowDirection.LeftToRight,
+                                LabelTypeface,
+                                fontSize,
+                                Brushes.Black,
+                                VisualTreeHelper.GetDpi(canvas).PixelsPerDip)
+                            {
+                                MaxTextWidth = obj.Bounds.Width,
+                                MaxTextHeight = obj.Bounds.Height,
+                                TextAlignment = TextAlignment.Center
+                            };
+
+                            var textOrigin = new Point(
+                                obj.Bounds.X,
+                                obj.Bounds.Y + (obj.Bounds.Height - text.Height) / 2);
+
+                            dc.DrawText(text, textOrigin);
+                        }
                         break;
                 }
             }

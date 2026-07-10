@@ -65,6 +65,8 @@ public partial class MainViewModel : ObservableObject
     private readonly ILocalizationHelper _localizationHelper;
     private readonly IFileSystem _fileSystem;
     private readonly ITransformationService _transformationService;
+    private readonly IExportService _exportService;
+    private readonly IPresetApplicationService _presetApplicationService;
 
 
     public event EventHandler<EventArgs> ShowStatisticsChanged;
@@ -97,7 +99,8 @@ public partial class MainViewModel : ObservableObject
         IDocumentServicesFactory documentServicesFactoryToUse = null,
         ISharedResourceManager sharedResourceManagerToUse = null,
         ILayoutService layoutServiceToUse = null,
-        ITransformationService transformationServiceToUse = null)
+        ITransformationService transformationServiceToUse = null,
+        IExportService exportServiceToUse = null)
     {
         _commons = commonsToUse;
         _commons.SelectedLanguageChanged += Commons_SelectedLanguageChanged;
@@ -120,6 +123,20 @@ public partial class MainViewModel : ObservableObject
         _documentServicesFactory = documentServicesFactoryToUse;
         _layoutService = layoutServiceToUse;
         _transformationService = transformationServiceToUse ?? new TransformationService();
+        _exportService = exportServiceToUse ?? new ExportService(
+            _layoutLoader,
+            _coordinateHelper,
+            _brushCache,
+            _penCache,
+            _appSettings,
+            _messageBoxService,
+            _localizationHelper,
+            _fileSystem,
+            _commons,
+            () => BuildingPresets,
+            () => Icons,
+            () => StatisticsViewModel,
+            () => LayoutSettingsViewModel);
 
         HotkeyCommandManager = new HotkeyCommandManager(_localizationHelper);
 
@@ -169,6 +186,21 @@ public partial class MainViewModel : ObservableObject
         _noIconItem = GenerateNoIconItem();
         AvailableIcons.Add(_noIconItem);
         SelectedIcon = _noIconItem;
+
+        _presetApplicationService = new PresetApplicationService(
+            () => BuildingSettingsViewModel,
+            () => BuildingPresets,
+            () => AnnoCanvas,
+            _coordinateHelper,
+            _brushCache,
+            _penCache,
+            _fileSystem,
+            _messageBoxService,
+            _localizationHelper,
+            () => SelectedIcon,
+            icon => SelectedIcon = icon,
+            () => AvailableIcons,
+            () => _noIconItem);
 
         RecentFiles = [];
         _recentFilesHelper.Updated += RecentFilesHelper_Updated;
@@ -324,168 +356,12 @@ public partial class MainViewModel : ObservableObject
 
     private void ApplyPreset(AnnoObject selectedItem)
     {
-        try
-        {
-            if (selectedItem == null) return;
-            var copySelectedItem = new AnnoObject(selectedItem);
-            copySelectedItem.Color = ColorPresetsHelper.Instance.GetPredefinedColor(copySelectedItem) ??
-                                     BuildingSettingsViewModel.SelectedColor ?? Colors.Red;
-
-            // Ensure icon is present on the copied preset for proper UI preview and placement
-            if (string.IsNullOrWhiteSpace(copySelectedItem.Icon))
-            {
-                var id = copySelectedItem.Identifier;
-                var template = copySelectedItem.Template;
-                var buildingInfo = BuildingPresets?.Buildings.FirstOrDefault(b =>
-                    (!string.IsNullOrWhiteSpace(copySelectedItem.Identifier) && string.Equals(b.Identifier, copySelectedItem.Identifier, StringComparison.OrdinalIgnoreCase))
-
-                );
-                if (!string.IsNullOrWhiteSpace(buildingInfo?.IconFileName))
-                {
-                    copySelectedItem.Icon = _fileSystem.Path.GetFileNameWithoutExtension(buildingInfo.IconFileName);
-                }
-            }
-            UpdateUiFromObject(new LayoutObject(copySelectedItem, _coordinateHelper, _brushCache, _penCache));
-
-            ApplyCurrentObject();
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(ex, "Error applying preset.");
-            _messageBoxService.ShowError(
-                _localizationHelper.GetLocalization("LayoutLoadingError"),
-                _localizationHelper.GetLocalization("Error"));
-        }
+        _presetApplicationService.ApplyPreset(selectedItem);
     }
 
     private void ApplyCurrentObject()
     {
-        // parse user inputs and create new object
-        var renameBuildingIdentifier = BuildingSettingsViewModel.BuildingName;
-        var textBoxText = "UnknownObject";
-        var obj = new AnnoObject
-        {
-            Size = new Size(BuildingSettingsViewModel.BuildingWidth, BuildingSettingsViewModel.BuildingHeight),
-            Color = BuildingSettingsViewModel.SelectedColor ?? Colors.Red,
-            Label =
-                BuildingSettingsViewModel.IsEnableLabelChecked
-                    ? BuildingSettingsViewModel.BuildingName
-                    : string.Empty,
-            Icon = SelectedIcon == _noIconItem ? null : SelectedIcon.Name,
-            Radius = BuildingSettingsViewModel.BuildingRadius,
-            InfluenceRange = BuildingSettingsViewModel.BuildingInfluenceRange,
-            PavedStreet = BuildingSettingsViewModel.IsPavedStreet,
-            Borderless = BuildingSettingsViewModel.IsBorderlessChecked,
-            Road = BuildingSettingsViewModel.IsRoadChecked,
-            Identifier = BuildingSettingsViewModel.BuildingIdentifier,
-            Template = BuildingSettingsViewModel.BuildingTemplate,
-            BlockedAreaLength = BuildingSettingsViewModel.BuildingBlockedAreaLength,
-            BlockedAreaWidth = BuildingSettingsViewModel.BuildingBlockedAreaWidth,
-            Direction = BuildingSettingsViewModel.BuildingDirection
-        };
-
-        var objIconFileName = "";
-        //Parse the Icon path into something we can check.
-        if (!string.IsNullOrWhiteSpace(obj.Icon))
-        {
-            if (obj.Icon.StartsWith("A5_"))
-            {
-                objIconFileName = obj.Icon[3..] + ".png"; //when Anno 2070, it use not A5_ in the original naming.
-            }
-            else
-            {
-                objIconFileName = obj.Icon + ".png";
-            }
-        }
-
-        // do some sanity checks
-        if (obj.Size is { Width: > 0, Height: > 0 } && obj.Radius >= 0)
-        {
-            //gets icons and origin building info
-            var buildingInfo = BuildingPresets?.Buildings.FirstOrDefault(_ =>
-                _.IconFileName?.Equals(objIconFileName, StringComparison.OrdinalIgnoreCase) ?? false);
-
-            if (buildingInfo != null)
-            {
-                // If the UI hasn't selected an icon (e.g. preset didn't set obj.Icon), try to set SelectedIcon from the preset's IconFileName
-                try
-                {
-                    if (string.IsNullOrWhiteSpace(SelectedIcon?.Name) || SelectedIcon == _noIconItem)
-                    {
-                        if (!string.IsNullOrWhiteSpace(buildingInfo.IconFileName))
-                        {
-                            var iconNameNoExt = _fileSystem.Path.GetFileNameWithoutExtension(buildingInfo.IconFileName);
-                            var foundIconImage = AvailableIcons.SingleOrDefault(x =>
-                                x.Name.Equals(iconNameNoExt, StringComparison.OrdinalIgnoreCase));
-                            SelectedIcon = foundIconImage ?? _noIconItem;
-                        }
-                    }
-                }
-                catch { }
-
-                //Put in the Blocked Area if there is one
-                if (buildingInfo.BlockedAreaLength > 0)
-                {
-                    obj.BlockedAreaLength = buildingInfo.BlockedAreaLength;
-                    obj.BlockedAreaWidth = buildingInfo.BlockedAreaWidth;
-                    obj.Direction = buildingInfo.Direction;
-                }
-
-                //if user entered a new Label Name (as in renaming existing building or naming own building) then name and identifier will be renamed
-                if (BuildingSettingsViewModel.BuildingRealName != BuildingSettingsViewModel.BuildingName)
-                {
-                    obj.Identifier = renameBuildingIdentifier;
-                    obj.Template = renameBuildingIdentifier;
-                }
-            }
-            else
-            {
-                //if no Identifier is found or if user entered a new Label Name (as in renaming existing building or naming own building) then name and identifier will be renamed
-                if (string.IsNullOrWhiteSpace(BuildingSettingsViewModel.BuildingIdentifier) ||
-                    BuildingSettingsViewModel.BuildingRealName != BuildingSettingsViewModel.BuildingName)
-                {
-                    if (!string.IsNullOrWhiteSpace(renameBuildingIdentifier))
-                    {
-                        obj.Identifier = renameBuildingIdentifier;
-                        obj.Template = renameBuildingIdentifier;
-                    }
-                    else
-                    {
-                        obj.Identifier = textBoxText;
-                    }
-                }
-            }
-
-            // Ensure the object has a valid icon string even if UI selection didn't resolve
-            if (string.IsNullOrWhiteSpace(obj.Icon))
-            {
-                string iconCandidate = null;
-                if (SelectedIcon != null && SelectedIcon != _noIconItem)
-                {
-                    iconCandidate = SelectedIcon.Name;
-                }
-                else if (buildingInfo != null && !string.IsNullOrWhiteSpace(buildingInfo.IconFileName))
-                {
-                    iconCandidate = _fileSystem.Path.GetFileNameWithoutExtension(buildingInfo.IconFileName);
-                }
-                if (!string.IsNullOrWhiteSpace(iconCandidate))
-                {
-                    obj.Icon = iconCandidate;
-                }
-            }
-
-            if (AnnoCanvas == null)
-            {
-                Logger.Warn("AnnoCanvas is null; cannot apply current object.");
-                return;
-            }
-
-            AnnoCanvas.SetCurrentObject(new LayoutObject(obj, _coordinateHelper, _brushCache, _penCache));
-        }
-        else
-        {
-            throw new Exception("Invalid building configuration.");
-        }
+        _presetApplicationService.ApplyCurrentObject();
     }
 
     /// <summary>
@@ -493,98 +369,7 @@ public partial class MainViewModel : ObservableObject
     /// </summary>
     private void UpdateUiFromObject(LayoutObject layoutObject)
     {
-        var obj = layoutObject?.WrappedAnnoObject;
-        if (obj == null)
-        {
-            return;
-        }
-        if (layoutObject == null)
-        {
-            return;
-        }
-
-        // size
-        BuildingSettingsViewModel.BuildingWidth = (int)layoutObject.Size.Width;
-        BuildingSettingsViewModel.BuildingHeight = (int)layoutObject.Size.Height;
-        // color
-        BuildingSettingsViewModel.SelectedColor = layoutObject.Color;
-        // label
-        BuildingSettingsViewModel.BuildingName = obj.Label;
-        BuildingSettingsViewModel.BuildingRealName = obj.Label;
-        // Identifier
-        BuildingSettingsViewModel.BuildingIdentifier = layoutObject.Identifier;
-        // Template
-        BuildingSettingsViewModel.BuildingTemplate = obj.Template;
-        // icon
-        try
-        {
-            if (string.IsNullOrWhiteSpace(obj.Icon))
-            {
-                SelectedIcon = _noIconItem;
-            }
-            else
-            {
-                var foundIconImage = AvailableIcons.FirstOrDefault(x =>
-                    x.Name.Equals(_fileSystem.Path.GetFileNameWithoutExtension(obj.Icon),
-                        StringComparison.OrdinalIgnoreCase));
-                SelectedIcon = foundIconImage ?? _noIconItem;
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(
-                $"Error finding {nameof(IconImage)} for value \"{obj.Icon}\".{Environment.NewLine}{ex}");
-
-            SelectedIcon = _noIconItem;
-        }
-
-        // radius
-        BuildingSettingsViewModel.BuildingRadius = obj.Radius;
-        //InfluenceRange
-        if (!BuildingSettingsViewModel.IsPavedStreet)
-        {
-            BuildingSettingsViewModel.BuildingInfluenceRange = obj.InfluenceRange;
-        }
-        else
-        {
-            _ = BuildingSettingsViewModel.GetDistanceRange(true,
-                BuildingPresets?.Buildings.FirstOrDefault(_ =>
-                    _.Identifier == BuildingSettingsViewModel.BuildingIdentifier));
-        }
-
-        //Set Influence Type
-        if (obj.Radius > 0 && obj.InfluenceRange > 0)
-        {
-            //Building uses both a radius and an influence
-            //Has to be set manually 
-            BuildingSettingsViewModel.SelectedBuildingInfluence =
-                BuildingSettingsViewModel.BuildingInfluences.Single(x => x.Type == BuildingInfluenceType.Both);
-        }
-        else if (obj.Radius > 0)
-        {
-            BuildingSettingsViewModel.SelectedBuildingInfluence =
-                BuildingSettingsViewModel.BuildingInfluences.Single(x => x.Type == BuildingInfluenceType.Radius);
-        }
-        else if (obj.InfluenceRange > 0)
-        {
-            BuildingSettingsViewModel.SelectedBuildingInfluence =
-                BuildingSettingsViewModel.BuildingInfluences.Single(x => x.Type == BuildingInfluenceType.Distance);
-
-            if (obj.PavedStreet)
-            {
-                BuildingSettingsViewModel.IsPavedStreet = obj.PavedStreet;
-            }
-        }
-        else
-        {
-            BuildingSettingsViewModel.SelectedBuildingInfluence =
-                BuildingSettingsViewModel.BuildingInfluences.Single(x => x.Type == BuildingInfluenceType.None);
-        }
-
-        // flags            
-        //BuildingSettingsViewModel.IsEnableLabelChecked = !string.IsNullOrEmpty(obj.Label);
-        BuildingSettingsViewModel.IsBorderlessChecked = obj.Borderless;
-        BuildingSettingsViewModel.IsRoadChecked = obj.Road;
+        _presetApplicationService.UpdateUiFromObject(layoutObject);
     }
 
     private void AnnoCanvas_StatisticsUpdated(object sender, UpdateStatisticsEventArgs e)
@@ -1124,6 +909,12 @@ public partial class MainViewModel : ObservableObject
     public DocumentViewModel CreateNewDocument()
     {
         var services = _documentServicesFactory?.CreateDocumentServices();
+        if (services is null)
+        {
+            // ponytail: factory not available (e.g. unit-test); skip document creation
+            return null;
+        }
+
         var document = new DocumentViewModel(services, BuildingPresets, Icons);
 
         document.CloseRequested += OnDocumentCloseRequested;
@@ -1348,6 +1139,11 @@ public partial class MainViewModel : ObservableObject
         private init { _ = SetProperty(ref field, value); }
     }
 
+    /// <summary>
+    /// Exposes the export service for CLI/external callers that need <see cref="IExportService.PrepareCanvasForRender"/>.
+    /// </summary>
+    public IExportService ExportService => _exportService;
+
     public ObservableCollection<RecentFileItem> RecentFiles
     {
         get;
@@ -1491,68 +1287,7 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     public void MergeRoads(object param)
     {
-        var roadColorGroups = AnnoCanvas.PlacedObjects.Where(p => p.WrappedAnnoObject.Road)
-            .GroupBy(p => (p.WrappedAnnoObject.Borderless, p.Color));
-        foreach (var roadColorGroup in roadColorGroups)
-        {
-            if (roadColorGroup.Count() <= 1)
-            {
-                continue;
-            }
-
-            var bounds =
-                (Rect)new StatisticsCalculationHelper().CalculateStatistics(
-                    roadColorGroup.Select(p => p.WrappedAnnoObject));
-
-            var cells = Enumerable.Range(0, (int)bounds.Width).Select(_ => new LayoutObject[(int)bounds.Height])
-                .ToArray();
-            foreach (var item in roadColorGroup)
-            {
-                for (var i = 0; i < item.Size.Width; i++)
-                {
-                    for (var j = 0; j < item.Size.Height; j++)
-                    {
-                        cells[(int)(item.Position.X + i - bounds.Left)][(int)(item.Position.Y + j - bounds.Top)] =
-                            item;
-                    }
-                }
-            }
-
-            var groups = _adjacentCellGrouper.GroupAdjacentCells(cells).ToList();
-            AnnoCanvas.UndoManager.AsSingleUndoableOperation(() =>
-            {
-                var oldObjects = groups.SelectMany(g => g.Items).ToList();
-                foreach (var item in oldObjects)
-                {
-                    _ = AnnoCanvas.PlacedObjects.Remove(item);
-                }
-
-                var newObjects = groups
-                    .Select(g => new LayoutObject(
-                        new AnnoObject(g.Items.First().WrappedAnnoObject)
-                        {
-                            Position = g.Bounds.TopLeft + (Vector)bounds.TopLeft,
-                            Size = g.Bounds.Size
-                        },
-                        _coordinateHelper,
-                        _brushCache,
-                        _penCache
-                    ))
-                    .ToList();
-                AnnoCanvas.PlacedObjects.AddRange(newObjects);
-
-                AnnoCanvas.UndoManager.RegisterOperation(new RemoveObjectsOperation<LayoutObject>()
-                {
-                    Objects = oldObjects,
-                    Collection = AnnoCanvas.PlacedObjects
-                });
-                AnnoCanvas.UndoManager.RegisterOperation(new AddObjectsOperation<LayoutObject>()
-                {
-                    Objects = newObjects,
-                    Collection = AnnoCanvas.PlacedObjects
-                });
-            });
-        }
+        RoadMergeHelper.MergeRoads(AnnoCanvas, _adjacentCellGrouper, _coordinateHelper, _brushCache, _penCache);
     }
 
 
@@ -1646,305 +1381,38 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private void UnregisterExtension(object param)
     {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            var regCheckAdFileExtension = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Default)
-                .OpenSubKey(@"Software\Classes\anno_designer", false);
-            if (regCheckAdFileExtension != null)
-            {
-                // removes the registry entries when exists          
-                Registry.CurrentUser.DeleteSubKeyTree(@"Software\Classes\anno_designer");
-                Registry.CurrentUser.DeleteSubKeyTree(@"Software\Classes\.ad");
-
-                ShowRegistrationMessageBox(isDeregistration: true);
-            }
-        }
+        FileAssociationHelper.UnregisterExtension(_messageBoxService, _localizationHelper);
     }
 
 
     [RelayCommand]
     private void RegisterExtension(object param)
     {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            // registers the anno_designer class type and adds the correct command string to pass a file argument to the application
-            Registry.SetValue(Constants.FileAssociationRegistryKey, null,
-                $"\"{App.ExecutablePath}\" open \"%1\"");
-            Registry.SetValue(@"HKEY_CURRENT_USER\Software\Classes\anno_designer\DefaultIcon", null,
-                $"\"{App.ExecutablePath}\",0");
-            // registers the .ad file extension to the anno_designer class
-            Registry.SetValue(@"HKEY_CURRENT_USER\Software\Classes\.ad", null, "anno_designer");
-
-            ShowRegistrationMessageBox(isDeregistration: false);
-        }
+        FileAssociationHelper.RegisterExtension(App.ExecutablePath, _messageBoxService, _localizationHelper);
     }
 
     public static void UpdateRegisteredExtension()
     {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            return;
-        }
-
-        if ($"\"{App.ExecutablePath}\" \"%1\""
-            .Equals(Registry.GetValue(Constants.FileAssociationRegistryKey, null, null)))
-        {
-            Registry.SetValue(Constants.FileAssociationRegistryKey, null,
-                $"\"{App.ExecutablePath}\" open \"%1\"");
-        }
-    }
-
-    private void ShowRegistrationMessageBox(bool isDeregistration)
-    {
-        var message = isDeregistration
-            ? _localizationHelper.GetLocalization("UnregisterFileExtensionSuccessful")
-            : _localizationHelper.GetLocalization("RegisterFileExtensionSuccessful");
-
-        _messageBoxService.ShowMessage(message, _localizationHelper.GetLocalization("Successful"));
+        FileAssociationHelper.UpdateRegisteredExtension(App.ExecutablePath);
     }
 
 
     [RelayCommand]
     private void ExportImage(object param)
     {
-        ExportImageSub(UseCurrentZoomOnExportedImageValue, RenderSelectionHighlightsOnExportedImageValue,
-            RenderVersionOnExportedImageValue);
+        _exportService?.ExportImage(AnnoCanvas, new ExportSettings
+        {
+            UseCurrentZoom = UseCurrentZoomOnExportedImageValue,
+            RenderSelectionHighlights = RenderSelectionHighlightsOnExportedImageValue,
+            RenderVersion = RenderVersionOnExportedImageValue,
+            RenderStatistics = StatisticsViewModel.IsVisible
+        });
     }
-
-    /// <summary>
-    /// Renders the current layout to file.
-    /// </summary>
-    /// <param name="exportZoom">indicates whether the current zoom level should be applied, if false the default zoom is used</param>
-    /// <param name="exportSelection">indicates whether selection and influence highlights should be rendered</param>
-    private void ExportImageSub(bool exportZoom, bool exportSelection, bool exportVersion)
-    {
-        var dialog = new SaveFileDialog
-        {
-            DefaultExt = Constants.ExportedImageExtension,
-            Filter = Constants.ExportDialogFilter
-        };
-
-        if (!string.IsNullOrEmpty(AnnoCanvas.LoadedFile))
-        {
-            // default the filename to the same name as the saved layout
-            dialog.FileName = _fileSystem.Path.GetFileNameWithoutExtension(AnnoCanvas.LoadedFile);
-        }
-
-        if (dialog.ShowDialog() == true)
-        {
-            try
-            {
-                RenderToFile(dialog.FileName, 1, exportZoom, exportSelection, StatisticsViewModel.IsVisible,
-                    exportVersion);
-
-                _messageBoxService.ShowMessage(Application.Current.MainWindow,
-                    _localizationHelper.GetLocalization("ExportImageSuccessful"),
-                    _localizationHelper.GetLocalization("Successful"));
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex, "Error exporting image.");
-                _messageBoxService.ShowError(Application.Current.MainWindow,
-                    _localizationHelper.GetLocalization("ExportImageError"),
-                    _localizationHelper.GetLocalization("Error"));
-            }
-        }
-    }
-
-    /// <summary>
-    /// Asynchronously renders the current layout to file.
-    /// </summary>
-    /// <param name="filename">filename of the output image</param>
-    /// <param name="border">normalization value used prior to exporting</param>
-    /// <param name="exportZoom">indicates whether the current zoom level should be applied, if false the default zoom is used</param>
-    /// <param name="exportSelection">indicates whether selection and influence highlights should be rendered</param>
-    private void RenderToFile(string filename, int border, bool exportZoom, bool exportSelection,
-        bool renderStatistics, bool renderVersion)
-    {
-        if (AnnoCanvas.PlacedObjects.Count == 0)
-        {
-            return;
-        }
-
-        Logger.Trace($"UI thread: {Environment.CurrentManagedThreadId} ({Thread.CurrentThread.Name})");
-
-        void RenderThread()
-        {
-            var target = PrepareCanvasForRender(
-                AnnoCanvas.PlacedObjects.Select(o => o.WrappedAnnoObject),
-                exportSelection ? AnnoCanvas.SelectedObjects.Select(o => o.WrappedAnnoObject) : [],
-                border,
-                new CanvasRenderSetting()
-                {
-                    GridSize = exportZoom ? AnnoCanvas.GridSize : null,
-                    RenderGrid = AnnoCanvas.RenderGrid,
-                    RenderHarborBlockedArea = AnnoCanvas.RenderHarborBlockedArea,
-                    RenderIcon = AnnoCanvas.RenderIcon,
-                    RenderInfluences = AnnoCanvas.RenderInfluences,
-                    RenderLabel = AnnoCanvas.RenderLabel,
-                    RenderPanorama = AnnoCanvas.RenderPanorama,
-                    RenderTrueInfluenceRange = AnnoCanvas.RenderTrueInfluenceRange,
-                    RenderStatistics = renderStatistics,
-                    RenderVersion = renderVersion
-                }
-            );
-
-            // render canvas to file
-            target.RenderToFile(filename);
-        }
-
-        var thread = new Thread(RenderThread) { IsBackground = true, Name = "exportImage" };
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            thread.SetApartmentState(ApartmentState.STA);
-        }
-
-        thread.Start();
-        _ = thread.Join(TimeSpan.FromSeconds(10));
-    }
-
-    public FrameworkElement PrepareCanvasForRender(
-        IEnumerable<AnnoObject> placedObjects,
-        IEnumerable<AnnoObject> selectedObjects,
-        int border,
-        CanvasRenderSetting renderSettings = null)
-    {
-        renderSettings ??= new CanvasRenderSetting() { RenderGrid = true, RenderIcon = true };
-
-        var sw = new Stopwatch();
-        sw.Start();
-
-        var icons = new Dictionary<string, IconImage>(StringComparer.OrdinalIgnoreCase);
-        foreach (var curIcon in Icons ?? new Dictionary<string, IconImage>())
-        {
-            icons.Add(curIcon.Key,
-                new IconImage(curIcon.Value.Name, curIcon.Value.Localizations, curIcon.Value.IconPath));
-        }
-
-        var annoObjects = placedObjects.ToList();
-        var statistics = new StatisticsCalculationHelper().CalculateStatistics(annoObjects, true, true);
-
-        var quadTree = new QuadTree<LayoutObject>((Rect)statistics);
-        quadTree.AddRange(annoObjects.Select(o =>
-            new LayoutObject(o, _coordinateHelper, _brushCache, _penCache)));
-        // initialize output canvas
-        var target =
-            new AnnoCanvas(BuildingPresets, icons, _appSettings, _coordinateHelper, _brushCache,
-                _penCache, _messageBoxService)
-            {
-                PlacedObjects = quadTree,
-                RenderGrid = renderSettings.RenderGrid,
-                RenderIcon = renderSettings.RenderIcon,
-                RenderLabel = renderSettings.RenderLabel,
-                RenderHarborBlockedArea = renderSettings.RenderHarborBlockedArea,
-                RenderPanorama = renderSettings.RenderPanorama,
-                RenderTrueInfluenceRange = renderSettings.RenderTrueInfluenceRange,
-                RenderInfluences = renderSettings.RenderInfluences,
-            };
-
-        sw.Stop();
-        Logger.Trace($"creating canvas took: {sw.ElapsedMilliseconds}ms");
-
-        // normalize layout
-        target.Normalize(border);
-
-        // set zoom level
-        if (renderSettings.GridSize.HasValue)
-        {
-            target.GridSize = renderSettings.GridSize.Value;
-        }
-
-        // set selection
-        target.SelectedObjects.UnionWith(selectedObjects.Select(o =>
-            new LayoutObject(o, _coordinateHelper, _brushCache, _penCache)));
-
-        // calculate output size
-        var width = _coordinateHelper.GridToScreen(
-            target.PlacedObjects.Max(_ => _.Position.X + _.Size.Width) + border,
-            target.GridSize); //if +1 then there are weird black lines next to the statistics view
-        var height =
-            _coordinateHelper.GridToScreen(target.PlacedObjects.Max(_ => _.Position.Y + _.Size.Height) + border,
-                target.GridSize) + 1; //+1 for black grid line at bottom
-
-        if (renderSettings.RenderVersion)
-        {
-            var versionView = new VersionView() { Context = LayoutSettingsViewModel };
-
-            target.DockPanel.Children.Insert(0, versionView);
-            DockPanel.SetDock(versionView, Dock.Bottom);
-
-            versionView.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-
-            height += versionView.DesiredSize.Height;
-        }
-
-        if (renderSettings.RenderStatistics)
-        {
-            var exportStatisticsViewModel = new StatisticsViewModel(_localizationHelper, _commons, _appSettings);
-            _ = exportStatisticsViewModel.UpdateStatisticsAsync(UpdateMode.All, [.. target.PlacedObjects],
-                target.SelectedObjects, target.BuildingPresets);
-            exportStatisticsViewModel.ShowBuildingList = StatisticsViewModel.ShowBuildingList;
-
-            var exportStatisticsView = new StatisticsView() { Context = exportStatisticsViewModel };
-
-            target.DockPanel.Children.Insert(0, exportStatisticsView);
-            DockPanel.SetDock(exportStatisticsView, Dock.Right);
-
-            //fix wrong for wrong width: https://stackoverflow.com/q/27894477
-            exportStatisticsView.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.Render);
-            //according to https://stackoverflow.com/a/25507450
-            //and https://stackoverflow.com/a/1320666
-            exportStatisticsView.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-            //exportStatisticsView.Arrange(new Rect(new Point(0, 0), exportStatisticsView.DesiredSize));
-
-            if (exportStatisticsView.DesiredSize.Height > height)
-            {
-                height = exportStatisticsView.DesiredSize.Height + target.LinePenThickness + border;
-            }
-
-            width += exportStatisticsView.DesiredSize.Width + target.LinePenThickness;
-        }
-
-        target.Width = width;
-        target.Height = height;
-        target.UpdateLayout();
-
-        // apply size
-        var outputSize = new Size(width, height);
-        target.Measure(outputSize);
-        target.Arrange(new Rect(outputSize));
-
-        return target;
-    }
-
 
     [RelayCommand]
     private void CopyLayoutToClipboard(object param)
     {
-        CopyLayoutToClipboardSub();
-    }
-
-    private void CopyLayoutToClipboardSub()
-    {
-        try
-        {
-            using var ms = new MemoryStream();
-            AnnoCanvas.Normalize(1);
-            var layoutToSave = new LayoutFile(AnnoCanvas.PlacedObjects.Select(x => x.WrappedAnnoObject));
-            _layoutLoader.SaveLayout(layoutToSave, ms);
-
-            var jsonString = Encoding.UTF8.GetString(ms.ToArray());
-
-            Clipboard.SetText(jsonString, TextDataFormat.UnicodeText);
-
-            _messageBoxService.ShowMessage(_localizationHelper.GetLocalization("ClipboardContainsLayoutAsJson"),
-                _localizationHelper.GetLocalization("Successful"));
-        }
-        catch (Exception ex)
-        {
-            Logger.Error(ex, "Error saving layout to JSON.");
-            _messageBoxService.ShowError(ex.Message, _localizationHelper.GetLocalization("LayoutSavingError"));
-        }
+        _exportService?.CopyLayoutToClipboard(AnnoCanvas);
     }
 
 

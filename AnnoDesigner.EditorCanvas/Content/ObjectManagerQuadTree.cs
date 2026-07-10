@@ -114,6 +114,18 @@ namespace AnnoDesigner.Controls.EditorCanvas.Content
             return hits.OrderByDescending(h => h.ZIndex);
         }
 
+        public IEnumerable<CanvasObject> GetObjectsInRegion(Rect region)
+        {
+            var hits = new List<CanvasObject>();
+            // ponytail: brute-force scan over all items; upgrade to bucket-range query if perf matters
+            foreach (var item in _items)
+            {
+                if (item != null && item.Bounds.IntersectsWith(region))
+                    hits.Add(item);
+            }
+            return hits;
+        }
+
         private void EnsureBucketForItem(CanvasObject item)
         {
             // Expand grid if item is outside current bounds

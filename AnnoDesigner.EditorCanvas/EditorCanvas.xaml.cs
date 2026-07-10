@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using AnnoDesigner.Controls.EditorCanvas.Content.Models;
@@ -15,7 +16,7 @@ namespace AnnoDesigner.Controls.EditorCanvas
     /// Code-behind for the EditorCanvas control (scaffold).
     /// This is an initial placeholder — implementation to follow.
     /// </summary>
-    public partial class EditorCanvas : UserControl
+    public partial class EditorCanvas : UserControl, IScrollInfo
     {
         private Core.IRenderer _renderer;
         /// <summary>
@@ -43,6 +44,7 @@ namespace AnnoDesigner.Controls.EditorCanvas
         public Core.IPlacementValidator PlacementValidator { get; set; } = new Core.DefaultPlacementValidator();
         public Core.IUndoManager? UndoManager { get; set; }
         private readonly List<CanvasObject> _selectedObjects = new();
+        private List<CanvasObject> _clipboard = new();
         public IReadOnlyList<CanvasObject> SelectedObjects => _selectedObjects;
         public CanvasObject? SelectedObject => _selectedObjects.FirstOrDefault();
         public event Action<IReadOnlyList<CanvasObject>>? SelectionChanged;
@@ -133,11 +135,13 @@ namespace AnnoDesigner.Controls.EditorCanvas
             // core services used by tools, layers and renderer
             Preferences = new Core.PreferencesService();
             TransformService = new Core.TransformService(Preferences);
+            TransformService.TransformChanged += (_, _) => InvalidateScrollOwner();
             ToolManager = new Tooling.ToolManager();
             Hotkeys = new Interaction.HotkeyManager(ToolManager, HandleCommand);
             _inputHandler = new Interaction.InputInteractionService(ToolManager, Hotkeys);
             ObjectManager = new Content.ObjectManagerQuadTree();
             UndoManager = new Core.UndoManager();
+            PlacementValidator = new Core.DefaultPlacementValidator(ObjectManager);
 
             // register default render layers when the renderer supports layering
             if (_renderer is Core.ILayeredRenderer layered)
@@ -240,6 +244,60 @@ namespace AnnoDesigner.Controls.EditorCanvas
             }
         }
 
+        public void CopySelection()
+        {
+            if (_selectedObjects.Count == 0) return;
+            _clipboard = _selectedObjects.Select(o => o.Clone()).ToList();
+        }
+
+        public void CutSelection()
+        {
+            if (_selectedObjects.Count == 0) return;
+            _clipboard = _selectedObjects.Select(o => o.Clone()).ToList();
+
+            var ops = _selectedObjects
+                .Select(o => new Core.Operations.RemoveObjectOperation(ObjectManager, o))
+                .Cast<Core.IUndoOperation>()
+                .ToList();
+            var composite = new Core.Operations.CompositeOperation("Cut", ops);
+
+            if (UndoManager != null)
+                UndoManager.Execute(composite);
+            else
+                composite.Execute();
+
+            ClearSelection();
+            _renderer.Invalidate();
+        }
+
+        public void PasteFromClipboard()
+        {
+            if (_clipboard.Count == 0) return;
+
+            var pasted = _clipboard.Select(o =>
+            {
+                var clone = o.Clone();
+                clone.OffsetBy(new System.Windows.Vector(1, 1)); // offset by 1 grid unit
+                return clone;
+            }).ToList();
+
+            var ops = pasted
+                .Select(o => new Core.Operations.AddObjectOperation(ObjectManager, o))
+                .Cast<Core.IUndoOperation>()
+                .ToList();
+            var composite = new Core.Operations.CompositeOperation("Paste", ops);
+
+            if (UndoManager != null)
+                UndoManager.Execute(composite);
+            else
+                composite.Execute();
+
+            SetSelection(pasted);
+            // Update clipboard so subsequent pastes offset further
+            _clipboard = pasted.Select(o => o.Clone()).ToList();
+            _renderer.Invalidate();
+        }
+
         public void SetSelection(IEnumerable<CanvasObject> objects)
         {
             _selectedObjects.Clear();
@@ -324,6 +382,15 @@ namespace AnnoDesigner.Controls.EditorCanvas
                     UndoManager?.Redo();
                     _renderer.Invalidate();
                     break;
+                case "Copy":
+                    CopySelection();
+                    break;
+                case "Cut":
+                    CutSelection();
+                    break;
+                case "Paste":
+                    PasteFromClipboard();
+                    break;
                 default:
                     break;
             }
@@ -357,7 +424,11 @@ namespace AnnoDesigner.Controls.EditorCanvas
                 new HotkeyBinding { Id = "ToggleLayerManager", DisplayName = "Toggle Layer Manager", Key = Key.L, Modifiers = ModifierKeys.Control | ModifierKeys.Shift, ActionType = HotkeyActionType.Command, Target = "ToggleLayerManager" },
                 // undo / redo
                 new HotkeyBinding { Id = "Undo", DisplayName = "Undo", Key = Key.Z, Modifiers = ModifierKeys.Control, ActionType = HotkeyActionType.Command, Target = "Undo" },
-                new HotkeyBinding { Id = "Redo", DisplayName = "Redo", Key = Key.Y, Modifiers = ModifierKeys.Control, ActionType = HotkeyActionType.Command, Target = "Redo" }
+                new HotkeyBinding { Id = "Redo", DisplayName = "Redo", Key = Key.Y, Modifiers = ModifierKeys.Control, ActionType = HotkeyActionType.Command, Target = "Redo" },
+                // clipboard
+                new HotkeyBinding { Id = "Copy", DisplayName = "Copy", Key = Key.C, Modifiers = ModifierKeys.Control, ActionType = HotkeyActionType.Command, Target = "Copy" },
+                new HotkeyBinding { Id = "Cut", DisplayName = "Cut", Key = Key.X, Modifiers = ModifierKeys.Control, ActionType = HotkeyActionType.Command, Target = "Cut" },
+                new HotkeyBinding { Id = "Paste", DisplayName = "Paste", Key = Key.V, Modifiers = ModifierKeys.Control, ActionType = HotkeyActionType.Command, Target = "Paste" }
             });
         }
 
@@ -384,6 +455,18 @@ namespace AnnoDesigner.Controls.EditorCanvas
                 _panStartScreen = e.GetPosition(this);
                 this.CaptureMouse();
                 e.Handled = true;
+            }
+            // Phase 2.6: Ctrl+Shift+LeftClick selects all objects with the same Identifier
+            else if (e.ChangedButton == MouseButton.Left
+                && Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
+            {
+                var worldPt = ScreenToWorld(e.GetPosition(this));
+                var hitObject = ObjectManager.GetObjectsAt(worldPt).FirstOrDefault();
+                if (hitObject != null && !string.IsNullOrEmpty(hitObject.Identifier))
+                {
+                    SelectAllWithIdentifier(hitObject.Identifier);
+                    e.Handled = true;
+                }
             }
         }
 
@@ -415,5 +498,124 @@ namespace AnnoDesigner.Controls.EditorCanvas
             base.OnRender(drawingContext);
             _renderer.Render(drawingContext);
         }
+
+        #region IScrollInfo
+
+        private ScrollViewer? _scrollOwner;
+
+        public bool CanHorizontallyScroll { get; set; } = true;
+        public bool CanVerticallyScroll { get; set; } = true;
+
+        public double ExtentWidth
+        {
+            get
+            {
+                var bounds = ComputeExtentBounds();
+                return bounds.Width;
+            }
+        }
+
+        public double ExtentHeight
+        {
+            get
+            {
+                var bounds = ComputeExtentBounds();
+                return bounds.Height;
+            }
+        }
+
+        public double ViewportWidth => ActualWidth / Math.Max(1e-6, TransformService?.Zoom ?? 1.0);
+        public double ViewportHeight => ActualHeight / Math.Max(1e-6, TransformService?.Zoom ?? 1.0);
+
+        public double HorizontalOffset => -(TransformService?.Pan.X ?? 0) / Math.Max(1e-6, TransformService?.Zoom ?? 1.0);
+        public double VerticalOffset => -(TransformService?.Pan.Y ?? 0) / Math.Max(1e-6, TransformService?.Zoom ?? 1.0);
+
+        public ScrollViewer? ScrollOwner
+        {
+            get => _scrollOwner;
+            set => _scrollOwner = value;
+        }
+
+        public void LineUp() => ScrollByGrid(0, -1);
+        public void LineDown() => ScrollByGrid(0, 1);
+        public void LineLeft() => ScrollByGrid(-1, 0);
+        public void LineRight() => ScrollByGrid(1, 0);
+
+        public void PageUp() => TransformService?.PanBy(new Vector(0, ActualHeight));
+        public void PageDown() => TransformService?.PanBy(new Vector(0, -ActualHeight));
+        public void PageLeft() => TransformService?.PanBy(new Vector(ActualWidth, 0));
+        public void PageRight() => TransformService?.PanBy(new Vector(-ActualWidth, 0));
+
+        // ponytail: zoom handled by MouseWheel event, these are no-ops
+        public void MouseWheelUp() { }
+        public void MouseWheelDown() { }
+        public void MouseWheelLeft() { }
+        public void MouseWheelRight() { }
+
+        public void SetHorizontalOffset(double offset)
+        {
+            if (TransformService == null) return;
+            var zoom = TransformService.Zoom;
+            TransformService.Pan = new Vector(-offset * zoom, TransformService.Pan.Y);
+        }
+
+        public void SetVerticalOffset(double offset)
+        {
+            if (TransformService == null) return;
+            var zoom = TransformService.Zoom;
+            TransformService.Pan = new Vector(TransformService.Pan.X, -offset * zoom);
+        }
+
+        public Rect MakeVisible(Visual visual, Rect rectangle)
+        {
+            // Return current viewport rect
+            return new Rect(HorizontalOffset, VerticalOffset, ViewportWidth, ViewportHeight);
+        }
+
+        private void ScrollByGrid(double dx, double dy)
+        {
+            // 1 grid unit in screen pixels
+            var zoom = TransformService?.Zoom ?? 1.0;
+            TransformService?.PanBy(new Vector(-dx * zoom, -dy * zoom));
+        }
+
+        private Rect ComputeExtentBounds()
+        {
+            // ponytail: simple union of all objects + padding; O(n) scan, upgrade to cached bounding box if perf matters
+            const double padding = 100;
+            var all = ObjectManager?.GetAll();
+            if (all == null || !all.Any())
+                return new Rect(0, 0, ViewportWidth + padding * 2, ViewportHeight + padding * 2);
+
+            double minX = double.MaxValue, minY = double.MaxValue;
+            double maxX = double.MinValue, maxY = double.MinValue;
+            foreach (var obj in all)
+            {
+                var b = obj.Bounds;
+                if (b.Left < minX) minX = b.Left;
+                if (b.Top < minY) minY = b.Top;
+                if (b.Right > maxX) maxX = b.Right;
+                if (b.Bottom > maxY) maxY = b.Bottom;
+            }
+            return new Rect(minX - padding, minY - padding, (maxX - minX) + padding * 2, (maxY - minY) + padding * 2);
+        }
+
+        private void InvalidateScrollOwner()
+        {
+            _scrollOwner?.InvalidateScrollInfo();
+        }
+
+        #endregion
+
+        #region Phase 2.6: Select All Same Identifier
+
+        public void SelectAllWithIdentifier(string identifier)
+        {
+            var matches = ObjectManager.GetAll().Where(o =>
+                string.Equals(o.Identifier, identifier, StringComparison.OrdinalIgnoreCase)).ToList();
+            SetSelection(matches);
+        }
+
+        #endregion
     }
 }

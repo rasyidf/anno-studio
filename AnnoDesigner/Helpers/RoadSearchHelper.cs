@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using AnnoDesigner.Controls.EditorCanvas.Content.Models;
 using AnnoDesigner.Core.Extensions;
 using AnnoDesigner.Core.Layout.Helper;
 using AnnoDesigner.Core.Models;
@@ -14,6 +16,101 @@ namespace AnnoDesigner.Helper
         private static readonly StatisticsCalculationHelper _statisticsCalculationHelper = new();
 
         private static void DoNothing(AnnoObject objectInRange) { }
+
+        /// <summary>
+        /// Returns all integer grid cells that a line segment passes through using Bresenham's line algorithm.
+        /// Both endpoints are included in the result.
+        /// </summary>
+        public static HashSet<Point> RasterizeSegment(Point from, Point to)
+        {
+            var cells = new HashSet<Point>();
+
+            var x0 = (int)Math.Floor(from.X);
+            var y0 = (int)Math.Floor(from.Y);
+            var x1 = (int)Math.Floor(to.X);
+            var y1 = (int)Math.Floor(to.Y);
+
+            var dx = Math.Abs(x1 - x0);
+            var dy = Math.Abs(y1 - y0);
+            var sx = x0 < x1 ? 1 : -1;
+            var sy = y0 < y1 ? 1 : -1;
+            var err = dx - dy;
+
+            while (true)
+            {
+                cells.Add(new Point(x0, y0));
+
+                if (x0 == x1 && y0 == y1)
+                    break;
+
+                var e2 = 2 * err;
+                if (e2 > -dy)
+                {
+                    err -= dy;
+                    x0 += sx;
+                }
+                if (e2 < dx)
+                {
+                    err += dx;
+                    y0 += sy;
+                }
+            }
+
+            return cells;
+        }
+
+        /// <summary>
+        /// Extends an existing grid dictionary with cells covered by diagonal road segments.
+        /// Diagonal roads are <see cref="CanvasObject"/> instances with ShapeType="Multiline" and IsRoad=true.
+        /// Their PathPoints are rasterized to determine which grid cells the road passes through,
+        /// and a synthetic 1x1 road AnnoObject is placed in each covered cell that is currently empty.
+        /// After this call, the standard BFS works unchanged on the extended grid.
+        /// </summary>
+        public static void PrepareConnectivityGraph(
+            Moved2DArray<AnnoObject> gridDictionary,
+            IEnumerable<CanvasObject> diagonalRoads)
+        {
+            if (gridDictionary is null || diagonalRoads is null)
+                return;
+
+            // ponytail: synthetic road object reused for all rasterized diagonal cells.
+            // Ceiling: if per-cell metadata (color, factor) is needed, create one per cell instead.
+            var syntheticRoad = new AnnoObject
+            {
+                Size = new Size(1, 1),
+                Road = true,
+                Identifier = "DiagonalRoadCell"
+            };
+
+            foreach (var road in diagonalRoads)
+            {
+                if (road.PathPoints is null || road.PathPoints.Count < 2)
+                    continue;
+
+                for (var i = 0; i < road.PathPoints.Count - 1; i++)
+                {
+                    var rasterized = RasterizeSegment(road.PathPoints[i], road.PathPoints[i + 1]);
+
+                    foreach (var cell in rasterized)
+                    {
+                        var x = (int)cell.X - gridDictionary.Offset.x;
+                        var y = (int)cell.Y - gridDictionary.Offset.y;
+
+                        // Bounds check — cell may fall outside the pre-computed grid
+                        if (x < 0 || x >= gridDictionary.Count)
+                            continue;
+                        if (y < 0 || y >= gridDictionary[x].Length)
+                            continue;
+
+                        // Only fill empty cells; don't overwrite existing buildings/roads
+                        if (gridDictionary[x][y] is null)
+                        {
+                            gridDictionary.Array[x][y] = syntheticRoad;
+                        }
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Creates offset 2D array from input AnnoObjects.
@@ -66,6 +163,11 @@ namespace AnnoDesigner.Helper
         /// For each influence range it:
         ///   - adds all adjecent roads of start buildings with current influence range to current list of cells to visit
         ///   - visits every cell from current list and adds adjecent cells to list for next iteration
+        ///
+        /// Diagonal roads are supported via <see cref="PrepareConnectivityGraph"/>: their line segments
+        /// are rasterized into individual grid cells before BFS runs. Each rasterized cell is traversed
+        /// at the standard cost of 1 per step, which matches Anno's tile-based influence counting
+        /// (roads are counted by tile, not by euclidean distance).
         /// </summary>
         public static bool[][] BreadthFirstSearch(
             IEnumerable<AnnoObject> placedObjects,
