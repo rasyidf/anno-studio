@@ -74,12 +74,34 @@ public sealed class EditorCanvasAnnoAdapter : UserControl, IAnnoCanvas
         _editorCanvas.SetResourceReference(EditorCanvas.EditorCanvas.SelectionStrokeBrushProperty,
             "SystemAccentColorPrimaryBrush");
 
+        // Configure for Anno grid: 1 world-unit = 1 grid cell, zoom = GridSize pixels per cell
+        if (_editorCanvas.Preferences != null)
+        {
+            _editorCanvas.Preferences.GridSpacing = 1.0;    // Grid lines every 1 world-unit
+            _editorCanvas.Preferences.SubGridVisible = false;
+            _editorCanvas.Preferences.SnapToGrid = true;
+            _editorCanvas.Preferences.DefaultZoom = _gridSize;  // 20x zoom = 20 pixels per grid cell
+            _editorCanvas.Preferences.MinZoom = 5.0;
+            _editorCanvas.Preferences.MaxZoom = 100.0;
+        }
+
+        // Set initial zoom to match Anno GridSize
+        if (_editorCanvas.TransformService != null)
+            _editorCanvas.TransformService.Zoom = _gridSize;
+
+        // Configure grid layer cell size to 1 world-unit
+        var gridLayer = _editorCanvas.LayeredRenderer?.Layers
+            ?.OfType<EditorCanvas.Core.Layers.GridLayer>().FirstOrDefault();
+        if (gridLayer != null)
+            gridLayer.CellSize = 1;
+
         _adapter = new AnnoEditorAdapter(
             _editorCanvas,
             coordinateHelper,
             brushCache,
             penCache,
-            () => _gridSize);
+            () => _gridSize,
+            icons);
 
         Content = _editorCanvas;
 

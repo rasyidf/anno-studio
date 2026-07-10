@@ -1,3 +1,4 @@
+using System;
 using System.Windows;
 using System.Windows.Media;
 
@@ -18,13 +19,18 @@ namespace AnnoDesigner.Controls.EditorCanvas.Core.Layers
             var pen = new Pen(canvas.GridLineBrush ?? Brushes.LightGray, 0.5);
             pen.Freeze();
 
-            for (double x = 0; x <= clip.Width; x += CellSize)
+            // Draw grid lines covering the visible clip area in world coordinates.
+            // Snap start to nearest cell boundary below/left of clip origin.
+            var startX = Math.Floor(clip.Left / CellSize) * CellSize;
+            var startY = Math.Floor(clip.Top / CellSize) * CellSize;
+
+            for (double x = startX; x <= clip.Right; x += CellSize)
             {
-                dc.DrawLine(pen, new System.Windows.Point(x, 0), new System.Windows.Point(x, clip.Height));
+                dc.DrawLine(pen, new Point(x, clip.Top), new Point(x, clip.Bottom));
             }
-            for (double y = 0; y <= clip.Height; y += CellSize)
+            for (double y = startY; y <= clip.Bottom; y += CellSize)
             {
-                dc.DrawLine(pen, new System.Windows.Point(0, y), new System.Windows.Point(clip.Width, y));
+                dc.DrawLine(pen, new Point(clip.Left, y), new Point(clip.Right, y));
             }
         }
     }

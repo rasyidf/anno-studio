@@ -54,10 +54,15 @@ namespace AnnoDesigner.Controls.Canvas.Layers
                 if (iconRect.IsEmpty) continue;
                 if (!clip.IntersectsWith(iconRect)) continue;
 
+                var iconName = obj.WrappedAnnoObject?.Icon;
                 var identifier = obj.Identifier;
-                if (identifier != null && _iconLookup.TryGetValue(identifier, out var icon))
+                if (!string.IsNullOrEmpty(iconName) && _iconLookup.TryGetValue(iconName, out var icon))
                 {
                     dc.DrawImage(icon, iconRect);
+                }
+                else if (identifier != null && _iconLookup.TryGetValue(identifier, out var iconByIdent))
+                {
+                    dc.DrawImage(iconByIdent, iconRect);
                 }
                 else
                 {

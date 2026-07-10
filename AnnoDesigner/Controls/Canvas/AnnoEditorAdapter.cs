@@ -26,6 +26,7 @@ public class AnnoEditorAdapter
     private readonly IBrushCache _brushCache;
     private readonly IPenCache _penCache;
     private readonly Func<int> _getGridSize;
+    private readonly Dictionary<string, IconImage> _icons;
     private InfluenceRenderLayer _influenceLayer;
 
     public EditorCanvas.EditorCanvas Canvas { get; }
@@ -35,14 +36,46 @@ public class AnnoEditorAdapter
         ICoordinateHelper coordinateHelper = null,
         IBrushCache brushCache = null,
         IPenCache penCache = null,
-        Func<int> getGridSize = null)
+        Func<int> getGridSize = null,
+        Dictionary<string, IconImage> icons = null)
     {
         Canvas = canvas ?? throw new ArgumentNullException(nameof(canvas));
         _coordinateHelper = coordinateHelper ?? new CoordinateHelper();
         _brushCache = brushCache ?? new BrushCache();
         _penCache = penCache ?? new PenCache();
         _getGridSize = getGridSize ?? (() => AnnoDesigner.Constants.GridStepDefault);
+        _icons = icons ?? new Dictionary<string, IconImage>();
         RegisterLayers();
+    }
+
+    private Dictionary<string, BitmapImage> BuildIconLookup()
+    {
+        var lookup = new Dictionary<string, BitmapImage>(StringComparer.OrdinalIgnoreCase);
+        foreach (var (key, iconImage) in _icons)
+        {
+            if (string.IsNullOrEmpty(iconImage?.IconPath)) continue;
+            try
+            {
+                var bmp = new BitmapImage();
+                bmp.BeginInit();
+                bmp.UriSource = new Uri(iconImage.IconPath, UriKind.RelativeOrAbsolute);
+                bmp.CacheOption = BitmapCacheOption.OnLoad;
+                bmp.EndInit();
+                bmp.Freeze();
+                // Store by icon name (without path/extension) for lookup
+                var iconName = System.IO.Path.GetFileNameWithoutExtension(iconImage.IconPath);
+                if (!string.IsNullOrEmpty(iconName) && !lookup.ContainsKey(iconName))
+                    lookup[iconName] = bmp;
+                // Also store by the key (which may be the icon name already)
+                if (!lookup.ContainsKey(key))
+                    lookup[key] = bmp;
+            }
+            catch
+            {
+                // ponytail: skip icons that fail to load (missing files, bad paths)
+            }
+        }
+        return lookup;
     }
 
     private void RegisterLayers()
@@ -50,7 +83,7 @@ public class AnnoEditorAdapter
         var renderer = Canvas.LayeredRenderer;
         if (renderer == null) return;
 
-        renderer.AddLayer(new IconRenderLayer(GetLayoutObjects, _getGridSize, new Dictionary<string, BitmapImage>()));
+        renderer.AddLayer(new IconRenderLayer(GetLayoutObjects, _getGridSize, BuildIconLookup()));
         renderer.AddLayer(new BlockedAreaRenderLayer(GetLayoutObjects));
 
         _influenceLayer = new InfluenceRenderLayer(
