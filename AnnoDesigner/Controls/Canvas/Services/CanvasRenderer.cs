@@ -131,6 +131,7 @@ namespace AnnoDesigner.Controls.Canvas.Services
                 _lastViewPortAbsolute != viewPortAbsolute ||
                 _lastPlacedObjects != _canvas.PlacedObjects ||
                 _objectListDirty ||
+                _canvas.CurrentMode == MouseMode.PlaceObjects ||
                 _canvas.CurrentMode == MouseMode.DeleteObject)
             {
                 objectsToDraw = [.. _canvas.PlacedObjects.GetItemsIntersecting(viewPortAbsolute)];

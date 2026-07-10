@@ -418,18 +418,18 @@ namespace AnnoDesigner.Models
         {
             public bool SettingsUpgradeNeeded { get; set; }
             public bool PromptedForAutoUpdateCheck { get; set; }
-            public string SelectedLanguage { get; set; } = "Default";
-            public bool StatsShowStats { get; set; }
+            public string SelectedLanguage { get; set; } = "English";
+            public bool StatsShowStats { get; set; } = true;
             public bool StatsShowBuildingCount { get; set; }
             public bool ShowPavedRoadsWarning { get; set; }
-            public bool EnableAutomaticUpdateCheck { get; set; }
+            public bool EnableAutomaticUpdateCheck { get; set; } = true;
             public bool UseCurrentZoomOnExportedImageValue { get; set; }
             public bool RenderSelectionHighlightsOnExportedImageValue { get; set; }
-            public bool ShowLabels { get; set; }
-            public bool ShowIcons { get; set; }
-            public bool ShowGrid { get; set; }
+            public bool ShowLabels { get; set; } = true;
+            public bool ShowIcons { get; set; } = true;
+            public bool ShowGrid { get; set; } = true;
             public bool ShowTrueInfluenceRange { get; set; }
-            public bool ShowInfluences { get; set; }
+            public bool ShowInfluences { get; set; } = true;
             public bool ShowHarborBlockedArea { get; set; }
             public bool ShowPanorama { get; set; }
             public bool IsPavedStreet { get; set; }
@@ -437,24 +437,24 @@ namespace AnnoDesigner.Models
             public string PresetsTreeGameVersionFilter { get; set; } = string.Empty;
             public string PresetsTreeExpandedState { get; set; } = string.Empty;
             public string PresetsTreeLastVersion { get; set; } = string.Empty;
-            public double MainWindowHeight { get; set; }
-            public double MainWindowWidth { get; set; }
+            public double MainWindowHeight { get; set; } = 750;
+            public double MainWindowWidth { get; set; } = 1280;
             public double MainWindowLeft { get; set; }
             public double MainWindowTop { get; set; }
             public WindowState MainWindowWindowState { get; set; }
             public bool UpdateSupportsPrerelease { get; set; }
-            public bool ShowMultipleInstanceWarning { get; set; }
+            public bool ShowMultipleInstanceWarning { get; set; } = true;
             public string HotkeyMappings { get; set; } = string.Empty;
             public string RecentFiles { get; set; } = string.Empty;
-            public int MaxRecentFiles { get; set; }
+            public int MaxRecentFiles { get; set; } = 10;
             public string ColorGridLines { get; set; } = string.Empty;
             public string ColorObjectBorderLines { get; set; } = string.Empty;
-            public bool UseZoomToPoint { get; set; }
+            public bool UseZoomToPoint { get; set; } = true;
             public bool HideInfluenceOnSelection { get; set; }
-            public double ZoomSensitivityPercentage { get; set; }
-            public bool InvertPanningDirection { get; set; }
+            public double ZoomSensitivityPercentage { get; set; } = 50;
+            public bool InvertPanningDirection { get; set; } = true;
             public bool InvertScrollingDirection { get; set; }
-            public bool ShowScrollbars { get; set; }
+            public bool ShowScrollbars { get; set; } = true;
             public bool IncludeRoadsInStatisticCalculation { get; set; }
             public bool RenderVersionOnExportedImageValue { get; set; }
             public string ThemePreference { get; set; } = "System";
