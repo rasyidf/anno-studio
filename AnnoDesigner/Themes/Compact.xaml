@@ -14,8 +14,8 @@
         <Setter Property="Padding" Value="{StaticResource CompactCardPadding}" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="MinWidth" Value="160" />
-        <Setter Property="Background" Value="#F7F7F7" />
-        <Setter Property="BorderBrush" Value="#E0E0E0" />
+        <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="1" />
     </Style>
 
@@ -42,7 +42,7 @@
 
     <Style x:Key="CompactLabel" TargetType="TextBlock">
         <Setter Property="FontSize" Value="11" />
-        <Setter Property="Foreground" Value="#666666" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
     </Style>
 
 </ResourceDictionary>
