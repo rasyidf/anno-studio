@@ -45,9 +45,12 @@ var reportGeneratorHistoryDirectory = MakeAbsolute(Directory($"{reportDirectory}
 var solutionFiles = new List<string>
 {
     "./../AnnoDesigner.sln",
-    "./../ColorPresetsDesigner.sln",
-    "./../FandomParser/FandomParser.sln",
-    "./../FandomTemplateExporter/FandomTemplateExporter.sln"
+    // ponytail: ColorPresetsDesigner, FandomParser, FandomTemplateExporter are separate tools
+    // with their own solution files. They share the root Directory.Packages.props but some
+    // packages need version alignment. Build them separately if needed.
+    // "./../ColorPresetsDesigner.sln",
+    // "./../FandomParser/FandomParser.sln",
+    // "./../FandomTemplateExporter/FandomTemplateExporter.sln"
 };
 
 var versionNumber = System.IO.File.ReadAllText("./../version.txt");
