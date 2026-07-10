@@ -143,14 +143,20 @@ public sealed class EditorCanvasAnnoAdapter : UserControl, IAnnoCanvas
 
     private UIElement CreateContentWithToolbox()
     {
-        var dock = new DockPanel { LastChildFill = true };
+        // Canvas fills entire space, toolbox + zoom controls float on top
+        var container = new Grid();
 
-        // Toolbox panel (left side, narrow strip)
+        // Canvas (fills everything)
+        container.Children.Add(_editorCanvas);
+
+        // Toolbox (floating top-left)
         var toolbox = new StackPanel
         {
             Orientation = System.Windows.Controls.Orientation.Vertical,
-            Width = 32,
+            HorizontalAlignment = HorizontalAlignment.Left,
             VerticalAlignment = VerticalAlignment.Top,
+            Margin = new Thickness(8, 8, 0, 0),
+            Opacity = 0.95,
         };
         toolbox.SetResourceReference(StackPanel.BackgroundProperty, "CardBackgroundFillColorDefaultBrush");
 
@@ -184,11 +190,33 @@ public sealed class EditorCanvasAnnoAdapter : UserControl, IAnnoCanvas
             toolbox.Children.Add(btn);
         }
 
-        DockPanel.SetDock(toolbox, Dock.Left);
-        dock.Children.Add(toolbox);
-        dock.Children.Add(_editorCanvas); // fills remaining space
+        // Zoom controls (floating bottom-right)
+        var zoomPanel = new StackPanel
+        {
+            Orientation = System.Windows.Controls.Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            VerticalAlignment = VerticalAlignment.Bottom,
+            Margin = new Thickness(0, 0, 8, 8),
+            Opacity = 0.95,
+        };
+        zoomPanel.SetResourceReference(StackPanel.BackgroundProperty, "CardBackgroundFillColorDefaultBrush");
 
-        return dock;
+        var zoomOut = new System.Windows.Controls.Button { Content = "−", Width = 28, Height = 28, FontSize = 16, Padding = new Thickness(0) };
+        var zoomReset = new System.Windows.Controls.Button { Content = "⟲", Width = 28, Height = 28, FontSize = 14, Padding = new Thickness(0), ToolTip = "Reset zoom" };
+        var zoomIn = new System.Windows.Controls.Button { Content = "+", Width = 28, Height = 28, FontSize = 16, Padding = new Thickness(0) };
+
+        zoomOut.Click += (s, e) => { if (_editorCanvas.TransformService != null) _editorCanvas.TransformService.Zoom *= 0.8; _editorCanvas.InvalidateVisual(); };
+        zoomIn.Click += (s, e) => { if (_editorCanvas.TransformService != null) _editorCanvas.TransformService.Zoom *= 1.25; _editorCanvas.InvalidateVisual(); };
+        zoomReset.Click += (s, e) => { if (_editorCanvas.TransformService != null) _editorCanvas.TransformService.Zoom = _gridSize; _editorCanvas.InvalidateVisual(); };
+
+        zoomPanel.Children.Add(zoomOut);
+        zoomPanel.Children.Add(zoomReset);
+        zoomPanel.Children.Add(zoomIn);
+
+        container.Children.Add(toolbox);
+        container.Children.Add(zoomPanel);
+
+        return container;
     }
 
     #region IAnnoCanvas Properties
