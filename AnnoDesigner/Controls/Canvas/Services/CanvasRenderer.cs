@@ -30,6 +30,11 @@ namespace AnnoDesigner.Controls.Canvas.Services
         private List<LayoutObject> _lastBorderedObjectsToDraw = [];
         private QuadTree<LayoutObject> _lastPlacedObjects;
 
+        // ponytail: dirty flag to avoid re-querying QuadTree every frame during PlaceObjects mode.
+        // Ceiling: if QuadTree gains a version counter, compare that instead of Count.
+        private bool _objectListDirty;
+        private int _lastPlacedObjectsCount = -1;
+
 
 
         private int _lastGridSize = -1;
@@ -114,16 +119,25 @@ namespace AnnoDesigner.Controls.Canvas.Services
             var borderedObjects = _lastBorderedObjectsToDraw;
             var objectsChanged = false;
 
+            // Detect mutations via count change (no event on QuadTree)
+            var currentCount = _canvas.PlacedObjects?.Count ?? 0;
+            if (currentCount != _lastPlacedObjectsCount)
+            {
+                _objectListDirty = true;
+                _lastPlacedObjectsCount = currentCount;
+            }
+
             if (_canvas._isRenderingForced ||
                 _lastViewPortAbsolute != viewPortAbsolute ||
                 _lastPlacedObjects != _canvas.PlacedObjects ||
-                _canvas.CurrentMode == MouseMode.PlaceObjects ||
+                _objectListDirty ||
                 _canvas.CurrentMode == MouseMode.DeleteObject)
             {
                 objectsToDraw = [.. _canvas.PlacedObjects.GetItemsIntersecting(viewPortAbsolute)];
                 _lastObjectsToDraw = objectsToDraw;
                 _lastPlacedObjects = _canvas.PlacedObjects;
                 _lastViewPortAbsolute = viewPortAbsolute;
+                _objectListDirty = false;
 
                 borderlessObjects = [.. objectsToDraw.Where(_ => _.WrappedAnnoObject.Borderless)];
                 _lastBorderlessObjectsToDraw = borderlessObjects;
