@@ -53,27 +53,10 @@ public class AnnoEditorAdapter
         var lookup = new Dictionary<string, BitmapImage>(StringComparer.OrdinalIgnoreCase);
         foreach (var (key, iconImage) in _icons)
         {
-            if (string.IsNullOrEmpty(iconImage?.IconPath)) continue;
-            try
-            {
-                var bmp = new BitmapImage();
-                bmp.BeginInit();
-                bmp.UriSource = new Uri(iconImage.IconPath, UriKind.RelativeOrAbsolute);
-                bmp.CacheOption = BitmapCacheOption.OnLoad;
-                bmp.EndInit();
-                bmp.Freeze();
-                // Store by icon name (without path/extension) for lookup
-                var iconName = System.IO.Path.GetFileNameWithoutExtension(iconImage.IconPath);
-                if (!string.IsNullOrEmpty(iconName) && !lookup.ContainsKey(iconName))
-                    lookup[iconName] = bmp;
-                // Also store by the key (which may be the icon name already)
-                if (!lookup.ContainsKey(key))
-                    lookup[key] = bmp;
-            }
-            catch
-            {
-                // ponytail: skip icons that fail to load (missing files, bad paths)
-            }
+            if (iconImage?.Icon == null) continue;
+            // Key is already the icon name (e.g., "A7_wheat_farm")
+            if (!lookup.ContainsKey(key))
+                lookup[key] = iconImage.Icon;
         }
         return lookup;
     }

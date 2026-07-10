@@ -46,13 +46,19 @@ namespace AnnoDesigner.Controls.Canvas.Layers
             var objects = _getObjects();
             if (objects == null) return;
 
-            var gridSize = _getGridSize();
-
             foreach (var obj in objects)
             {
-                var iconRect = obj.GetIconRect(gridSize);
-                if (iconRect.IsEmpty) continue;
-                if (!clip.IntersectsWith(iconRect)) continue;
+                // In world-space (order < 500), coords are grid units. Compute icon rect as inset of object bounds.
+                var gridRect = new Rect(obj.Position, obj.Size);
+                if (gridRect.IsEmpty || gridRect.Width <= 0 || gridRect.Height <= 0) continue;
+                if (!clip.IntersectsWith(gridRect)) continue;
+
+                // Icon fills center 60% of the object
+                var iconRect = new Rect(
+                    gridRect.X + gridRect.Width * 0.2,
+                    gridRect.Y + gridRect.Height * 0.2,
+                    gridRect.Width * 0.6,
+                    gridRect.Height * 0.6);
 
                 var iconName = obj.WrappedAnnoObject?.Icon;
                 var identifier = obj.Identifier;
@@ -63,10 +69,6 @@ namespace AnnoDesigner.Controls.Canvas.Layers
                 else if (identifier != null && _iconLookup.TryGetValue(identifier, out var iconByIdent))
                 {
                     dc.DrawImage(iconByIdent, iconRect);
-                }
-                else
-                {
-                    dc.DrawRectangle(PlaceholderBrush, PlaceholderPen, iconRect);
                 }
             }
         }
