@@ -164,54 +164,25 @@ var updateAssemblyInfoTask = Task("Update-Assembly-Info")
 
 var buildTask = Task("Build")
 .Description("Builds all the different parts of the project.")
-//.IsDependentOn(cleanTask)
-.IsDependentOn(updateAssemblyInfoTask)
+.IsDependentOn(cleanTask)
 .Does(() =>
 {
     foreach (var curSolutionFile in solutionFiles)
     {
         var curSolutionFileName = System.IO.Path.GetFileName(curSolutionFile);
-        var msBuildSettings = new MSBuildSettings()
-        {
-            Configuration = configuration,
-            PlatformTarget = PlatformTarget.MSIL,
-            ToolVersion = (Cake.Common.Tools.MSBuild.MSBuildToolVersion)msbuildVersion,
-            MaxCpuCount = 0,//use all available
-            NoConsoleLogger = true,
-            DetailedSummary = true,
-            Verbosity = Verbosity.Minimal,
-            NoLogo = true
-        };
-
-        if(isWorkflowRun)
-        {
-            msBuildSettings.NoConsoleLogger = false;
-            //msBuildSettings.Verbosity = Verbosity.Normal;
-        }
-
-        if(useBinaryLog)
-        {
-            msBuildSettings.BinaryLogger = new MSBuildBinaryLogSettings
-            {
-                Enabled = true,
-                FileName = $"{logDirectory}/{curSolutionFileName}.binlog"
-            };
-        }
-        else
-        {
-            msBuildSettings.FileLoggers.Add(new MSBuildFileLogger
-            {
-                LogFile = $"{logDirectory}/{curSolutionFileName}.log"
-            });
-        }
-
-        msBuildSettings = msBuildSettings.WithTarget("Clean");
-        msBuildSettings = msBuildSettings.WithTarget("Restore");
-        msBuildSettings = msBuildSettings.WithTarget("Build");
 
         Information($"{DateTime.Now:hh:mm:ss.ff} compiling {curSolutionFileName}");
 
-        MSBuild(curSolutionFile, msBuildSettings);
+        // ponytail: replaced MSBuild() with DotNetBuild().
+        // VS 2022 17.14 doesn't support .NET 10. dotnet build uses the SDK directly.
+        var buildSettings = new DotNetBuildSettings
+        {
+            Configuration = configuration,
+            Verbosity = DotNetVerbosity.Minimal,
+            NoLogo = true
+        };
+
+        DotNetBuild(curSolutionFile, buildSettings);
         Information("");
     }
 });
