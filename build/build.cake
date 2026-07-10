@@ -230,102 +230,57 @@ var runUnitTestsTask = Task("Run-Unit-Tests")
 
     Information("");
 
-var xUnit2Settings = new XUnit2Settings
-        {
-            Parallelism = ParallelismOption.All,
-            HtmlReport = true,
-            XmlReport = true,
-            ReportName = $"TestResults_{configuration}",
-            OutputDirectory = $"{logDirectory}",
-            UseX86 = true,
-            ShadowCopy = false,//if true OpenCover says 0% coverage
-            ToolPath = $"./tools/xunit.runner.console.{xunitRunnerVersion}/tools/net472/xunit.console.exe",
-            //ArgumentCustomization = args => args.Append("-quiet")
-            //ArgumentCustomization = args => args.Append("-verbose") //print progress of unit tests
-        };
-        
-        var openCoverSettings = new OpenCoverSettings
-        {            
-            MergeOutput = true,
-            MergeByHash = true,
-            NoDefaultFilters = true,
-            ReturnTargetCodeOffset = 0 //to throw an exception, when there are failing tests
-            //ArgumentCustomization = args => args.Append("-coverbytest:*.Tests.dll").Append("-mergebyhash")
-        };
-        openCoverSettings.WithRegisterUser();
-        
-        openCoverSettings.WithFilter("+[*]*");
-        openCoverSettings.WithFilter("-[*.Tests]*");
-        openCoverSettings.WithFilter("-[*Moq*]*");
-        openCoverSettings.WithFilter("-[*Xunit*]*");
-        openCoverSettings.WithFilter("-[*xunit*]*");
-        openCoverSettings.WithFilter("-[xunit*]*");
-        openCoverSettings.WithFilter("-[*]Xunit*");
-        openCoverSettings.WithFilter("-[*]xunit*");
-        openCoverSettings.WithFilter("-[*]xunit.*");
-        
-        var coverageResultsFilePath = new FilePath($"{openCoverDirectory}/OpenCover_results.xml");
-        
-        OpenCover(tool => 
-        {
-            tool.XUnit2(testAssemblies,xUnit2Settings);
-        },coverageResultsFilePath, openCoverSettings);
+    // ponytail: replaced OpenCover + xunit.console.exe (net472) with dotnet test.
+    // OpenCover can't load .NET 10 assemblies. Use built-in coverage collection instead.
+    // Upgrade path: add --collect:"XPlat Code Coverage" for coverage reports.
+    var testSettings = new DotNetTestSettings
+    {
+        Configuration = configuration,
+        NoBuild = true,
+        NoRestore = true,
+        Verbosity = DotNetVerbosity.Normal,
+        ResultsDirectory = logDirectory
+    };
 
-Information("");
-Information($"{DateTime.Now:hh:mm:ss.ff} starting ReportGenerator");
-
-var reportGeneratorSettings = new ReportGeneratorSettings()
-        {
-            HistoryDirectory = reportGeneratorHistoryDirectory,
-            Verbosity = ReportGeneratorVerbosity.Info,
-            ReportTypes = new[] { ReportGeneratorReportType.Html }
-        };        
-
-ReportGenerator(coverageResultsFilePath, reportGeneratorDirectory, reportGeneratorSettings);
+    var testProjects = GetFiles("./../Tests/**/*.csproj");
+    foreach (var project in testProjects)
+    {
+        Information($"{DateTime.Now:hh:mm:ss.ff} running tests for {project.GetFilename()}");
+        DotNetTest(project.FullPath, testSettings);
+    }
 });
 
 var copyFilesTask = Task("Copy-Files")
 .IsDependentOn(buildTask)
 .Does(() =>
 {
-    var outputDirectoryIcons=$"{outDirectory}/icons";
-    EnsureDirectoryExists(outputDirectoryIcons);
-    CleanDirectory(outputDirectoryIcons);
+    // ponytail: publish as self-contained for distribution.
+    // The old approach copied individual DLLs from net48 output.
+    // .NET 10 apps use `dotnet publish` for proper output.
+    var publishDir = $"./../AnnoDesigner/bin/{configuration}/net10.0-windows8.0/publish";
 
-    Information($"{DateTime.Now:hh:mm:ss.ff} copy icons to \"{outputDirectoryIcons}\"");
-    CopyDirectory($"./../AnnoDesigner/bin/{configuration}/net48/icons", $"{outputDirectoryIcons}");
-
-    Information($"{DateTime.Now:hh:mm:ss.ff} copy application to \"{outDirectory}\"");
-    CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/AnnoDesigner.Core.dll", $"{outDirectory}");
-    CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/AnnoDesigner.exe", $"{outDirectory}");
-    
-    //hide the exe.config file (it confused some users)
-    var appConfigFilePath = MakeAbsolute(File($"./../AnnoDesigner/bin/{configuration}/net48/AnnoDesigner.exe.config")).FullPath;
-    System.IO.File.SetAttributes(appConfigFilePath, System.IO.File.GetAttributes(appConfigFilePath) | System.IO.FileAttributes.Hidden);
-    CopyFileToDirectory(appConfigFilePath, $"{outDirectory}");    
-
-    CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/colors.json", $"{outDirectory}");
-    CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/icons.json", $"{outDirectory}");    
-    CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/Microsoft.Bcl.HashCode.dll", $"{outDirectory}");
-    CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/Microsoft.Xaml.Behaviors.dll", $"{outDirectory}");
-    CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/Newtonsoft.Json.dll", $"{outDirectory}");
-    CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/NLog.dll", $"{outDirectory}");
-    CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/Octokit.dll", $"{outDirectory}");
-    CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/presets.json", $"{outDirectory}");    
-    CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/System.CommandLine.dll", $"{outDirectory}");
-    CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/System.Buffers.dll", $"{outDirectory}");
-    CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/System.Memory.dll", $"{outDirectory}");
-    CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/System.Numerics.Vectors.dll", $"{outDirectory}");
-    CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/System.Runtime.CompilerServices.Unsafe.dll", $"{outDirectory}");
-    CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/System.IO.Abstractions.dll", $"{outDirectory}");
-    CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/treeLocalization.json", $"{outDirectory}");
-    CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/Xceed.Wpf.Toolkit.dll", $"{outDirectory}");
-
-    if(configuration.Equals("DEBUG", StringComparison.OrdinalIgnoreCase))
+    Information($"{DateTime.Now:hh:mm:ss.ff} publishing AnnoDesigner...");
+    DotNetPublish("./../AnnoDesigner/AnnoDesigner.csproj", new DotNetPublishSettings
     {
-        CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/AnnoDesigner.Core.pdb", $"{outDirectory}");
-        CopyFileToDirectory($"./../AnnoDesigner/bin/{configuration}/net48/AnnoDesigner.pdb", $"{outDirectory}");
+        Configuration = configuration,
+        OutputDirectory = publishDir,
+        NoBuild = true
+    });
+
+    var outputDirectoryIcons = $"{outDirectory}/icons";
+    EnsureDirectoryExists(outputDirectoryIcons);
+    EnsureDirectoryExists(outDirectory);
+
+    // Copy game icons
+    var gameIconsDir = $"{publishDir}/Assets/game_icons";
+    if (DirectoryExists(gameIconsDir))
+    {
+        Information($"{DateTime.Now:hh:mm:ss.ff} copy icons to \"{outputDirectoryIcons}\"");
+        CopyDirectory(gameIconsDir, outputDirectoryIcons);
     }
+    // Copy published output to out directory
+    Information($"{DateTime.Now:hh:mm:ss.ff} copying published files to \"{outDirectory}\"");
+    CopyDirectory(publishDir, outDirectory);
 
     Information("");
 });
