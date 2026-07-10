@@ -353,6 +353,12 @@ namespace AnnoDesigner.Models
             set => _data.ThemePreference = value;
         }
 
+        public bool UseNewCanvas
+        {
+            get => _data.UseNewCanvas;
+            set => _data.UseNewCanvas = value;
+        }
+
         #endregion
 
         #region Defaults
@@ -400,7 +406,8 @@ namespace AnnoDesigner.Models
             ShowScrollbars = true,
             IncludeRoadsInStatisticCalculation = false,
             RenderVersionOnExportedImageValue = true,
-            ThemePreference = "System"
+            ThemePreference = "System",
+            UseNewCanvas = false
         };
 
         #endregion
@@ -451,6 +458,7 @@ namespace AnnoDesigner.Models
             public bool IncludeRoadsInStatisticCalculation { get; set; }
             public bool RenderVersionOnExportedImageValue { get; set; }
             public string ThemePreference { get; set; } = "System";
+            public bool UseNewCanvas { get; set; }
         }
 
         #endregion

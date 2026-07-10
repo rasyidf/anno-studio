@@ -82,23 +82,38 @@ namespace AnnoDesigner.ViewModels
             BuildingPresets buildingPresets,
             Dictionary<string, IconImage> icons)
         {
-            // Create new canvas instance with scoped services
-            Canvas = new AnnoCanvas(
-                buildingPresets,
-                icons,
-                _services.AppSettings,
-                _services.CoordinateHelper,
-                _services.BrushCache,
-                _services.PenCache,
-                _services.MessageBoxService,
-                _services.LocalizationHelper,
-                _services.CreateUndoManager(), // Scoped per document
-                layoutFileServiceFactory => new LayoutFileService(
-                    layoutFileServiceFactory,
+            if (_services.AppSettings.UseNewCanvas)
+            {
+                // ponytail: Phase 4 MVP — EditorCanvas path via adapter shim
+                Canvas = new EditorCanvasAnnoAdapter(
+                    buildingPresets,
+                    icons,
+                    _services.AppSettings,
+                    _services.CoordinateHelper,
+                    _services.BrushCache,
+                    _services.PenCache,
+                    _services.CreateUndoManager());
+            }
+            else
+            {
+                // Original AnnoCanvas path
+                Canvas = new AnnoCanvas(
+                    buildingPresets,
+                    icons,
+                    _services.AppSettings,
+                    _services.CoordinateHelper,
+                    _services.BrushCache,
+                    _services.PenCache,
                     _services.MessageBoxService,
-                    _services.LocalizationHelper),
-                _services.ClipboardService
-            );
+                    _services.LocalizationHelper,
+                    _services.CreateUndoManager(), // Scoped per document
+                    layoutFileServiceFactory => new LayoutFileService(
+                        layoutFileServiceFactory,
+                        _services.MessageBoxService,
+                        _services.LocalizationHelper),
+                    _services.ClipboardService
+                );
+            }
 
             // Apply default rendering settings
             Canvas.RenderGrid = _services.AppSettings.ShowGrid;

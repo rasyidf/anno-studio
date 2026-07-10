@@ -302,6 +302,9 @@ namespace AnnoDesigner.Models
             get;// => Settings.Default.ThemePreference;
             set;//=> Settings.Default.ThemePreference = value;
         }
+
+        // ponytail: not persisted in legacy Settings.Default — only relevant for JsonAppSettings path
+        public bool UseNewCanvas { get; set; }
     }
 }
 
