@@ -80,9 +80,9 @@ public sealed class EditorCanvasAnnoAdapter : UserControl, IAnnoCanvas
             _editorCanvas.Preferences.GridSpacing = 1.0;    // Grid lines every 1 world-unit
             _editorCanvas.Preferences.SubGridVisible = false;
             _editorCanvas.Preferences.SnapToGrid = true;
-            _editorCanvas.Preferences.DefaultZoom = _gridSize;  // 20x zoom = 20 pixels per grid cell
-            _editorCanvas.Preferences.MinZoom = 5.0;
-            _editorCanvas.Preferences.MaxZoom = 100.0;
+            _editorCanvas.Preferences.DefaultZoom = _gridSize;  // pixels per grid cell
+            _editorCanvas.Preferences.MinZoom = 8.0;
+            _editorCanvas.Preferences.MaxZoom = 120.0;
         }
 
         // Set initial zoom to match Anno GridSize

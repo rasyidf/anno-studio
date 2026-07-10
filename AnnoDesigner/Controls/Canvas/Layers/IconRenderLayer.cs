@@ -61,6 +61,9 @@ namespace AnnoDesigner.Controls.Canvas.Layers
                     gridRect.Height * 0.6);
 
                 var iconName = obj.WrappedAnnoObject?.Icon;
+                // Strip extension if present (BuildingInfo stores "A8_bread_goods.png" but lookup key is "A8_bread_goods")
+                if (!string.IsNullOrEmpty(iconName) && iconName.Contains('.'))
+                    iconName = System.IO.Path.GetFileNameWithoutExtension(iconName);
                 var identifier = obj.Identifier;
                 if (!string.IsNullOrEmpty(iconName) && _iconLookup.TryGetValue(iconName, out var icon))
                 {
