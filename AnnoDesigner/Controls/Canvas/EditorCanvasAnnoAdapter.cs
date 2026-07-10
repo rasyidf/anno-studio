@@ -63,6 +63,17 @@ public sealed class EditorCanvasAnnoAdapter : UserControl, IAnnoCanvas
         _undoManager = undoManager;
 
         _editorCanvas = new EditorCanvas.EditorCanvas();
+
+        // Sync with system theme via WPF-UI dynamic resources
+        _editorCanvas.SetResourceReference(EditorCanvas.EditorCanvas.BackgroundBrushProperty,
+            "ApplicationBackgroundBrush");
+        _editorCanvas.SetResourceReference(EditorCanvas.EditorCanvas.GridLineBrushProperty,
+            "ControlStrokeColorDefaultBrush");
+        _editorCanvas.SetResourceReference(EditorCanvas.EditorCanvas.ObjectStrokeBrushProperty,
+            "TextFillColorPrimaryBrush");
+        _editorCanvas.SetResourceReference(EditorCanvas.EditorCanvas.SelectionStrokeBrushProperty,
+            "SystemAccentColorPrimaryBrush");
+
         _adapter = new AnnoEditorAdapter(
             _editorCanvas,
             coordinateHelper,
@@ -147,7 +158,30 @@ public sealed class EditorCanvasAnnoAdapter : UserControl, IAnnoCanvas
     {
         _currentObjects.Clear();
         if (obj != null)
+        {
             _currentObjects.Add(obj);
+
+            // Activate placement tool on the EditorCanvas with the object as template
+            var placementTool = _editorCanvas.ToolManager?.RegisteredTools
+                ?.OfType<EditorCanvas.Tooling.PlacementTool>().FirstOrDefault();
+            if (placementTool != null)
+            {
+                var template = new CanvasObject
+                {
+                    Bounds = new Rect(0, 0, obj.Size.Width, obj.Size.Height),
+                    Identifier = obj.Identifier,
+                    FillColor = obj.Color.MediaColor,
+                    Label = obj.WrappedAnnoObject?.Label,
+                    IconName = obj.WrappedAnnoObject?.Icon,
+                    IsRoad = obj.WrappedAnnoObject?.Road ?? false,
+                    IsBorderless = obj.WrappedAnnoObject?.Borderless ?? false,
+                    Tag = obj.WrappedAnnoObject,
+                    ShapeType = "Rectangle"
+                };
+                placementTool.SetTemplate(template);
+                _editorCanvas.ToolManager.Activate("Placement");
+            }
+        }
         OnCurrentObjectChanged?.Invoke(obj);
     }
 

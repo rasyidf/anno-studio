@@ -329,7 +329,7 @@
                         Text="Requires restart. Enables the new EditorCanvas renderer." />
                 </Grid>
             </ui:CardControl.Header>
-            <ToggleButton IsChecked="{Binding UseNewCanvas}" />
+            <ui:ToggleSwitch IsChecked="{Binding UseNewCanvas}" />
         </ui:CardControl>
 
     </StackPanel>

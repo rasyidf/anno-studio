@@ -46,9 +46,25 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
         {
             _templateSize = size;
             _templateIdentifier = identifier ?? string.Empty;
+            _templateObject = null;
             _hasTemplate = true;
             _ghostPosition = null;
         }
+
+        /// <summary>
+        /// Sets a full CanvasObject as the placement template (preserves color, icon, label, etc.)
+        /// </summary>
+        public void SetTemplate(CanvasObject template)
+        {
+            if (template == null) return;
+            _templateSize = template.Bounds.Size;
+            _templateIdentifier = template.Identifier ?? string.Empty;
+            _templateObject = template;
+            _hasTemplate = true;
+            _ghostPosition = null;
+        }
+
+        private CanvasObject _templateObject;
 
         private EditorCanvas Canvas => _owner as EditorCanvas;
 
