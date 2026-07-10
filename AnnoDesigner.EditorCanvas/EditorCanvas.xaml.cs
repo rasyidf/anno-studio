@@ -163,7 +163,7 @@ namespace AnnoDesigner.Controls.EditorCanvas
             }
 
             // register default tools
-            var selection = new Tooling.SelectionTool(ObjectManager, this);
+            var selection = new Tooling.SelectionTool(ObjectManager, this, SetSelection, () => SelectedObjects, () => _renderer.Invalidate());
             selection.ObjectSelected += obj => SetSelection(obj == null ? Array.Empty<CanvasObject>() : new[] { obj });
             ToolManager.RegisterTool(selection);
 

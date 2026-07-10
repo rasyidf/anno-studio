@@ -1,85 +1,192 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
 using AnnoDesigner.Controls.EditorCanvas.Content.Models;
 
 namespace AnnoDesigner.Controls.EditorCanvas.Tooling
 {
     /// <summary>
-    /// Basic selection tool scaffold. Will be extended to handle mouse interactions and multi-select.
+    /// Selection tool: click to select single object, drag to rubber-band multi-select.
+    /// Supports Ctrl (toggle) and Shift (add) modifiers during drag selection.
     /// </summary>
     public class SelectionTool : ITool
     {
         public string Name => "Selection";
 
         private readonly Content.IObjectManager<CanvasObject> _objectManager;
-        private readonly System.Windows.IInputElement _owner;
+        private readonly IInputElement _owner;
+        private readonly Action<IEnumerable<CanvasObject>>? _setSelection;
+        private readonly Func<IReadOnlyList<CanvasObject>>? _getSelection;
+        private readonly Action? _invalidate;
 
-        public event Action<CanvasObject> ObjectSelected;
+        public event Action<CanvasObject>? ObjectSelected;
 
-        public SelectionTool(Content.IObjectManager<CanvasObject> objectManager, System.Windows.IInputElement owner)
+        private bool _isDragging;
+        private Point _dragStart;
+        private Rect _selectionRect;
+
+        public SelectionTool(Content.IObjectManager<CanvasObject> objectManager, IInputElement owner)
+            : this(objectManager, owner, null, null, null)
+        {
+        }
+
+        public SelectionTool(
+            Content.IObjectManager<CanvasObject> objectManager,
+            IInputElement owner,
+            Action<IEnumerable<CanvasObject>>? setSelection,
+            Func<IReadOnlyList<CanvasObject>>? getSelection,
+            Action? invalidate)
         {
             _objectManager = objectManager ?? throw new ArgumentNullException(nameof(objectManager));
             _owner = owner ?? throw new ArgumentNullException(nameof(owner));
+            _setSelection = setSelection;
+            _getSelection = getSelection;
+            _invalidate = invalidate;
         }
+
+        private Point ToWorld(Point screenPoint) => (_owner is EditorCanvas ec) ? ec.ScreenToWorld(screenPoint) : screenPoint;
 
         public void Activate()
         {
-            // nothing special for now
+            ClearDragState();
         }
 
         public void Deactivate()
         {
-            // nothing special for now
+            ClearDragState();
         }
 
         public void OnCancel()
         {
-            // cancel clears pending drag state; none currently
+            ClearDragState();
+            _invalidate?.Invoke();
         }
 
-        protected void RaiseSelected(CanvasObject obj)
+        public void OnMouseDown(MouseButtonEventArgs e)
         {
-            ObjectSelected?.Invoke(obj);
-        }
-
-        public void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
-        {
-            if (e == null) return;
+            if (e == null || e.ChangedButton != MouseButton.Left) return;
             var screenPt = e.GetPosition(_owner);
-            var pt = (_owner is EditorCanvas ec) ? ec.ScreenToWorld(screenPt) : screenPt;
+            var pt = ToWorld(screenPt);
+
+            // Check if we hit an existing object
             var hits = _objectManager.GetObjectsAt(pt);
-            // pick the first hit (topmost logic not implemented yet)
             foreach (var hit in hits)
             {
                 RaiseSelected(hit);
                 return;
             }
-            // no hit -> deselect (raise null?) We'll raise null to indicate none
-            RaiseSelected(null);
+
+            // No hit — start drag selection
+            _isDragging = true;
+            _dragStart = pt;
+            _selectionRect = new Rect(pt, new Size(0, 0));
         }
 
-        public void OnMouseMove(System.Windows.Input.MouseEventArgs e)
+        public void OnMouseMove(MouseEventArgs e)
         {
-            // TODO: update drag selection rectangle
+            if (!_isDragging || e == null || e.LeftButton != MouseButtonState.Pressed) return;
+            var current = ToWorld(e.GetPosition(_owner));
+            _selectionRect = NormalizeRect(_dragStart, current);
+            _invalidate?.Invoke();
         }
 
-        public void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e)
+        public void OnMouseUp(MouseButtonEventArgs e)
         {
-            // TODO: finalize selection
+            if (!_isDragging || e == null || e.ChangedButton != MouseButton.Left) return;
+
+            var end = ToWorld(e.GetPosition(_owner));
+            var finalRect = NormalizeRect(_dragStart, end);
+
+            var hits = _objectManager.GetObjectsInRegion(finalRect)
+                .Where(o => o.IsSelectable)
+                .ToList();
+
+            var modifiers = Keyboard.Modifiers;
+
+            if (_setSelection != null)
+            {
+                if ((modifiers & ModifierKeys.Control) != 0)
+                {
+                    // Ctrl: toggle each hit in/out of current selection
+                    var current = new List<CanvasObject>(_getSelection?.Invoke() ?? Array.Empty<CanvasObject>());
+                    foreach (var hit in hits)
+                    {
+                        if (current.Contains(hit))
+                            current.Remove(hit);
+                        else
+                            current.Add(hit);
+                    }
+                    _setSelection(current);
+                }
+                else if ((modifiers & ModifierKeys.Shift) != 0)
+                {
+                    // Shift: add to current selection
+                    var current = new List<CanvasObject>(_getSelection?.Invoke() ?? Array.Empty<CanvasObject>());
+                    foreach (var hit in hits)
+                    {
+                        if (!current.Contains(hit))
+                            current.Add(hit);
+                    }
+                    _setSelection(current);
+                }
+                else
+                {
+                    // No modifier: replace selection
+                    _setSelection(hits);
+                }
+            }
+            else
+            {
+                // Fallback for legacy constructor: raise event for first hit
+                RaiseSelected(hits.FirstOrDefault());
+            }
+
+            ClearDragState();
+            _invalidate?.Invoke();
         }
 
-        public void OnKeyDown(System.Windows.Input.KeyEventArgs e)
+        public void OnKeyDown(KeyEventArgs e)
         {
-            // TODO: handle keyboard modifiers
+            // no-op — modifiers checked on mouse up
         }
 
-        public void OnKeyUp(System.Windows.Input.KeyEventArgs e)
+        public void OnKeyUp(KeyEventArgs e)
         {
-            // TODO: handle keyboard modifiers
+            // no-op
         }
 
-        public void Render(System.Windows.Media.DrawingContext dc)
+        public void Render(DrawingContext dc)
         {
-            // SelectionTool has no additional overlays yet; future handles/rects go here.
+            if (!_isDragging || _selectionRect.IsEmpty) return;
+
+            var fill = new SolidColorBrush(Color.FromArgb(40, 0, 120, 215));
+            fill.Freeze();
+            var pen = new Pen(new SolidColorBrush(Color.FromRgb(0, 120, 215)), 1)
+            {
+                DashStyle = DashStyles.Dash
+            };
+            pen.Freeze();
+
+            dc.DrawRectangle(fill, pen, _selectionRect);
+        }
+
+        protected void RaiseSelected(CanvasObject? obj)
+        {
+            ObjectSelected?.Invoke(obj);
+        }
+
+        private void ClearDragState()
+        {
+            _isDragging = false;
+            _selectionRect = Rect.Empty;
+        }
+
+        private static Rect NormalizeRect(Point a, Point b)
+        {
+            return new Rect(Math.Min(a.X, b.X), Math.Min(a.Y, b.Y), Math.Abs(b.X - a.X), Math.Abs(b.Y - a.Y));
         }
     }
 }

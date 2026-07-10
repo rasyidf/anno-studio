@@ -117,12 +117,51 @@ namespace AnnoDesigner.Controls.EditorCanvas.Content
         public IEnumerable<CanvasObject> GetObjectsInRegion(Rect region)
         {
             var hits = new List<CanvasObject>();
-            // ponytail: brute-force scan over all items; upgrade to bucket-range query if perf matters
-            foreach (var item in _items)
+
+            // Determine which grid cells overlap the query region
+            int minCx = (int)Math.Floor((region.Left - _originX) / _cellSize);
+            int minCy = (int)Math.Floor((region.Top - _originY) / _cellSize);
+            int maxCx = (int)Math.Floor((region.Right - _originX) / _cellSize);
+            int maxCy = (int)Math.Floor((region.Bottom - _originY) / _cellSize);
+
+            // Clamp to grid bounds
+            minCx = Math.Max(0, minCx);
+            minCy = Math.Max(0, minCy);
+            maxCx = Math.Min(_cols - 1, maxCx);
+            maxCy = Math.Min(_rows - 1, maxCy);
+
+            if (minCx > maxCx || minCy > maxCy)
             {
-                if (item != null && item.Bounds.IntersectsWith(region))
-                    hits.Add(item);
+                // Region is entirely outside grid — fall back to brute force
+                foreach (var item in _items)
+                {
+                    if (item != null && item.Bounds.IntersectsWith(region))
+                        hits.Add(item);
+                }
+                return hits;
             }
+
+            // ponytail: items are stored by center point only, so expand scan by 1 cell
+            // to catch objects whose center is in an adjacent cell but whose bounds overlap.
+            int scanMinCx = Math.Max(0, minCx - 1);
+            int scanMinCy = Math.Max(0, minCy - 1);
+            int scanMaxCx = Math.Min(_cols - 1, maxCx + 1);
+            int scanMaxCy = Math.Min(_rows - 1, maxCy + 1);
+
+            Span2D<List<CanvasObject>> grid = _buckets2d;
+            for (int y = scanMinCy; y <= scanMaxCy; y++)
+            {
+                for (int x = scanMinCx; x <= scanMaxCx; x++)
+                {
+                    var bucket = grid[y, x];
+                    foreach (var item in bucket)
+                    {
+                        if (item != null && item.Bounds.IntersectsWith(region))
+                            hits.Add(item);
+                    }
+                }
+            }
+
             return hits;
         }
 
