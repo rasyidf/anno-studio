@@ -36,8 +36,8 @@ namespace AnnoDesigner.Helper
         private readonly FileSystem _fileSystem = new();
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        private const string GITHUB_USERNAME = "AnnoDesigner";
-        private const string GITHUB_PROJECTNAME = "anno-designer";
+        private const string GITHUB_USERNAME = "rasyidf";
+        private const string GITHUB_PROJECTNAME = "anno-studio";
 
         private const string TAG_PRESETS = "Presetsv";
         private const string TAG_PRESETS_ICONS = "PresetsIconsv";
