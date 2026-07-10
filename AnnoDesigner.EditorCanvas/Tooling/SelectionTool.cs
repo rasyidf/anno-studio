@@ -65,6 +65,10 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
             _invalidate?.Invoke();
         }
 
+        private bool _isMoving;
+        private Point _moveStart;
+        private List<(CanvasObject obj, Rect originalBounds)> _moveTargets = new();
+
         public void OnMouseDown(MouseButtonEventArgs e)
         {
             if (e == null || e.ChangedButton != MouseButton.Left) return;
@@ -75,7 +79,29 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
             var hits = _objectManager.GetObjectsAt(pt);
             foreach (var hit in hits)
             {
-                RaiseSelected(hit);
+                // If hit object is already selected, start move
+                var currentSelection = _getSelection?.Invoke();
+                if (currentSelection != null && currentSelection.Contains(hit))
+                {
+                    _isMoving = true;
+                    _moveStart = pt;
+                    _moveTargets = currentSelection.Select(o => (o, o.Bounds)).ToList();
+                    return;
+                }
+
+                // Otherwise, select it (with Ctrl toggle)
+                if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+                {
+                    var sel = currentSelection?.ToList() ?? new();
+                    if (sel.Contains(hit)) sel.Remove(hit);
+                    else sel.Add(hit);
+                    _setSelection?.Invoke(sel);
+                }
+                else
+                {
+                    _setSelection?.Invoke(new[] { hit });
+                }
+                _invalidate?.Invoke();
                 return;
             }
 
@@ -87,15 +113,46 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
 
         public void OnMouseMove(MouseEventArgs e)
         {
-            if (!_isDragging || e == null || e.LeftButton != MouseButtonState.Pressed) return;
+            if (e == null) return;
             var current = ToWorld(e.GetPosition(_owner));
+
+            if (_isMoving && e.LeftButton == MouseButtonState.Pressed)
+            {
+                var delta = current - _moveStart;
+                // Snap delta to grid
+                var ec = _owner as EditorCanvas;
+                if (ec?.TransformService != null)
+                {
+                    var snapped = ec.TransformService.SnapToGrid(new Point(delta.X, delta.Y));
+                    delta = new Vector(Math.Round(snapped.X), Math.Round(snapped.Y));
+                }
+
+                foreach (var (obj, orig) in _moveTargets)
+                {
+                    obj.Bounds = new Rect(orig.X + delta.X, orig.Y + delta.Y, orig.Width, orig.Height);
+                }
+                _invalidate?.Invoke();
+                return;
+            }
+
+            if (!_isDragging || e.LeftButton != MouseButtonState.Pressed) return;
             _selectionRect = NormalizeRect(_dragStart, current);
             _invalidate?.Invoke();
         }
 
         public void OnMouseUp(MouseButtonEventArgs e)
         {
-            if (!_isDragging || e == null || e.ChangedButton != MouseButton.Left) return;
+            if (e == null || e.ChangedButton != MouseButton.Left) return;
+
+            if (_isMoving)
+            {
+                _isMoving = false;
+                _moveTargets.Clear();
+                _invalidate?.Invoke();
+                return;
+            }
+
+            if (!_isDragging) return;
 
             var end = ToWorld(e.GetPosition(_owner));
             var finalRect = NormalizeRect(_dragStart, end);
@@ -181,6 +238,8 @@ namespace AnnoDesigner.Controls.EditorCanvas.Tooling
         private void ClearDragState()
         {
             _isDragging = false;
+            _isMoving = false;
+            _moveTargets.Clear();
             _selectionRect = Rect.Empty;
         }
 

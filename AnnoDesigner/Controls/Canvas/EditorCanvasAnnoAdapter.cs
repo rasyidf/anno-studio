@@ -89,7 +89,7 @@ public sealed class EditorCanvasAnnoAdapter : UserControl, IAnnoCanvas
 
         // Disable guidelines (crosshair dashes) — not useful for Anno tile-based placement
         _editorCanvas.ShowGuides = false;
-        _editorCanvas.ShowToolOverlays = false; // We render selection in ObjectsLayer instead
+        _editorCanvas.ShowToolOverlays = true; // pens are now screen-pixel width
 
         // Disable extra grid layers (SubGrid, DotGrid, CrossGrid) — Anno only needs simple tile grid
         if (_editorCanvas.LayeredRenderer is EditorCanvas.Core.ILayeredRenderer layered)
