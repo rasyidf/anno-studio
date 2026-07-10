@@ -15,7 +15,11 @@ namespace AnnoDesigner.Controls.EditorCanvas.Core.Layers
 
         public override void Render(DrawingContext dc, AnnoDesigner.Controls.EditorCanvas.EditorCanvas canvas, Rect clip)
         {
-            var defaultPen = new Pen(canvas.ObjectStrokeBrush ?? Brushes.Blue, 1);
+            // Pen thickness must be in screen pixels: 1/zoom gives 1px regardless of zoom level
+            var zoom = canvas.TransformService?.Zoom ?? 1.0;
+            var strokeWidth = 1.0 / zoom;
+
+            var defaultPen = new Pen(canvas.ObjectStrokeBrush ?? Brushes.Black, strokeWidth);
             var defaultFill = canvas.ObjectFillBrush ?? Brushes.Transparent;
             defaultPen.Freeze();
 
@@ -26,7 +30,7 @@ namespace AnnoDesigner.Controls.EditorCanvas.Core.Layers
             {
                 if (obj == null) continue;
 
-                // Determine fill: use object-specific FillColor when set, otherwise default
+                // Determine fill: use object-specific FillColor, otherwise default
                 Brush fill = defaultFill;
                 if (obj.FillColor.HasValue)
                 {
@@ -85,7 +89,7 @@ namespace AnnoDesigner.Controls.EditorCanvas.Core.Layers
                         // Draw label text when available
                         if (!string.IsNullOrEmpty(obj.Label) && obj.Bounds.Width > 0 && obj.Bounds.Height > 0)
                         {
-                            var fontSize = System.Math.Max(6, System.Math.Min(12, obj.Bounds.Height * 0.3));
+                            var fontSize = System.Math.Max(0.3, System.Math.Min(0.8, obj.Bounds.Height * 0.2));
                             var text = new FormattedText(
                                 obj.Label,
                                 CultureInfo.CurrentCulture,
@@ -110,16 +114,21 @@ namespace AnnoDesigner.Controls.EditorCanvas.Core.Layers
                 }
             }
 
-            // Draw selection highlighting
+            // Draw selection highlighting: thin yellow dashed border (screen-pixel width)
             var selected = canvas.SelectedObjects;
             if (selected != null && selected.Count > 0)
             {
-                var selPen = new Pen(canvas.SelectionStrokeBrush ?? Brushes.Red, 2);
+                var selPen = new Pen(Brushes.Yellow, 2.0 / zoom);
+                selPen.DashStyle = DashStyles.Dash;
                 selPen.Freeze();
+
+                var selFill = new SolidColorBrush(Color.FromArgb(30, 255, 255, 0));
+                selFill.Freeze();
+
                 foreach (var obj in selected)
                 {
                     if (obj == null) continue;
-                    dc.DrawRectangle(null, selPen, obj.Bounds);
+                    dc.DrawRectangle(selFill, selPen, obj.Bounds);
                 }
             }
         }

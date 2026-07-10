@@ -116,12 +116,66 @@ public sealed class EditorCanvasAnnoAdapter : UserControl, IAnnoCanvas
             () => _gridSize,
             icons);
 
-        Content = _editorCanvas;
+        Content = CreateContentWithToolbox();
 
         _placedObjects = new QuadTree<LayoutObject>(new Rect(-500, -500, 1000, 1000));
         _selectedObjects = new HashSet<LayoutObject>();
 
         _editorCanvas.SelectionChanged += OnEditorSelectionChanged;
+    }
+
+    private UIElement CreateContentWithToolbox()
+    {
+        var grid = new Grid();
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(36) });
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+        // Toolbox panel (left side)
+        var toolbox = new StackPanel
+        {
+            Orientation = System.Windows.Controls.Orientation.Vertical,
+            Background = new System.Windows.Media.SolidColorBrush(
+                System.Windows.Media.Color.FromArgb(200, 40, 40, 40)),
+            VerticalAlignment = VerticalAlignment.Top,
+            Margin = new Thickness(2)
+        };
+
+        var tools = new (string Name, string Label, string Hotkey)[]
+        {
+            ("Selection", "▢", "V"),
+            ("RectSelect", "⬚", "R"),
+            ("Lasso", "◇", "L"),
+            ("Placement", "⊞", "P"),
+            ("Transform", "↔", "M"),
+            ("Line", "╱", "N"),
+            ("Road", "═", "⇧R"),
+        };
+
+        foreach (var (name, label, hotkey) in tools)
+        {
+            var btn = new System.Windows.Controls.Button
+            {
+                Content = label,
+                ToolTip = $"{name} ({hotkey})",
+                Width = 32,
+                Height = 32,
+                Margin = new Thickness(1),
+                FontSize = 16,
+                HorizontalContentAlignment = HorizontalAlignment.Center,
+                VerticalContentAlignment = VerticalAlignment.Center
+            };
+            var toolName = name; // capture for closure
+            btn.Click += (s, e) => _editorCanvas.ToolManager?.Activate(toolName);
+            toolbox.Children.Add(btn);
+        }
+
+        Grid.SetColumn(toolbox, 0);
+        Grid.SetColumn(_editorCanvas, 1);
+
+        grid.Children.Add(toolbox);
+        grid.Children.Add(_editorCanvas);
+
+        return grid;
     }
 
     #region IAnnoCanvas Properties

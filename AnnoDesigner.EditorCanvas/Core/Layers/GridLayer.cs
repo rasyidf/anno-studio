@@ -16,7 +16,8 @@ namespace AnnoDesigner.Controls.EditorCanvas.Core.Layers
         {
             if (!canvas.ShowGrid) return;
 
-            var pen = new Pen(canvas.GridLineBrush ?? Brushes.LightGray, 0.5);
+            var zoom = canvas.TransformService?.Zoom ?? 1.0;
+            var pen = new Pen(canvas.GridLineBrush ?? Brushes.LightGray, 0.5 / zoom);
             pen.Freeze();
 
             // Draw grid lines covering the visible clip area in world coordinates.
